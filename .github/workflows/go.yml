@@ -14,6 +14,8 @@ jobs:
           POSTGRES_DB: hammer
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -33,5 +35,5 @@ jobs:
       run: make lint
     - name: Build
       env:
-        DATABASE_URL: 'postgres://test:test@postgres:5432/hammer?sslmode=disable'
+        DATABASE_URL: 'postgres://test:test@localhost:5432/hammer?sslmode=disable'
       run: make db-migrate && make test
