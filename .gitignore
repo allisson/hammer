@@ -17,3 +17,6 @@
 # golang-migrate binaries
 migrate.darwin-amd64
 migrate.linux-amd64
+
+# golangci-lint
+/bin/golangci-lint
