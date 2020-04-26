@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS delivery_attemps;
+DROP TABLE IF EXISTS deliveries;
+DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS subscriptions;
+DROP TABLE IF EXISTS topics;

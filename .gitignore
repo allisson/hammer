@@ -13,3 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# golang-migrate binaries
+migrate.darwin-amd64
+migrate.linux-amd64
