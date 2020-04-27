@@ -23,6 +23,7 @@ type txnTestHelper struct {
 	db               *sqlx.DB
 	topicRepo        Topic
 	subscriptionRepo Subscription
+	messageRepo      Message
 }
 
 func newTxnTestHelper() txnTestHelper {
@@ -32,6 +33,7 @@ func newTxnTestHelper() txnTestHelper {
 		db:               db,
 		topicRepo:        NewTopic(db),
 		subscriptionRepo: NewSubscription(db),
+		messageRepo:      NewMessage(db),
 	}
 }
 

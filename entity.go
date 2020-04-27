@@ -34,7 +34,7 @@ type Subscription struct {
 type Message struct {
 	ID                string    `json:"id" db:"id"`
 	TopicID           string    `json:"topic_id" db:"topic_id"`
-	Data              []byte    `json:"data" db:"data"`
+	Data              string    `json:"data" db:"data"`
 	CreatedDeliveries bool      `json:"created_deliveries" db:"created_deliveries"`
 	CreatedAt         time.Time `json:"created_at" db:"created_at"`
 }
