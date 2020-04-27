@@ -58,13 +58,10 @@ func MakeTestMessage() Message {
 func MakeTestDelivery() Delivery {
 	id := fmt.Sprintf("%d", randonInt())
 	return Delivery{
-		ID:                     fmt.Sprintf("Delivery_%s", id),
-		MaxDeliveryAttempts:    1,
-		DeliveryAttemptDelay:   1000,
-		DeliveryAttemptTimeout: 1000,
-		Status:                 "pending",
-		CreatedAt:              time.Now().UTC(),
-		UpdatedAt:              time.Now().UTC(),
+		ID:        fmt.Sprintf("Delivery_%s", id),
+		Status:    "pending",
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 	}
 }
 

@@ -22,3 +22,10 @@ type MessageService interface {
 	FindAll(limit, offset int) ([]Message, error)
 	Create(message *Message) error
 }
+
+// DeliveryService interface
+type DeliveryService interface {
+	Find(id string) (Delivery, error)
+	FindAll(limit, offset int) ([]Delivery, error)
+	Create(message *Message) ([]Delivery, error)
+}

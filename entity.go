@@ -41,18 +41,15 @@ type Message struct {
 
 // Delivery data
 type Delivery struct {
-	ID                     string    `json:"id" db:"id"`
-	TopicID                string    `json:"topic_id" db:"topic_id"`
-	SubscriptionID         string    `json:"subscription_id" db:"subscription_id"`
-	MessageID              string    `json:"message_id" db:"message_id"`
-	MaxDeliveryAttempts    int       `json:"max_delivery_attempts" db:"max_delivery_attempts"`
-	DeliveryAttemptDelay   int       `json:"delivery_attempt_delay" db:"delivery_attempt_delay"`
-	DeliveryAttemptTimeout int       `json:"delivery_attempt_timeout" db:"delivery_attempt_timeout"`
-	DeliveryAttempts       int       `json:"delivery_attempts" db:"delivery_attempts"`
-	LastDeliveryAttempt    null.Time `json:"last_delivery_attempt" db:"last_delivery_attempt"`
-	Status                 string    `json:"status" db:"status"`
-	CreatedAt              time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt              time.Time `json:"updated_at" db:"updated_at"`
+	ID                  string    `json:"id" db:"id"`
+	TopicID             string    `json:"topic_id" db:"topic_id"`
+	SubscriptionID      string    `json:"subscription_id" db:"subscription_id"`
+	MessageID           string    `json:"message_id" db:"message_id"`
+	DeliveryAttempts    int       `json:"delivery_attempts" db:"delivery_attempts"`
+	LastDeliveryAttempt null.Time `json:"last_delivery_attempt" db:"last_delivery_attempt"`
+	Status              string    `json:"status" db:"status"`
+	CreatedAt           time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt           time.Time `json:"updated_at" db:"updated_at"`
 }
 
 // DeliveryAttempt data
