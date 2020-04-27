@@ -1,38 +1,20 @@
 package postgres
 
 import (
-	"fmt"
 	"testing"
-	"time"
 
 	"github.com/allisson/hammer"
 	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
-func makeTestSubscription() hammer.Subscription {
-	id := fmt.Sprintf("%d", randonInt())
-	return hammer.Subscription{
-		ID:                     fmt.Sprintf("Subscription_%s", id),
-		Name:                   fmt.Sprintf("My Subscription %s", id),
-		URL:                    fmt.Sprintf("https://example.com/%s/", id),
-		SecretToken:            fmt.Sprintf("token-%s", id),
-		MaxDeliveryAttempts:    1,
-		DeliveryAttemptDelay:   10,
-		DeliveryAttemptTimeout: 5,
-		Active:                 true,
-		CreatedAt:              time.Now().UTC(),
-		UpdatedAt:              time.Now().UTC(),
-	}
-}
-
 func TestSubscription(t *testing.T) {
 	t.Run("Test Store new Subscription", func(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		subscription := makeTestSubscription()
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
@@ -44,8 +26,8 @@ func TestSubscription(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		subscription := makeTestSubscription()
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
@@ -63,8 +45,8 @@ func TestSubscription(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		subscription := makeTestSubscription()
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
@@ -80,10 +62,10 @@ func TestSubscription(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		subscription1 := makeTestSubscription()
+		topic := hammer.MakeTestTopic()
+		subscription1 := hammer.MakeTestSubscription()
 		subscription1.TopicID = topic.ID
-		subscription2 := makeTestSubscription()
+		subscription2 := hammer.MakeTestSubscription()
 		subscription2.TopicID = topic.ID
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
@@ -100,10 +82,10 @@ func TestSubscription(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		subscription1 := makeTestSubscription()
+		topic := hammer.MakeTestTopic()
+		subscription1 := hammer.MakeTestSubscription()
 		subscription1.TopicID = topic.ID
-		subscription2 := makeTestSubscription()
+		subscription2 := hammer.MakeTestSubscription()
 		subscription2.TopicID = topic.ID
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)

@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"fmt"
-	"math/rand"
 	"testing"
 	"time"
 
@@ -16,7 +15,6 @@ import (
 
 func init() {
 	txdb.Register("pgx", "postgres", env.GetString("DATABASE_URL", ""))
-	rand.Seed(time.Now().UnixNano())
 }
 
 type txnTestHelper struct {
@@ -41,27 +39,12 @@ func newTxnTestHelper() txnTestHelper {
 	}
 }
 
-func randonInt() int {
-	return rand.Intn(9999)
-}
-
-func makeTestTopic() hammer.Topic {
-	id := fmt.Sprintf("%d", randonInt())
-	return hammer.Topic{
-		ID:        fmt.Sprintf("topic_%s", id),
-		Name:      fmt.Sprintf("My Topic %s", id),
-		Active:    true,
-		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
-	}
-}
-
 func TestTopic(t *testing.T) {
 	t.Run("Test Store new topic", func(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
+		topic := hammer.MakeTestTopic()
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
 	})
@@ -70,7 +53,7 @@ func TestTopic(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
+		topic := hammer.MakeTestTopic()
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
 		topic.Name = "My Topic III"
@@ -85,7 +68,7 @@ func TestTopic(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
+		topic := hammer.MakeTestTopic()
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
 		topicFromRepo, err := th.topicRepo.Find(topic.ID)
@@ -98,8 +81,8 @@ func TestTopic(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic1 := makeTestTopic()
-		topic2 := makeTestTopic()
+		topic1 := hammer.MakeTestTopic()
+		topic2 := hammer.MakeTestTopic()
 		err := th.topicRepo.Store(&topic1)
 		assert.Nil(t, err)
 		err = th.topicRepo.Store(&topic2)

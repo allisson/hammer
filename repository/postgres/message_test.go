@@ -1,32 +1,20 @@
 package postgres
 
 import (
-	"fmt"
 	"testing"
-	"time"
 
 	"github.com/allisson/hammer"
 	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
-func makeTestMessage() hammer.Message {
-	id := fmt.Sprintf("%d", randonInt())
-	return hammer.Message{
-		ID:                fmt.Sprintf("Message_%s", id),
-		Data:              fmt.Sprintf("data_%s", id),
-		CreatedDeliveries: false,
-		CreatedAt:         time.Now().UTC(),
-	}
-}
-
 func TestMessage(t *testing.T) {
 	t.Run("Test Store new Message", func(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		message := makeTestMessage()
+		topic := hammer.MakeTestTopic()
+		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
@@ -38,8 +26,8 @@ func TestMessage(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		message := makeTestMessage()
+		topic := hammer.MakeTestTopic()
+		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
@@ -57,8 +45,8 @@ func TestMessage(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		message := makeTestMessage()
+		topic := hammer.MakeTestTopic()
+		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
@@ -74,10 +62,10 @@ func TestMessage(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		message1 := makeTestMessage()
+		topic := hammer.MakeTestTopic()
+		message1 := hammer.MakeTestMessage()
 		message1.TopicID = topic.ID
-		message2 := makeTestMessage()
+		message2 := hammer.MakeTestMessage()
 		message2.TopicID = topic.ID
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
