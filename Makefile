@@ -19,4 +19,14 @@ download-golang-migrate-binary:
 db-migrate: download-golang-migrate-binary
 	./migrate.$(PLATFORM)-amd64 -source file://db/migrations -database ${DATABASE_URL} up
 
-.PHONY: lint test download-golang-migrate-binary db-migrate
+mock:
+	@rm -rf mocks
+	mockery -name TopicRepository
+	mockery -name SubscriptionRepository
+	mockery -name MessageRepository
+	mockery -name DeliveryRepository
+	mockery -name DeliveryAttemptRepository
+	mockery -name LockRepository
+	mockery -name TopicService
+
+.PHONY: lint test download-golang-migrate-binary db-migrate mock

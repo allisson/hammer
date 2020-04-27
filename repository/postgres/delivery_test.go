@@ -1,39 +1,24 @@
 package postgres
 
 import (
-	"fmt"
 	"testing"
-	"time"
 
 	"github.com/allisson/hammer"
 	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
-func makeTestDelivery() hammer.Delivery {
-	id := fmt.Sprintf("%d", randonInt())
-	return hammer.Delivery{
-		ID:                     fmt.Sprintf("Delivery_%s", id),
-		MaxDeliveryAttempts:    1,
-		DeliveryAttemptDelay:   1000,
-		DeliveryAttemptTimeout: 1000,
-		Status:                 "pending",
-		CreatedAt:              time.Now().UTC(),
-		UpdatedAt:              time.Now().UTC(),
-	}
-}
-
 func TestDelivery(t *testing.T) {
 	t.Run("Test Store new Delivery", func(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		subscription := makeTestSubscription()
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
-		message := makeTestMessage()
+		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
-		delivery := makeTestDelivery()
+		delivery := hammer.MakeTestDelivery()
 		delivery.TopicID = topic.ID
 		delivery.SubscriptionID = subscription.ID
 		delivery.MessageID = message.ID
@@ -51,12 +36,12 @@ func TestDelivery(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		subscription := makeTestSubscription()
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
-		message := makeTestMessage()
+		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
-		delivery := makeTestDelivery()
+		delivery := hammer.MakeTestDelivery()
 		delivery.TopicID = topic.ID
 		delivery.SubscriptionID = subscription.ID
 		delivery.MessageID = message.ID
@@ -80,12 +65,12 @@ func TestDelivery(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		subscription := makeTestSubscription()
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
-		message := makeTestMessage()
+		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
-		delivery := makeTestDelivery()
+		delivery := hammer.MakeTestDelivery()
 		delivery.TopicID = topic.ID
 		delivery.SubscriptionID = subscription.ID
 		delivery.MessageID = message.ID
@@ -107,16 +92,16 @@ func TestDelivery(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		subscription := makeTestSubscription()
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
-		message := makeTestMessage()
+		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
-		delivery1 := makeTestDelivery()
+		delivery1 := hammer.MakeTestDelivery()
 		delivery1.TopicID = topic.ID
 		delivery1.SubscriptionID = subscription.ID
 		delivery1.MessageID = message.ID
-		delivery2 := makeTestDelivery()
+		delivery2 := hammer.MakeTestDelivery()
 		delivery2.TopicID = topic.ID
 		delivery2.SubscriptionID = subscription.ID
 		delivery2.MessageID = message.ID

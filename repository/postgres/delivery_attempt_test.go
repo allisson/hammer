@@ -1,40 +1,28 @@
 package postgres
 
 import (
-	"fmt"
 	"testing"
-	"time"
 
 	"github.com/allisson/hammer"
 	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
-func makeTestDeliveryAttempt() hammer.DeliveryAttempt {
-	id := fmt.Sprintf("%d", randonInt())
-	return hammer.DeliveryAttempt{
-		ID:        fmt.Sprintf("DeliveryAttempt_%s", id),
-		URL:       fmt.Sprintf("https://example.com/%s/", id),
-		Success:   false,
-		CreatedAt: time.Now().UTC(),
-	}
-}
-
 func TestDeliveryAttempt(t *testing.T) {
 	t.Run("Test Store new DeliveryAttempt", func(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		subscription := makeTestSubscription()
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
-		message := makeTestMessage()
+		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
-		delivery := makeTestDelivery()
+		delivery := hammer.MakeTestDelivery()
 		delivery.TopicID = topic.ID
 		delivery.SubscriptionID = subscription.ID
 		delivery.MessageID = message.ID
-		deliveryAttempt := makeTestDeliveryAttempt()
+		deliveryAttempt := hammer.MakeTestDeliveryAttempt()
 		deliveryAttempt.DeliveryID = delivery.ID
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
@@ -52,16 +40,16 @@ func TestDeliveryAttempt(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		subscription := makeTestSubscription()
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
-		message := makeTestMessage()
+		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
-		delivery := makeTestDelivery()
+		delivery := hammer.MakeTestDelivery()
 		delivery.TopicID = topic.ID
 		delivery.SubscriptionID = subscription.ID
 		delivery.MessageID = message.ID
-		deliveryAttempt := makeTestDeliveryAttempt()
+		deliveryAttempt := hammer.MakeTestDeliveryAttempt()
 		deliveryAttempt.DeliveryID = delivery.ID
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
@@ -85,16 +73,16 @@ func TestDeliveryAttempt(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		subscription := makeTestSubscription()
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
-		message := makeTestMessage()
+		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
-		delivery := makeTestDelivery()
+		delivery := hammer.MakeTestDelivery()
 		delivery.TopicID = topic.ID
 		delivery.SubscriptionID = subscription.ID
 		delivery.MessageID = message.ID
-		deliveryAttempt := makeTestDeliveryAttempt()
+		deliveryAttempt := hammer.MakeTestDeliveryAttempt()
 		deliveryAttempt.DeliveryID = delivery.ID
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
@@ -116,18 +104,18 @@ func TestDeliveryAttempt(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		topic := makeTestTopic()
-		subscription := makeTestSubscription()
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
-		message := makeTestMessage()
+		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
-		delivery := makeTestDelivery()
+		delivery := hammer.MakeTestDelivery()
 		delivery.TopicID = topic.ID
 		delivery.SubscriptionID = subscription.ID
 		delivery.MessageID = message.ID
-		deliveryAttempt1 := makeTestDeliveryAttempt()
+		deliveryAttempt1 := hammer.MakeTestDeliveryAttempt()
 		deliveryAttempt1.DeliveryID = delivery.ID
-		deliveryAttempt2 := makeTestDeliveryAttempt()
+		deliveryAttempt2 := hammer.MakeTestDeliveryAttempt()
 		deliveryAttempt2.DeliveryID = delivery.ID
 		err := th.topicRepo.Store(&topic)
 		assert.Nil(t, err)
