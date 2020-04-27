@@ -30,5 +30,6 @@ mock:
 	mockery -name TopicService
 	mockery -name SubscriptionService
 	mockery -name MessageService
+	mockery -name DeliveryService
 
 .PHONY: lint test download-golang-migrate-binary db-migrate mock
