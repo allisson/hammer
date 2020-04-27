@@ -7,7 +7,7 @@ lint:
 	fi;
 	./bin/golangci-lint run
 
-test: lint
+test:
 	go test -covermode=count -coverprofile=count.out -v ./...
 
 download-golang-migrate-binary:

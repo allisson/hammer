@@ -20,16 +20,18 @@ func init() {
 }
 
 type txnTestHelper struct {
-	db        *sqlx.DB
-	topicRepo Topic
+	db               *sqlx.DB
+	topicRepo        Topic
+	subscriptionRepo Subscription
 }
 
 func newTxnTestHelper() txnTestHelper {
 	cName := fmt.Sprintf("connection_%d", time.Now().UnixNano())
 	db, _ := sqlx.Open("pgx", cName)
 	return txnTestHelper{
-		db:        db,
-		topicRepo: NewTopic(db),
+		db:               db,
+		topicRepo:        NewTopic(db),
+		subscriptionRepo: NewSubscription(db),
 	}
 }
 
