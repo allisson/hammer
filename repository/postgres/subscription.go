@@ -24,6 +24,20 @@ func (s *Subscription) Find(id string) (hammer.Subscription, error) {
 	return subscription, err
 }
 
+// FindAll returns []hammer.Subscription by limit and offset
+func (s *Subscription) FindAll(limit, offset int) ([]hammer.Subscription, error) {
+	subscriptions := []hammer.Subscription{}
+	sqlStatement := `
+		SELECT *
+		FROM subscriptions
+		ORDER BY id ASC
+		LIMIT $1
+		OFFSET $2
+	`
+	err := s.db.Select(&subscriptions, sqlStatement, limit, offset)
+	return subscriptions, err
+}
+
 // FindByTopic returns hammer.Subscription by topic_id and topic_created_at
 func (s *Subscription) FindByTopic(topicID string) ([]hammer.Subscription, error) {
 	subscriptions := []hammer.Subscription{}

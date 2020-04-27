@@ -69,4 +69,24 @@ func TestMessage(t *testing.T) {
 		assert.Equal(t, messageFromRepo.ID, message.ID)
 		assert.Equal(t, messageFromRepo.Data, message.Data)
 	})
+
+	t.Run("Test FindAll", func(t *testing.T) {
+		th := newTxnTestHelper()
+		defer th.db.Close()
+
+		topic := makeTestTopic()
+		message1 := makeTestMessage()
+		message1.TopicID = topic.ID
+		message2 := makeTestMessage()
+		message2.TopicID = topic.ID
+		err := th.topicRepo.Store(&topic)
+		assert.Nil(t, err)
+		err = th.messageRepo.Store(&message1)
+		assert.Nil(t, err)
+		err = th.messageRepo.Store(&message2)
+		assert.Nil(t, err)
+		messages, err := th.messageRepo.FindAll(50, 0)
+		assert.Nil(t, err)
+		assert.Equal(t, 2, len(messages))
+	})
 }

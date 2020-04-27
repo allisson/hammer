@@ -102,4 +102,36 @@ func TestDelivery(t *testing.T) {
 		assert.Equal(t, deliveryFromRepo.ID, delivery.ID)
 		assert.Equal(t, deliveryFromRepo.Status, delivery.Status)
 	})
+
+	t.Run("Test FindAll", func(t *testing.T) {
+		th := newTxnTestHelper()
+		defer th.db.Close()
+
+		topic := makeTestTopic()
+		subscription := makeTestSubscription()
+		subscription.TopicID = topic.ID
+		message := makeTestMessage()
+		message.TopicID = topic.ID
+		delivery1 := makeTestDelivery()
+		delivery1.TopicID = topic.ID
+		delivery1.SubscriptionID = subscription.ID
+		delivery1.MessageID = message.ID
+		delivery2 := makeTestDelivery()
+		delivery2.TopicID = topic.ID
+		delivery2.SubscriptionID = subscription.ID
+		delivery2.MessageID = message.ID
+		err := th.topicRepo.Store(&topic)
+		assert.Nil(t, err)
+		err = th.subscriptionRepo.Store(&subscription)
+		assert.Nil(t, err)
+		err = th.messageRepo.Store(&message)
+		assert.Nil(t, err)
+		err = th.deliveryRepo.Store(&delivery1)
+		assert.Nil(t, err)
+		err = th.deliveryRepo.Store(&delivery2)
+		assert.Nil(t, err)
+		deliveries, err := th.deliveryRepo.FindAll(50, 0)
+		assert.Nil(t, err)
+		assert.Equal(t, 2, len(deliveries))
+	})
 }
