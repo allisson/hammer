@@ -15,3 +15,10 @@ type SubscriptionService interface {
 	Create(subscription *Subscription) error
 	Update(subscription *Subscription) error
 }
+
+// MessageService interface
+type MessageService interface {
+	Find(id string) (Message, error)
+	FindAll(limit, offset int) ([]Message, error)
+	Create(message *Message) error
+}
