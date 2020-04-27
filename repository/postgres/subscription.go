@@ -24,6 +24,18 @@ func (s *Subscription) Find(id string) (hammer.Subscription, error) {
 	return subscription, err
 }
 
+// FindByTopic returns hammer.Subscription by topic_id and topic_created_at
+func (s *Subscription) FindByTopic(topicID string) ([]hammer.Subscription, error) {
+	subscriptions := []hammer.Subscription{}
+	sqlStatement := `
+		SELECT *
+		FROM subscriptions
+		WHERE topic_id = $1
+	`
+	err := s.db.Select(&subscriptions, sqlStatement, topicID)
+	return subscriptions, err
+}
+
 func (s *Subscription) create(subscription *hammer.Subscription) error {
 	sqlStatement := `
 		INSERT INTO subscriptions (

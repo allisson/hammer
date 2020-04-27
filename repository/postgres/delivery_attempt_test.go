@@ -11,7 +11,7 @@ import (
 )
 
 func makeTestDeliveryAttempt() hammer.DeliveryAttempt {
-	id := string(randonInt())
+	id := fmt.Sprintf("%d", randonInt())
 	return hammer.DeliveryAttempt{
 		ID:        fmt.Sprintf("DeliveryAttempt_%s", id),
 		URL:       fmt.Sprintf("https://example.com/%s/", id),

@@ -46,7 +46,7 @@ func randonInt() int {
 }
 
 func makeTestTopic() hammer.Topic {
-	id := string(randonInt())
+	id := fmt.Sprintf("%d", randonInt())
 	return hammer.Topic{
 		ID:        fmt.Sprintf("topic_%s", id),
 		Name:      fmt.Sprintf("My Topic %s", id),
