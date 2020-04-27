@@ -9,6 +9,7 @@ type TopicRepository interface {
 // SubscriptionRepository interface
 type SubscriptionRepository interface {
 	Find(id string) (Subscription, error)
+	FindByTopic(topicID string) ([]Subscription, error)
 	Store(subscription *Subscription) error
 }
 

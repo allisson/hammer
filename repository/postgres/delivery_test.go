@@ -11,7 +11,7 @@ import (
 )
 
 func makeTestDelivery() hammer.Delivery {
-	id := string(randonInt())
+	id := fmt.Sprintf("%d", randonInt())
 	return hammer.Delivery{
 		ID:                     fmt.Sprintf("Delivery_%s", id),
 		MaxDeliveryAttempts:    1,

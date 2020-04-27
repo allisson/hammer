@@ -11,7 +11,7 @@ import (
 )
 
 func makeTestMessage() hammer.Message {
-	id := string(randonInt())
+	id := fmt.Sprintf("%d", randonInt())
 	return hammer.Message{
 		ID:                fmt.Sprintf("Message_%s", id),
 		Data:              fmt.Sprintf("data_%s", id),

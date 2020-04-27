@@ -11,7 +11,7 @@ import (
 )
 
 func makeTestSubscription() hammer.Subscription {
-	id := string(randonInt())
+	id := fmt.Sprintf("%d", randonInt())
 	return hammer.Subscription{
 		ID:                     fmt.Sprintf("Subscription_%s", id),
 		Name:                   fmt.Sprintf("My Subscription %s", id),
@@ -74,5 +74,25 @@ func TestSubscription(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, subscriptionFromRepo.ID, subscription.ID)
 		assert.Equal(t, subscriptionFromRepo.Name, subscription.Name)
+	})
+
+	t.Run("Test FindByTopic", func(t *testing.T) {
+		th := newTxnTestHelper()
+		defer th.db.Close()
+
+		topic := makeTestTopic()
+		subscription1 := makeTestSubscription()
+		subscription1.TopicID = topic.ID
+		subscription2 := makeTestSubscription()
+		subscription2.TopicID = topic.ID
+		err := th.topicRepo.Store(&topic)
+		assert.Nil(t, err)
+		err = th.subscriptionRepo.Store(&subscription1)
+		assert.Nil(t, err)
+		err = th.subscriptionRepo.Store(&subscription2)
+		assert.Nil(t, err)
+		subscriptions, err := th.subscriptionRepo.FindByTopic(topic.ID)
+		assert.Nil(t, err)
+		assert.Equal(t, 2, len(subscriptions))
 	})
 }
