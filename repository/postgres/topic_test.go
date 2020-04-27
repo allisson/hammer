@@ -24,6 +24,7 @@ type txnTestHelper struct {
 	topicRepo        Topic
 	subscriptionRepo Subscription
 	messageRepo      Message
+	deliveryRepo     Delivery
 }
 
 func newTxnTestHelper() txnTestHelper {
@@ -34,6 +35,7 @@ func newTxnTestHelper() txnTestHelper {
 		topicRepo:        NewTopic(db),
 		subscriptionRepo: NewSubscription(db),
 		messageRepo:      NewMessage(db),
+		deliveryRepo:     NewDelivery(db),
 	}
 }
 
