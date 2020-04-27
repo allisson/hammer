@@ -7,7 +7,7 @@ import (
 // PingHandler implements Get method for connectivity test
 type PingHandler struct{}
 
-// Get returns status code 204r
+// Get returns status code 204
 func (p *PingHandler) Get(w http.ResponseWriter, r *http.Request) {
 	contentType := "application/json"
 	MakeResponse(w, []byte{}, http.StatusNoContent, contentType)
