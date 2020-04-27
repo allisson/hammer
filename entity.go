@@ -66,6 +66,6 @@ type DeliveryAttempt struct {
 	ResponseBody       string    `json:"response_body" db:"response_body"`
 	ResponseStatusCode int       `json:"response_status_code" db:"response_status_code"`
 	ExecutionDuration  int       `json:"execution_duration" db:"execution_duration"`
-	Succcess           bool      `json:"success" db:"success"`
+	Success            bool      `json:"success" db:"success"`
 	CreatedAt          time.Time `json:"created_at" db:"created_at"`
 }
