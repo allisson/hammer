@@ -24,6 +24,20 @@ func (t *Topic) Find(id string) (hammer.Topic, error) {
 	return topic, err
 }
 
+// FindAll returns []hammer.Topic by limit and offset
+func (t *Topic) FindAll(limit, offset int) ([]hammer.Topic, error) {
+	topics := []hammer.Topic{}
+	sqlStatement := `
+		SELECT *
+		FROM topics
+		ORDER BY id ASC
+		LIMIT $1
+		OFFSET $2
+	`
+	err := t.db.Select(&topics, sqlStatement, limit, offset)
+	return topics, err
+}
+
 func (t *Topic) create(topic *hammer.Topic) error {
 	sqlStatement := `
 		INSERT INTO topics (

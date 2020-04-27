@@ -93,4 +93,19 @@ func TestTopic(t *testing.T) {
 		assert.Equal(t, topicFromRepo.ID, topic.ID)
 		assert.Equal(t, topicFromRepo.Name, topic.Name)
 	})
+
+	t.Run("Test FindAll", func(t *testing.T) {
+		th := newTxnTestHelper()
+		defer th.db.Close()
+
+		topic1 := makeTestTopic()
+		topic2 := makeTestTopic()
+		err := th.topicRepo.Store(&topic1)
+		assert.Nil(t, err)
+		err = th.topicRepo.Store(&topic2)
+		assert.Nil(t, err)
+		topics, err := th.topicRepo.FindAll(50, 0)
+		assert.Nil(t, err)
+		assert.Equal(t, 2, len(topics))
+	})
 }

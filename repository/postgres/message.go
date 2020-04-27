@@ -24,6 +24,20 @@ func (m *Message) Find(id string) (hammer.Message, error) {
 	return message, err
 }
 
+// FindAll returns hammer.Message by limit and offset
+func (m *Message) FindAll(limit, offset int) ([]hammer.Message, error) {
+	messages := []hammer.Message{}
+	sqlStatement := `
+		SELECT *
+		FROM messages
+		ORDER BY id DESC
+		LIMIT $1
+		OFFSET $2
+	`
+	err := m.db.Select(&messages, sqlStatement, limit, offset)
+	return messages, err
+}
+
 func (m *Message) create(message *hammer.Message) error {
 	sqlStatement := `
 		INSERT INTO messages (

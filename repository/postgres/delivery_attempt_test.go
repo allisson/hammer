@@ -111,4 +111,38 @@ func TestDeliveryAttempt(t *testing.T) {
 		assert.Equal(t, deliveryAttemptFromRepo.ID, deliveryAttempt.ID)
 		assert.Equal(t, deliveryAttemptFromRepo.Success, deliveryAttempt.Success)
 	})
+
+	t.Run("Test FindAll", func(t *testing.T) {
+		th := newTxnTestHelper()
+		defer th.db.Close()
+
+		topic := makeTestTopic()
+		subscription := makeTestSubscription()
+		subscription.TopicID = topic.ID
+		message := makeTestMessage()
+		message.TopicID = topic.ID
+		delivery := makeTestDelivery()
+		delivery.TopicID = topic.ID
+		delivery.SubscriptionID = subscription.ID
+		delivery.MessageID = message.ID
+		deliveryAttempt1 := makeTestDeliveryAttempt()
+		deliveryAttempt1.DeliveryID = delivery.ID
+		deliveryAttempt2 := makeTestDeliveryAttempt()
+		deliveryAttempt2.DeliveryID = delivery.ID
+		err := th.topicRepo.Store(&topic)
+		assert.Nil(t, err)
+		err = th.subscriptionRepo.Store(&subscription)
+		assert.Nil(t, err)
+		err = th.messageRepo.Store(&message)
+		assert.Nil(t, err)
+		err = th.deliveryRepo.Store(&delivery)
+		assert.Nil(t, err)
+		err = th.deliveryAttemptRepo.Store(&deliveryAttempt1)
+		assert.Nil(t, err)
+		err = th.deliveryAttemptRepo.Store(&deliveryAttempt2)
+		assert.Nil(t, err)
+		deliveryAttempts, err := th.deliveryAttemptRepo.FindAll(50, 0)
+		assert.Nil(t, err)
+		assert.Equal(t, 2, len(deliveryAttempts))
+	})
 }

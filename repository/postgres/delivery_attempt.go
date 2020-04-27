@@ -24,6 +24,20 @@ func (d *DeliveryAttempt) Find(id string) (hammer.DeliveryAttempt, error) {
 	return deliveryAttempt, err
 }
 
+// FindAll returns []hammer.DeliveryAttempt by limit and offset
+func (d *DeliveryAttempt) FindAll(limit, offset int) ([]hammer.DeliveryAttempt, error) {
+	deliveryAttempts := []hammer.DeliveryAttempt{}
+	sqlStatement := `
+		SELECT *
+		FROM delivery_attempts
+		ORDER BY id DESC
+		LIMIT $1
+		OFFSET $2
+	`
+	err := d.db.Select(&deliveryAttempts, sqlStatement, limit, offset)
+	return deliveryAttempts, err
+}
+
 func (d *DeliveryAttempt) create(deliveryAttempt *hammer.DeliveryAttempt) error {
 	sqlStatement := `
 		INSERT INTO delivery_attempts (
