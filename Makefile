@@ -3,7 +3,7 @@ PLATFORM := $(shell uname | tr A-Z a-z)
 lint:
 	if [ ! -f ./bin/golangci-lint ] ; \
 	then \
-		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.25.0; \
+		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.25.1; \
 	fi;
 	./bin/golangci-lint run
 
@@ -29,5 +29,6 @@ mock:
 	mockery -name LockRepository
 	mockery -name TopicService
 	mockery -name SubscriptionService
+	mockery -name MessageService
 
 .PHONY: lint test download-golang-migrate-binary db-migrate mock
