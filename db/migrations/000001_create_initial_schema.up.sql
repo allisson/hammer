@@ -66,9 +66,9 @@ CREATE INDEX IF NOT EXISTS topic_id_idx ON deliveries (topic_id);
 CREATE INDEX IF NOT EXISTS subscription_id_idx ON deliveries (subscription_id);
 CREATE INDEX IF NOT EXISTS message_id_idx ON deliveries (message_id);
 
--- delivery_attemps table
+-- delivery_attempts table
 
-CREATE TABLE IF NOT EXISTS delivery_attemps(
+CREATE TABLE IF NOT EXISTS delivery_attempts(
     id VARCHAR PRIMARY KEY,
     delivery_id VARCHAR NOT NULL,
     url VARCHAR NOT NULL,
@@ -83,4 +83,4 @@ CREATE TABLE IF NOT EXISTS delivery_attemps(
     FOREIGN KEY (delivery_id) REFERENCES deliveries (id)
 );
 
-CREATE INDEX IF NOT EXISTS delivery_id_idx ON delivery_attemps (delivery_id);
+CREATE INDEX IF NOT EXISTS delivery_id_idx ON delivery_attempts (delivery_id);
