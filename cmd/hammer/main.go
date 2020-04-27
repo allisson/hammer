@@ -20,8 +20,7 @@ var (
 )
 
 func init() {
-	l, _ := zap.NewProduction()
-	logger = l
+	logger, _ = zap.NewProduction()
 }
 
 func main() {
