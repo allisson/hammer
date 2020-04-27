@@ -17,14 +17,17 @@ type Topic struct {
 
 // Subscription data
 type Subscription struct {
-	ID          string    `json:"id" db:"id"`
-	TopicID     string    `json:"topic_id" db:"topic_id"`
-	Name        string    `json:"name" db:"name"`
-	URL         string    `json:"url" db:"url"`
-	SecretToken string    `json:"secret_token" db:"secret_token"`
-	Active      bool      `json:"active" db:"active"`
-	CreatedAt   time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at" db:"updated_at"`
+	ID                     string    `json:"id" db:"id"`
+	TopicID                string    `json:"topic_id" db:"topic_id"`
+	Name                   string    `json:"name" db:"name"`
+	URL                    string    `json:"url" db:"url"`
+	SecretToken            string    `json:"secret_token" db:"secret_token"`
+	MaxDeliveryAttempts    int       `json:"max_delivery_attempts" db:"max_delivery_attempts"`
+	DeliveryAttemptDelay   int       `json:"delivery_attempt_delay" db:"delivery_attempt_delay"`
+	DeliveryAttemptTimeout int       `json:"delivery_attempt_timeout" db:"delivery_attempt_timeout"`
+	Active                 bool      `json:"active" db:"active"`
+	CreatedAt              time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt              time.Time `json:"updated_at" db:"updated_at"`
 }
 
 // Message data
