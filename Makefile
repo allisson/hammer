@@ -32,4 +32,7 @@ mock:
 	mockery -name MessageService
 	mockery -name DeliveryService
 
-.PHONY: lint test download-golang-migrate-binary db-migrate mock
+run:
+	go run cmd/hammer/main.go
+
+.PHONY: lint test download-golang-migrate-binary db-migrate mock run
