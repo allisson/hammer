@@ -1,7 +1,24 @@
 package hammer
 
 import (
+	"regexp"
 	"time"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
+)
+
+const (
+	// DeliveryStatusPending represents the delivery pending status
+	DeliveryStatusPending = "pending"
+	// DeliveryStatusFailed represents the delivery failed status
+	DeliveryStatusFailed = "failed"
+	// DeliveryStatusCompleted represents the delivery completed status
+	DeliveryStatusCompleted = "completed"
+)
+
+var (
+	idRegex = regexp.MustCompile(`^[\w.+-]+$`)
 )
 
 // Topic data
@@ -11,6 +28,14 @@ type Topic struct {
 	Active    bool      `json:"active" db:"active"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+}
+
+// Validate topic
+func (t Topic) Validate() error {
+	return validation.ValidateStruct(&t,
+		validation.Field(&t.ID, validation.Required, validation.Match(idRegex)),
+		validation.Field(&t.Name, validation.Required),
+	)
 }
 
 // Subscription data
@@ -28,6 +53,18 @@ type Subscription struct {
 	UpdatedAt              time.Time `json:"updated_at" db:"updated_at"`
 }
 
+// Validate subscription
+func (s Subscription) Validate() error {
+	return validation.ValidateStruct(&s,
+		validation.Field(&s.ID, validation.Required, validation.Match(idRegex)),
+		validation.Field(&s.Name, validation.Required),
+		validation.Field(&s.URL, validation.Required, is.URL),
+		validation.Field(&s.MaxDeliveryAttempts, validation.Min(1)),
+		validation.Field(&s.DeliveryAttemptDelay, validation.Min(1)),
+		validation.Field(&s.DeliveryAttemptTimeout, validation.Min(1)),
+	)
+}
+
 // Message data
 type Message struct {
 	ID                string    `json:"id" db:"id"`
@@ -35,6 +72,13 @@ type Message struct {
 	Data              string    `json:"data" db:"data"`
 	CreatedDeliveries bool      `json:"created_deliveries" db:"created_deliveries"`
 	CreatedAt         time.Time `json:"created_at" db:"created_at"`
+}
+
+// Validate message
+func (m Message) Validate() error {
+	return validation.ValidateStruct(&m,
+		validation.Field(&m.Data, validation.Required),
+	)
 }
 
 // Delivery data

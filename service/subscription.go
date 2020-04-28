@@ -26,6 +26,13 @@ func (s *Subscription) Create(subscription *hammer.Subscription) error {
 	now := time.Now().UTC()
 	subscription.CreatedAt = now
 	subscription.UpdatedAt = now
+	if subscription.SecretToken == "" {
+		id, err := generateID()
+		if err != nil {
+			return err
+		}
+		subscription.SecretToken = id
+	}
 	return s.subscriptionRepo.Store(subscription)
 }
 
