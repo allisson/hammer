@@ -40,6 +40,7 @@ func TestSubscription(t *testing.T) {
 
 		err := subscriptionService.Create(&subscription)
 		assert.Nil(t, err)
+		assert.NotEqual(t, "", subscription.SecretToken)
 	})
 
 	t.Run("Test Update", func(t *testing.T) {
