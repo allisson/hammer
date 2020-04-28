@@ -45,6 +45,7 @@ func (d *Delivery) Create(message *hammer.Message) ([]hammer.Delivery, error) {
 			TopicID:        message.TopicID,
 			SubscriptionID: subscription.ID,
 			MessageID:      message.ID,
+			ScheduledAt:    now,
 			Status:         "pending",
 			CreatedAt:      now,
 			UpdatedAt:      now,
