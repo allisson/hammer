@@ -51,17 +51,21 @@ func main() {
 
 	// Create repositories
 	topicRepo := repository.NewTopic(sqlDB)
+	subscriptionRepo := repository.NewSubscription(sqlDB)
 
 	// Create services
 	topicService := service.NewTopic(&topicRepo)
+	subscriptionService := service.NewSubscription(&topicRepo, &subscriptionRepo)
 
 	// Create handlers
 	pingHandler := h.NewPingHandler()
 	topicHandler := h.NewTopicHandler(&topicService)
+	subscriptionHandler := h.NewSubscriptionHandler(&subscriptionService)
 
 	// Create routes
 	r.Get("/ping", pingHandler.Get)
 	r.Post("/topics", topicHandler.Post)
+	r.Post("/subscriptions", subscriptionHandler.Post)
 
 	// Start server and make graceful shutdown
 	logger.Info("start-http-server")

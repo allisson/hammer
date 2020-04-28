@@ -20,10 +20,14 @@ const (
 
 var (
 	idRegex = regexp.MustCompile(`^[\w.+-]+$`)
-	// ErrObjectAlreadyExists is a generic error used when the object already exists on repository.
-	ErrObjectAlreadyExists = errors.New("object_already_exists")
-	// ErrObjectDoesNotExist is a generic error used when the object does not exists on repository.
-	ErrObjectDoesNotExist = errors.New("object_does_not_exist")
+	// ErrTopicAlreadyExists is used when the topic already exists on repository.
+	ErrTopicAlreadyExists = errors.New("topic_already_exists")
+	// ErrTopicDoesNotExists is used when the topic does not exists on repository.
+	ErrTopicDoesNotExists = errors.New("topic_does_not_exists")
+	// ErrSubscriptionAlreadyExists is used when the subscription already exists on repository.
+	ErrSubscriptionAlreadyExists = errors.New("subscription_already_exists")
+	// ErrSubscriptionDoesNotExists is used when the subscription does not exists on repository.
+	ErrSubscriptionDoesNotExists = errors.New("subscription_does_not_exists")
 )
 
 // Error data
@@ -67,6 +71,7 @@ type Subscription struct {
 func (s Subscription) Validate() error {
 	return validation.ValidateStruct(&s,
 		validation.Field(&s.ID, validation.Required, validation.Match(idRegex)),
+		validation.Field(&s.TopicID, validation.Required, validation.Match(idRegex)),
 		validation.Field(&s.Name, validation.Required),
 		validation.Field(&s.URL, validation.Required, is.URL),
 		validation.Field(&s.MaxDeliveryAttempts, validation.Min(1)),

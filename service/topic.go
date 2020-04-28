@@ -27,7 +27,7 @@ func (t *Topic) Create(topic *hammer.Topic) error {
 	// Verify if object already exists
 	_, err := t.topicRepo.Find(topic.ID)
 	if err == nil {
-		return hammer.ErrObjectAlreadyExists
+		return hammer.ErrTopicAlreadyExists
 	}
 
 	// Create new topic
@@ -43,7 +43,7 @@ func (t *Topic) Update(topic *hammer.Topic) error {
 	topicFromRepo, err := t.topicRepo.Find(topic.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return hammer.ErrObjectDoesNotExist
+			return hammer.ErrTopicDoesNotExists
 		}
 		return err
 	}
