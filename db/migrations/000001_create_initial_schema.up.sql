@@ -3,7 +3,6 @@
 CREATE TABLE IF NOT EXISTS topics(
     id VARCHAR PRIMARY KEY,
     name VARCHAR NOT NULL,
-    active BOOLEAN NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -19,10 +18,9 @@ CREATE TABLE IF NOT EXISTS subscriptions(
     max_delivery_attempts INT NOT NULL,
     delivery_attempt_delay INT NOT NULL,
     delivery_attempt_timeout INT NOT NULL,
-    active BOOLEAN NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (topic_id) REFERENCES topics (id)
+    FOREIGN KEY (topic_id) REFERENCES topics (id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS topic_id_idx ON subscriptions (topic_id);
@@ -36,7 +34,7 @@ CREATE TABLE IF NOT EXISTS messages(
     data TEXT NOT NULL,
     created_deliveries BOOLEAN NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (topic_id) REFERENCES topics (id)
+    FOREIGN KEY (topic_id) REFERENCES topics (id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS topic_id_idx ON messages (topic_id);
@@ -54,9 +52,9 @@ CREATE TABLE IF NOT EXISTS deliveries(
     status VARCHAR NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (topic_id) REFERENCES topics (id),
-    FOREIGN KEY (subscription_id) REFERENCES subscriptions (id),
-    FOREIGN KEY (message_id) REFERENCES messages (id)
+    FOREIGN KEY (topic_id) REFERENCES topics (id) ON DELETE CASCADE,
+    FOREIGN KEY (subscription_id) REFERENCES subscriptions (id) ON DELETE CASCADE,
+    FOREIGN KEY (message_id) REFERENCES messages (id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS topic_id_idx ON deliveries (topic_id);
@@ -79,7 +77,7 @@ CREATE TABLE IF NOT EXISTS delivery_attempts(
     execution_duration INT NOT NULL,
     success BOOLEAN NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    FOREIGN KEY (delivery_id) REFERENCES deliveries (id)
+    FOREIGN KEY (delivery_id) REFERENCES deliveries (id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS delivery_id_idx ON delivery_attempts (delivery_id);

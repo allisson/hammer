@@ -10,17 +10,34 @@ import (
 
 	"github.com/allisson/go-env"
 	h "github.com/allisson/hammer/http"
+	repository "github.com/allisson/hammer/repository/postgres"
+	"github.com/allisson/hammer/service"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
 var (
 	logger *zap.Logger
+	sqlDB  *sqlx.DB
 )
 
 func init() {
+	// Set logger
 	logger, _ = zap.NewProduction()
+
+	// Set database connection
+	db, err := sqlx.Open("postgres", env.GetString("DATABASE_URL", ""))
+	if err != nil {
+		logger.Fatal("failed-to-start-database-client", zap.Error(err))
+	}
+	err = db.Ping()
+	if err != nil {
+		logger.Fatal("failed-to-ping-database", zap.Error(err))
+	}
+	sqlDB = db
 }
 
 func main() {
@@ -32,9 +49,19 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	// Add handlers
+	// Create repositories
+	topicRepo := repository.NewTopic(sqlDB)
+
+	// Create services
+	topicService := service.NewTopic(&topicRepo)
+
+	// Create handlers
 	pingHandler := h.NewPingHandler()
+	topicHandler := h.NewTopicHandler(&topicService)
+
+	// Create routes
 	r.Get("/ping", pingHandler.Get)
+	r.Post("/topics", topicHandler.Post)
 
 	// Start server and make graceful shutdown
 	logger.Info("start-http-server")

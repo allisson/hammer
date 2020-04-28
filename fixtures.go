@@ -20,7 +20,6 @@ func MakeTestTopic() Topic {
 	return Topic{
 		ID:        fmt.Sprintf("topic_%s", id),
 		Name:      fmt.Sprintf("My Topic %s", id),
-		Active:    true,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 	}
@@ -37,7 +36,6 @@ func MakeTestSubscription() Subscription {
 		MaxDeliveryAttempts:    1,
 		DeliveryAttemptDelay:   10,
 		DeliveryAttemptTimeout: 5,
-		Active:                 true,
 		CreatedAt:              time.Now().UTC(),
 		UpdatedAt:              time.Now().UTC(),
 	}
