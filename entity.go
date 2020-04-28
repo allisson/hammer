@@ -2,8 +2,6 @@ package hammer
 
 import (
 	"time"
-
-	"gopkg.in/guregu/null.v4"
 )
 
 // Topic data
@@ -41,15 +39,15 @@ type Message struct {
 
 // Delivery data
 type Delivery struct {
-	ID                  string    `json:"id" db:"id"`
-	TopicID             string    `json:"topic_id" db:"topic_id"`
-	SubscriptionID      string    `json:"subscription_id" db:"subscription_id"`
-	MessageID           string    `json:"message_id" db:"message_id"`
-	DeliveryAttempts    int       `json:"delivery_attempts" db:"delivery_attempts"`
-	LastDeliveryAttempt null.Time `json:"last_delivery_attempt" db:"last_delivery_attempt"`
-	Status              string    `json:"status" db:"status"`
-	CreatedAt           time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt           time.Time `json:"updated_at" db:"updated_at"`
+	ID               string    `json:"id" db:"id"`
+	TopicID          string    `json:"topic_id" db:"topic_id"`
+	SubscriptionID   string    `json:"subscription_id" db:"subscription_id"`
+	MessageID        string    `json:"message_id" db:"message_id"`
+	ScheduledAt      time.Time `json:"scheduled_at" db:"scheduled_at"`
+	DeliveryAttempts int       `json:"delivery_attempts" db:"delivery_attempts"`
+	Status           string    `json:"status" db:"status"`
+	CreatedAt        time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at" db:"updated_at"`
 }
 
 // DeliveryAttempt data

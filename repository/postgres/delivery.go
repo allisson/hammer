@@ -45,8 +45,8 @@ func (d *Delivery) create(delivery *hammer.Delivery) error {
 			"topic_id",
 			"subscription_id",
 			"message_id",
+			"scheduled_at",
 			"delivery_attempts",
-			"last_delivery_attempt",
 			"status",
 			"created_at",
 			"updated_at"
@@ -56,8 +56,8 @@ func (d *Delivery) create(delivery *hammer.Delivery) error {
 			:topic_id,
 			:subscription_id,
 			:message_id,
+			:scheduled_at,
 			:delivery_attempts,
-			:last_delivery_attempt,
 			:status,
 			:created_at,
 			:updated_at
@@ -73,8 +73,8 @@ func (d *Delivery) update(delivery *hammer.Delivery) error {
 		SET topic_id = :topic_id,
 			subscription_id = :subscription_id,
 			message_id = :message_id,
+			scheduled_at = :scheduled_at,
 			delivery_attempts = :delivery_attempts,
-			last_delivery_attempt = :last_delivery_attempt,
 			status = :status,
 			created_at = :created_at,
 			updated_at = :updated_at

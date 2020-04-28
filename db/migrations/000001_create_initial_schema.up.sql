@@ -49,8 +49,8 @@ CREATE TABLE IF NOT EXISTS deliveries(
     topic_id VARCHAR NOT NULL,
     subscription_id VARCHAR NOT NULL,
     message_id VARCHAR NOT NULL,
+    scheduled_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     delivery_attempts INT NOT NULL,
-    last_delivery_attempt TIMESTAMPTZ,
     status VARCHAR NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -62,6 +62,8 @@ CREATE TABLE IF NOT EXISTS deliveries(
 CREATE INDEX IF NOT EXISTS topic_id_idx ON deliveries (topic_id);
 CREATE INDEX IF NOT EXISTS subscription_id_idx ON deliveries (subscription_id);
 CREATE INDEX IF NOT EXISTS message_id_idx ON deliveries (message_id);
+CREATE INDEX IF NOT EXISTS scheduled_at_idx ON deliveries (scheduled_at);
+CREATE INDEX IF NOT EXISTS status_idx ON deliveries (status);
 
 -- delivery_attempts table
 
