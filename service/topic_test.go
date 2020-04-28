@@ -44,7 +44,7 @@ func TestTopic(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("Test Create with object already exists on repository", func(t *testing.T) {
+	t.Run("Test Create with topic already exists on repository", func(t *testing.T) {
 		topic := hammer.MakeTestTopic()
 		topicRepo := &mocks.TopicRepository{}
 		topicService := NewTopic(topicRepo)
@@ -52,7 +52,7 @@ func TestTopic(t *testing.T) {
 		topicRepo.On("Find", mock.Anything).Return(hammer.Topic{}, nil)
 
 		err := topicService.Create(&topic)
-		assert.Equal(t, hammer.ErrObjectAlreadyExists, err)
+		assert.Equal(t, hammer.ErrTopicAlreadyExists, err)
 	})
 
 	t.Run("Test Update", func(t *testing.T) {
@@ -67,7 +67,7 @@ func TestTopic(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("Test Update with object does not exists on repository", func(t *testing.T) {
+	t.Run("Test Update with topic does not exists on repository", func(t *testing.T) {
 		topic := hammer.MakeTestTopic()
 		topicRepo := &mocks.TopicRepository{}
 		topicService := NewTopic(topicRepo)
@@ -76,6 +76,6 @@ func TestTopic(t *testing.T) {
 
 		topic.Name = "My Topic"
 		err := topicService.Update(&topic)
-		assert.Equal(t, hammer.ErrObjectDoesNotExist, err)
+		assert.Equal(t, hammer.ErrTopicDoesNotExists, err)
 	})
 }

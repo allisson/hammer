@@ -8,30 +8,30 @@ import (
 	"github.com/allisson/hammer"
 )
 
-// TopicHandler implements methods for topic create/update
-type TopicHandler struct {
-	topicService hammer.TopicService
+// SubscriptionHandler implements methods for Subscription create/update
+type SubscriptionHandler struct {
+	subscriptionService hammer.SubscriptionService
 }
 
-// Post creates a new topic
-func (t *TopicHandler) Post(w http.ResponseWriter, r *http.Request) {
+// Post creates a new Subscription
+func (s *SubscriptionHandler) Post(w http.ResponseWriter, r *http.Request) {
 	contentType := "application/json"
 
 	// Parse request
-	topic := hammer.Topic{}
+	subscription := hammer.Subscription{}
 	requestBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		errorResponse(w, hammer.Error{Code: http.StatusInternalServerError, Message: "read_body_error", Details: err.Error()}, contentType)
 		return
 	}
-	err = json.Unmarshal(requestBody, &topic)
+	err = json.Unmarshal(requestBody, &subscription)
 	if err != nil {
 		errorResponse(w, hammer.Error{Code: http.StatusBadRequest, Message: "malformed_request_body", Details: err.Error()}, contentType)
 		return
 	}
 
-	// Validate topic
-	err = topic.Validate()
+	// Validate Subscription
+	err = subscription.Validate()
 	if err != nil {
 		errorPayload, _ := json.Marshal(err)
 		errorResponse(w, hammer.Error{Code: http.StatusBadRequest, Message: "invalid_request_body", Details: string(errorPayload)}, contentType)
@@ -39,10 +39,10 @@ func (t *TopicHandler) Post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Call service
-	err = t.topicService.Create(&topic)
+	err = s.subscriptionService.Create(&subscription)
 	if err != nil {
 		switch err {
-		case hammer.ErrTopicAlreadyExists:
+		case hammer.ErrTopicDoesNotExists, hammer.ErrSubscriptionAlreadyExists:
 			errorResponse(w, hammer.Error{Code: http.StatusBadRequest, Message: err.Error(), Details: ""}, contentType)
 			return
 		default:
@@ -52,7 +52,7 @@ func (t *TopicHandler) Post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Convert to json
-	responseBody, err := json.Marshal(&topic)
+	responseBody, err := json.Marshal(&subscription)
 	if err != nil {
 		errorResponse(w, hammer.Error{Code: http.StatusInternalServerError, Message: "json_convert_error", Details: err.Error()}, contentType)
 		return
@@ -61,7 +61,7 @@ func (t *TopicHandler) Post(w http.ResponseWriter, r *http.Request) {
 	makeResponse(w, responseBody, http.StatusCreated, contentType)
 }
 
-// NewTopicHandler returns a new TopicHandler
-func NewTopicHandler(topicService hammer.TopicService) TopicHandler {
-	return TopicHandler{topicService: topicService}
+// NewSubscriptionHandler returns a new SubscriptionHandler
+func NewSubscriptionHandler(subscriptionService hammer.SubscriptionService) SubscriptionHandler {
+	return SubscriptionHandler{subscriptionService: subscriptionService}
 }

@@ -50,7 +50,7 @@ func TestTopicHandler(t *testing.T) {
 		topicHandler := NewTopicHandler(&topicService)
 		r := chi.NewRouter()
 		r.Post("/topics", topicHandler.Post)
-		topicService.On("Create", mock.Anything).Return(hammer.ErrObjectAlreadyExists)
+		topicService.On("Create", mock.Anything).Return(hammer.ErrTopicAlreadyExists)
 
 		apitest.New().
 			Handler(r).
@@ -58,7 +58,7 @@ func TestTopicHandler(t *testing.T) {
 			Body(`{"id": "topic", "name": "Topic"}`).
 			Expect(t).
 			Status(http.StatusBadRequest).
-			Body(`{"message":"object_already_exists","details":""}`).
+			Body(`{"message":"topic_already_exists","details":""}`).
 			End()
 	})
 
