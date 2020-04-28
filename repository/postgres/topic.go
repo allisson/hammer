@@ -1,4 +1,4 @@
-package postgres
+package repository
 
 import (
 	"database/sql"
@@ -43,14 +43,12 @@ func (t *Topic) create(topic *hammer.Topic) error {
 		INSERT INTO topics (
 			"id",
 			"name",
-			"active",
 			"created_at",
 			"updated_at"
 		)
 		VALUES (
 			:id,
 			:name,
-			:active,
 			:created_at,
 			:updated_at
 		)
@@ -63,7 +61,6 @@ func (t *Topic) update(topic *hammer.Topic) error {
 	sqlStatement := `
 		UPDATE topics
 		SET name = :name,
-			active = :active,
 			created_at = :created_at,
 			updated_at = :updated_at
 		WHERE id = :id

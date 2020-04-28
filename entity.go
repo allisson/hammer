@@ -1,6 +1,7 @@
 package hammer
 
 import (
+	"errors"
 	"regexp"
 	"time"
 
@@ -19,13 +20,23 @@ const (
 
 var (
 	idRegex = regexp.MustCompile(`^[\w.+-]+$`)
+	// ErrObjectAlreadyExists is a generic error used when the object already exists on repository.
+	ErrObjectAlreadyExists = errors.New("object_already_exists")
+	// ErrObjectDoesNotExist is a generic error used when the object does not exists on repository.
+	ErrObjectDoesNotExist = errors.New("object_does_not_exist")
 )
+
+// Error data
+type Error struct {
+	Code    int    `json:"-"`
+	Message string `json:"message"`
+	Details string `json:"details"`
+}
 
 // Topic data
 type Topic struct {
 	ID        string    `json:"id" db:"id"`
 	Name      string    `json:"name" db:"name"`
-	Active    bool      `json:"active" db:"active"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
@@ -48,7 +59,6 @@ type Subscription struct {
 	MaxDeliveryAttempts    int       `json:"max_delivery_attempts" db:"max_delivery_attempts"`
 	DeliveryAttemptDelay   int       `json:"delivery_attempt_delay" db:"delivery_attempt_delay"`
 	DeliveryAttemptTimeout int       `json:"delivery_attempt_timeout" db:"delivery_attempt_timeout"`
-	Active                 bool      `json:"active" db:"active"`
 	CreatedAt              time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt              time.Time `json:"updated_at" db:"updated_at"`
 }

@@ -1,4 +1,4 @@
-package postgres
+package repository
 
 import (
 	"database/sql"
@@ -61,7 +61,6 @@ func (s *Subscription) create(subscription *hammer.Subscription) error {
 			"max_delivery_attempts",
 			"delivery_attempt_delay",
 			"delivery_attempt_timeout",
-			"active",
 			"created_at",
 			"updated_at"
 		)
@@ -74,7 +73,6 @@ func (s *Subscription) create(subscription *hammer.Subscription) error {
 			:max_delivery_attempts,
 			:delivery_attempt_delay,
 			:delivery_attempt_timeout,
-			:active,
 			:created_at,
 			:updated_at
 		)
@@ -93,7 +91,6 @@ func (s *Subscription) update(subscription *hammer.Subscription) error {
 			max_delivery_attempts = :max_delivery_attempts,
 			delivery_attempt_delay = :delivery_attempt_delay,
 			delivery_attempt_timeout = :delivery_attempt_timeout,
-			active = :active,
 			created_at = :created_at,
 			updated_at = :updated_at
 		WHERE id = :id
