@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/allisson/go-env"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
@@ -28,6 +29,10 @@ var (
 	ErrSubscriptionAlreadyExists = errors.New("subscription_already_exists")
 	// ErrSubscriptionDoesNotExists is used when the subscription does not exists on repository.
 	ErrSubscriptionDoesNotExists = errors.New("subscription_does_not_exists")
+	// DefaultPaginationLimit represents a default pagination limit on resource list
+	DefaultPaginationLimit = env.GetInt("HAMMER_DEFAULT_PAGINATION_LIMIT", 25)
+	// MaxPaginationLimit represents the max value for pagination limit on resource list
+	MaxPaginationLimit = env.GetInt("HAMMER_MAX_PAGINATION_LIMIT", 50)
 )
 
 // Error data
@@ -51,6 +56,13 @@ func (t Topic) Validate() error {
 		validation.Field(&t.ID, validation.Required, validation.Match(idRegex)),
 		validation.Field(&t.Name, validation.Required),
 	)
+}
+
+// ListTopicsResponse data
+type ListTopicsResponse struct {
+	Limit  int     `json:"limit"`
+	Offset int     `json:"offset"`
+	Topics []Topic `json:"topics"`
 }
 
 // Subscription data
