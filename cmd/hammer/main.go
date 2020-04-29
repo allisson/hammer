@@ -64,7 +64,8 @@ func main() {
 
 	// Create routes
 	r.Get("/ping", pingHandler.Get)
-	r.Post("/topics", topicHandler.Post)
+	r.Post("/topics", topicHandler.Create)
+	r.Get("/topics", topicHandler.List)
 	r.Post("/subscriptions", subscriptionHandler.Post)
 
 	// Start server and make graceful shutdown
