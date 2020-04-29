@@ -23,6 +23,11 @@ func (m *Message) FindAll(limit, offset int) ([]hammer.Message, error) {
 	return m.messageRepo.FindAll(limit, offset)
 }
 
+// FindByTopic returns []hammer.Message by topicID, limit and offset
+func (m *Message) FindByTopic(topicID string, limit, offset int) ([]hammer.Message, error) {
+	return m.messageRepo.FindByTopic(topicID, limit, offset)
+}
+
 // Create a hammer.Message on repository
 func (m *Message) Create(message *hammer.Message) error {
 	// Verify if topic already exists

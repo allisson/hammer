@@ -68,8 +68,19 @@ func (m *MessageHandler) List(w http.ResponseWriter, r *http.Request) {
 	// Get limit and offset
 	limit, offset := getLimitOffset(r)
 
+	// Get topic_id
+	topicID := r.URL.Query().Get("topic_id")
+
 	// Call service
-	messages, err := m.messageService.FindAll(limit, offset)
+	var (
+		err      error
+		messages []hammer.Message
+	)
+	if topicID != "" {
+		messages, err = m.messageService.FindByTopic(topicID, limit, offset)
+	} else {
+		messages, err = m.messageService.FindAll(limit, offset)
+	}
 	if err != nil {
 		errorResponse(w, hammer.Error{Code: http.StatusInternalServerError, Message: "service_error", Details: err.Error()}, contentType)
 		return

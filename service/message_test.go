@@ -35,6 +35,18 @@ func TestMessage(t *testing.T) {
 		assert.Equal(t, expectedMessages, messages)
 	})
 
+	t.Run("Test FindByTopic", func(t *testing.T) {
+		expectedMessages := []hammer.Message{hammer.MakeTestMessage()}
+		topicRepo := &mocks.TopicRepository{}
+		messageRepo := &mocks.MessageRepository{}
+		messageService := NewMessage(topicRepo, messageRepo)
+		messageRepo.On("FindByTopic", mock.Anything, mock.Anything, mock.Anything).Return(expectedMessages, nil)
+
+		messages, err := messageService.FindByTopic("topic_id", 50, 0)
+		assert.Nil(t, err)
+		assert.Equal(t, expectedMessages, messages)
+	})
+
 	t.Run("Test Create", func(t *testing.T) {
 		message := hammer.MakeTestMessage()
 		message.ID = ""

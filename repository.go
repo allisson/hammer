@@ -19,6 +19,7 @@ type SubscriptionRepository interface {
 type MessageRepository interface {
 	Find(id string) (Message, error)
 	FindAll(limit, offset int) ([]Message, error)
+	FindByTopic(topicID string, limit, offset int) ([]Message, error)
 	Store(message *Message) error
 }
 

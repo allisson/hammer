@@ -129,4 +129,20 @@ func TestMessageHandlerList(t *testing.T) {
 			Status(http.StatusOK).
 			End()
 	})
+
+	t.Run("Test success with topic_id", func(t *testing.T) {
+		messageService := mocks.MessageService{}
+		messageHandler := NewMessageHandler(&messageService)
+		r := chi.NewRouter()
+		r.Get("/messages", messageHandler.List)
+		messageService.On("FindByTopic", mock.Anything, mock.Anything, mock.Anything).Return(messages, nil)
+
+		apitest.New().
+			Handler(r).
+			Get("/messages").
+			Query("topic_id", "topic_id").
+			Expect(t).
+			Status(http.StatusOK).
+			End()
+	})
 }
