@@ -52,15 +52,18 @@ func main() {
 	// Create repositories
 	topicRepo := repository.NewTopic(sqlDB)
 	subscriptionRepo := repository.NewSubscription(sqlDB)
+	messageRepo := repository.NewMessage(sqlDB)
 
 	// Create services
 	topicService := service.NewTopic(&topicRepo)
 	subscriptionService := service.NewSubscription(&topicRepo, &subscriptionRepo)
+	messageService := service.NewMessage(&topicRepo, &messageRepo)
 
 	// Create handlers
 	pingHandler := h.NewPingHandler()
 	topicHandler := h.NewTopicHandler(&topicService)
 	subscriptionHandler := h.NewSubscriptionHandler(&subscriptionService)
+	messageHandler := h.NewMessageHandler(&messageService)
 
 	// Create routes
 	r.Get("/ping", pingHandler.Get)
@@ -68,6 +71,8 @@ func main() {
 	r.Get("/topics", topicHandler.List)
 	r.Post("/subscriptions", subscriptionHandler.Create)
 	r.Get("/subscriptions", subscriptionHandler.List)
+	r.Post("/messages", messageHandler.Create)
+	r.Get("/messages", messageHandler.List)
 
 	// Start server and make graceful shutdown
 	logger.Info("start-http-server")

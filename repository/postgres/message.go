@@ -45,14 +45,16 @@ func (m *Message) create(message *hammer.Message) error {
 			"topic_id",
 			"data",
 			"created_deliveries",
-			"created_at"
+			"created_at",
+			"updated_at"
 		)
 		VALUES (
 			:id,
 			:topic_id,
 			:data,
 			:created_deliveries,
-			:created_at
+			:created_at,
+			:updated_at
 		)
 	`
 	_, err := m.db.NamedExec(sqlStatement, message)
@@ -65,7 +67,8 @@ func (m *Message) update(message *hammer.Message) error {
 		SET topic_id = :topic_id,
 			data = :data,
 			created_deliveries = :created_deliveries,
-			created_at = :created_at
+			created_at = :created_at,
+			updated_at = :updated_at
 		WHERE id = :id
 	`
 	_, err := m.db.NamedExec(sqlStatement, message)

@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS messages(
     data TEXT NOT NULL,
     created_deliveries BOOLEAN NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     FOREIGN KEY (topic_id) REFERENCES topics (id) ON DELETE CASCADE
 );
 

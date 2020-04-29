@@ -33,9 +33,9 @@ func MakeTestSubscription() Subscription {
 		Name:                   fmt.Sprintf("My Subscription %s", id),
 		URL:                    fmt.Sprintf("https://example.com/%s/", id),
 		SecretToken:            fmt.Sprintf("token-%s", id),
-		MaxDeliveryAttempts:    1,
-		DeliveryAttemptDelay:   10,
-		DeliveryAttemptTimeout: 5,
+		MaxDeliveryAttempts:    DefaultMaxDeliveryAttempts,
+		DeliveryAttemptDelay:   DefaultDeliveryAttemptDelay,
+		DeliveryAttemptTimeout: DefaultDeliveryAttemptTimeout,
 		CreatedAt:              time.Now().UTC(),
 		UpdatedAt:              time.Now().UTC(),
 	}
@@ -49,6 +49,7 @@ func MakeTestMessage() Message {
 		Data:              fmt.Sprintf("data_%s", id),
 		CreatedDeliveries: false,
 		CreatedAt:         time.Now().UTC(),
+		UpdatedAt:         time.Now().UTC(),
 	}
 }
 

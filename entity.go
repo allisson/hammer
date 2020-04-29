@@ -112,6 +112,7 @@ type Message struct {
 	Data              string    `json:"data" db:"data"`
 	CreatedDeliveries bool      `json:"created_deliveries" db:"created_deliveries"`
 	CreatedAt         time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at" db:"updated_at"`
 }
 
 // Validate message
@@ -119,6 +120,13 @@ func (m Message) Validate() error {
 	return validation.ValidateStruct(&m,
 		validation.Field(&m.Data, validation.Required),
 	)
+}
+
+// ListMessagesResponse data
+type ListMessagesResponse struct {
+	Limit    int       `json:"limit"`
+	Offset   int       `json:"offset"`
+	Messages []Message `json:"messages"`
 }
 
 // Delivery data
