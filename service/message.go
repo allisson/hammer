@@ -1,6 +1,7 @@
 package service
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/allisson/hammer"
@@ -8,6 +9,7 @@ import (
 
 // Message is a implementation of hammer.MessageService
 type Message struct {
+	topicRepo   hammer.TopicRepository
 	messageRepo hammer.MessageRepository
 }
 
@@ -21,19 +23,39 @@ func (m *Message) FindAll(limit, offset int) ([]hammer.Message, error) {
 	return m.messageRepo.FindAll(limit, offset)
 }
 
+// FindByTopic returns []hammer.Message by topicID, limit and offset
+func (m *Message) FindByTopic(topicID string, limit, offset int) ([]hammer.Message, error) {
+	return m.messageRepo.FindByTopic(topicID, limit, offset)
+}
+
 // Create a hammer.Message on repository
 func (m *Message) Create(message *hammer.Message) error {
+	// Verify if topic already exists
+	_, err := m.topicRepo.Find(message.TopicID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return hammer.ErrTopicDoesNotExists
+		}
+		return err
+	}
+
+	// Create message
 	id, err := generateID()
 	if err != nil {
 		return err
 	}
+	now := time.Now().UTC()
 	message.ID = id
-	message.CreatedAt = time.Now().UTC()
+	message.CreatedAt = now
+	message.UpdatedAt = now
 	message.CreatedDeliveries = false
 	return m.messageRepo.Store(message)
 }
 
 // NewMessage returns a new Message with MessageRepo
-func NewMessage(messageRepo hammer.MessageRepository) Message {
-	return Message{messageRepo: messageRepo}
+func NewMessage(topicRepo hammer.TopicRepository, messageRepo hammer.MessageRepository) Message {
+	return Message{
+		topicRepo:   topicRepo,
+		messageRepo: messageRepo,
+	}
 }

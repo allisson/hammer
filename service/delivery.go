@@ -59,6 +59,7 @@ func (d *Delivery) Create(message *hammer.Message) ([]hammer.Delivery, error) {
 
 	// Update message CreatedDeliveries
 	message.CreatedDeliveries = true
+	message.UpdatedAt = time.Now().UTC()
 	err = d.messageRepo.Store(message)
 
 	return deliveries, err

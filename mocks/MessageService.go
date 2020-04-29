@@ -69,3 +69,26 @@ func (_m *MessageService) FindAll(limit int, offset int) ([]hammer.Message, erro
 
 	return r0, r1
 }
+
+// FindByTopic provides a mock function with given fields: topicID, limit, offset
+func (_m *MessageService) FindByTopic(topicID string, limit int, offset int) ([]hammer.Message, error) {
+	ret := _m.Called(topicID, limit, offset)
+
+	var r0 []hammer.Message
+	if rf, ok := ret.Get(0).(func(string, int, int) []hammer.Message); ok {
+		r0 = rf(topicID, limit, offset)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]hammer.Message)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, int, int) error); ok {
+		r1 = rf(topicID, limit, offset)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}

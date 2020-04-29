@@ -48,7 +48,6 @@ func TestTopic(t *testing.T) {
 		topic := hammer.MakeTestTopic()
 		topicRepo := &mocks.TopicRepository{}
 		topicService := NewTopic(topicRepo)
-		topicRepo.On("Store", mock.Anything).Return(nil)
 		topicRepo.On("Find", mock.Anything).Return(hammer.Topic{}, nil)
 
 		err := topicService.Create(&topic)
@@ -71,7 +70,6 @@ func TestTopic(t *testing.T) {
 		topic := hammer.MakeTestTopic()
 		topicRepo := &mocks.TopicRepository{}
 		topicService := NewTopic(topicRepo)
-		topicRepo.On("Store", mock.Anything).Return(nil)
 		topicRepo.On("Find", mock.Anything).Return(topic, sql.ErrNoRows)
 
 		topic.Name = "My Topic"

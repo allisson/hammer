@@ -77,4 +77,24 @@ func TestMessage(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(messages))
 	})
+
+	t.Run("Test FindByTopic", func(t *testing.T) {
+		th := newTxnTestHelper()
+		defer th.db.Close()
+
+		topic := hammer.MakeTestTopic()
+		message1 := hammer.MakeTestMessage()
+		message1.TopicID = topic.ID
+		message2 := hammer.MakeTestMessage()
+		message2.TopicID = topic.ID
+		err := th.topicRepo.Store(&topic)
+		assert.Nil(t, err)
+		err = th.messageRepo.Store(&message1)
+		assert.Nil(t, err)
+		err = th.messageRepo.Store(&message2)
+		assert.Nil(t, err)
+		messages, err := th.messageRepo.FindByTopic(topic.ID, 50, 0)
+		assert.Nil(t, err)
+		assert.Equal(t, 2, len(messages))
+	})
 }

@@ -24,7 +24,7 @@ func (m *Message) Find(id string) (hammer.Message, error) {
 	return message, err
 }
 
-// FindAll returns hammer.Message by limit and offset
+// FindAll returns []hammer.Message by limit and offset
 func (m *Message) FindAll(limit, offset int) ([]hammer.Message, error) {
 	messages := []hammer.Message{}
 	sqlStatement := `
@@ -38,6 +38,21 @@ func (m *Message) FindAll(limit, offset int) ([]hammer.Message, error) {
 	return messages, err
 }
 
+// FindByTopic returns []hammer.Message by topic, limit and offset
+func (m *Message) FindByTopic(topicID string, limit, offset int) ([]hammer.Message, error) {
+	messages := []hammer.Message{}
+	sqlStatement := `
+		SELECT *
+		FROM messages
+		WHERE topic_id = $1
+		ORDER BY id DESC
+		LIMIT $2
+		OFFSET $3
+	`
+	err := m.db.Select(&messages, sqlStatement, topicID, limit, offset)
+	return messages, err
+}
+
 func (m *Message) create(message *hammer.Message) error {
 	sqlStatement := `
 		INSERT INTO messages (
@@ -45,14 +60,16 @@ func (m *Message) create(message *hammer.Message) error {
 			"topic_id",
 			"data",
 			"created_deliveries",
-			"created_at"
+			"created_at",
+			"updated_at"
 		)
 		VALUES (
 			:id,
 			:topic_id,
 			:data,
 			:created_deliveries,
-			:created_at
+			:created_at,
+			:updated_at
 		)
 	`
 	_, err := m.db.NamedExec(sqlStatement, message)
@@ -65,7 +82,8 @@ func (m *Message) update(message *hammer.Message) error {
 		SET topic_id = :topic_id,
 			data = :data,
 			created_deliveries = :created_deliveries,
-			created_at = :created_at
+			created_at = :created_at,
+			updated_at = :updated_at
 		WHERE id = :id
 	`
 	_, err := m.db.NamedExec(sqlStatement, message)
