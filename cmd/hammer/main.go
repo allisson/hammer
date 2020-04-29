@@ -66,7 +66,8 @@ func main() {
 	r.Get("/ping", pingHandler.Get)
 	r.Post("/topics", topicHandler.Create)
 	r.Get("/topics", topicHandler.List)
-	r.Post("/subscriptions", subscriptionHandler.Post)
+	r.Post("/subscriptions", subscriptionHandler.Create)
+	r.Get("/subscriptions", subscriptionHandler.List)
 
 	// Start server and make graceful shutdown
 	logger.Info("start-http-server")

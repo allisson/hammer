@@ -12,12 +12,12 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestSubscriptionHandler(t *testing.T) {
-	t.Run("Test Post with malformed request body", func(t *testing.T) {
+func TestSubscriptionHandlerCreate(t *testing.T) {
+	t.Run("Test with malformed request body", func(t *testing.T) {
 		subscriptionService := mocks.SubscriptionService{}
 		subscriptionHandler := NewSubscriptionHandler(&subscriptionService)
 		r := chi.NewRouter()
-		r.Post("/subscriptions", subscriptionHandler.Post)
+		r.Post("/subscriptions", subscriptionHandler.Create)
 
 		apitest.New().
 			Handler(r).
@@ -29,11 +29,11 @@ func TestSubscriptionHandler(t *testing.T) {
 			End()
 	})
 
-	t.Run("Test Post with invalid request body", func(t *testing.T) {
+	t.Run("Test with invalid request body", func(t *testing.T) {
 		subscriptionService := mocks.SubscriptionService{}
 		subscriptionHandler := NewSubscriptionHandler(&subscriptionService)
 		r := chi.NewRouter()
-		r.Post("/subscriptions", subscriptionHandler.Post)
+		r.Post("/subscriptions", subscriptionHandler.Create)
 
 		apitest.New().
 			Handler(r).
@@ -45,11 +45,11 @@ func TestSubscriptionHandler(t *testing.T) {
 			End()
 	})
 
-	t.Run("Test Post with subscription already exists error", func(t *testing.T) {
+	t.Run("Test with subscription already exists error", func(t *testing.T) {
 		subscriptionService := mocks.SubscriptionService{}
 		subscriptionHandler := NewSubscriptionHandler(&subscriptionService)
 		r := chi.NewRouter()
-		r.Post("/subscriptions", subscriptionHandler.Post)
+		r.Post("/subscriptions", subscriptionHandler.Create)
 		subscriptionService.On("Create", mock.Anything).Return(hammer.ErrSubscriptionAlreadyExists)
 
 		apitest.New().
@@ -62,11 +62,11 @@ func TestSubscriptionHandler(t *testing.T) {
 			End()
 	})
 
-	t.Run("Test Post with topic does not exists error", func(t *testing.T) {
+	t.Run("Test with topic does not exists error", func(t *testing.T) {
 		subscriptionService := mocks.SubscriptionService{}
 		subscriptionHandler := NewSubscriptionHandler(&subscriptionService)
 		r := chi.NewRouter()
-		r.Post("/subscriptions", subscriptionHandler.Post)
+		r.Post("/subscriptions", subscriptionHandler.Create)
 		subscriptionService.On("Create", mock.Anything).Return(hammer.ErrTopicDoesNotExists)
 
 		apitest.New().
@@ -79,11 +79,11 @@ func TestSubscriptionHandler(t *testing.T) {
 			End()
 	})
 
-	t.Run("Test Post with service error", func(t *testing.T) {
+	t.Run("Test with service error", func(t *testing.T) {
 		subscriptionService := mocks.SubscriptionService{}
 		subscriptionHandler := NewSubscriptionHandler(&subscriptionService)
 		r := chi.NewRouter()
-		r.Post("/subscriptions", subscriptionHandler.Post)
+		r.Post("/subscriptions", subscriptionHandler.Create)
 		subscriptionService.On("Create", mock.Anything).Return(errors.New("service_error"))
 
 		apitest.New().
@@ -96,11 +96,11 @@ func TestSubscriptionHandler(t *testing.T) {
 			End()
 	})
 
-	t.Run("Test Post success", func(t *testing.T) {
+	t.Run("Test success", func(t *testing.T) {
 		subscriptionService := mocks.SubscriptionService{}
 		subscriptionHandler := NewSubscriptionHandler(&subscriptionService)
 		r := chi.NewRouter()
-		r.Post("/subscriptions", subscriptionHandler.Post)
+		r.Post("/subscriptions", subscriptionHandler.Create)
 		subscriptionService.On("Create", mock.Anything).Return(nil)
 
 		apitest.New().
@@ -109,6 +109,41 @@ func TestSubscriptionHandler(t *testing.T) {
 			Body(`{"id": "subscription", "topic_id": "topic", "name": "subscription", "url": "http://example.com"}`).
 			Expect(t).
 			Status(http.StatusCreated).
+			End()
+	})
+}
+
+func TestSubscriptionHandlerList(t *testing.T) {
+	subscriptions := []hammer.Subscription{hammer.MakeTestSubscription(), hammer.MakeTestSubscription()}
+
+	t.Run("Test with service error", func(t *testing.T) {
+		subscriptionService := mocks.SubscriptionService{}
+		subscriptionHandler := NewSubscriptionHandler(&subscriptionService)
+		r := chi.NewRouter()
+		r.Get("/subscriptions", subscriptionHandler.List)
+		subscriptionService.On("FindAll", mock.Anything, mock.Anything).Return(subscriptions, errors.New("service_error"))
+
+		apitest.New().
+			Handler(r).
+			Get("/subscriptions").
+			Expect(t).
+			Status(http.StatusInternalServerError).
+			Body(`{"message":"service_error","details":"service_error"}`).
+			End()
+	})
+
+	t.Run("Test success", func(t *testing.T) {
+		subscriptionService := mocks.SubscriptionService{}
+		subscriptionHandler := NewSubscriptionHandler(&subscriptionService)
+		r := chi.NewRouter()
+		r.Get("/subscriptions", subscriptionHandler.List)
+		subscriptionService.On("FindAll", mock.Anything, mock.Anything).Return(subscriptions, nil)
+
+		apitest.New().
+			Handler(r).
+			Get("/subscriptions").
+			Expect(t).
+			Status(http.StatusOK).
 			End()
 	})
 }

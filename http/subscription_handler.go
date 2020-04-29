@@ -13,8 +13,8 @@ type SubscriptionHandler struct {
 	subscriptionService hammer.SubscriptionService
 }
 
-// Post creates a new Subscription
-func (s *SubscriptionHandler) Post(w http.ResponseWriter, r *http.Request) {
+// Create new subscription
+func (s *SubscriptionHandler) Create(w http.ResponseWriter, r *http.Request) {
 	contentType := "application/json"
 
 	// Parse request
@@ -59,6 +59,37 @@ func (s *SubscriptionHandler) Post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	makeResponse(w, responseBody, http.StatusCreated, contentType)
+}
+
+// List subscriptions
+func (s *SubscriptionHandler) List(w http.ResponseWriter, r *http.Request) {
+	contentType := "application/json"
+
+	// Get limit and offset
+	limit, offset := getLimitOffset(r)
+
+	// Call service
+	subscriptions, err := s.subscriptionService.FindAll(limit, offset)
+	if err != nil {
+		errorResponse(w, hammer.Error{Code: http.StatusInternalServerError, Message: "service_error", Details: err.Error()}, contentType)
+		return
+	}
+
+	// Create ListSubscriptionsResponse
+	subscriptionResponse := hammer.ListSubscriptionsResponse{
+		Limit:         limit,
+		Offset:        offset,
+		Subscriptions: subscriptions,
+	}
+
+	// Convert to json
+	responseBody, err := json.Marshal(&subscriptionResponse)
+	if err != nil {
+		errorResponse(w, hammer.Error{Code: http.StatusInternalServerError, Message: "json_convert_error", Details: err.Error()}, contentType)
+		return
+	}
+
+	makeResponse(w, responseBody, http.StatusOK, contentType)
 }
 
 // NewSubscriptionHandler returns a new SubscriptionHandler

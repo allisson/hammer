@@ -59,14 +59,14 @@ func (s *Subscription) Create(subscription *hammer.Subscription) error {
 		}
 		subscription.SecretToken = id
 	}
-	if subscription.MaxDeliveryAttempts == 0 {
-		subscription.MaxDeliveryAttempts = 5
+	if subscription.MaxDeliveryAttempts <= 0 {
+		subscription.MaxDeliveryAttempts = hammer.DefaultMaxDeliveryAttempts
 	}
-	if subscription.DeliveryAttemptDelay == 0 {
-		subscription.DeliveryAttemptDelay = 60
+	if subscription.DeliveryAttemptDelay <= 0 {
+		subscription.DeliveryAttemptDelay = hammer.DefaultDeliveryAttemptDelay
 	}
-	if subscription.DeliveryAttemptTimeout == 0 {
-		subscription.DeliveryAttemptTimeout = 5
+	if subscription.DeliveryAttemptTimeout <= 0 {
+		subscription.DeliveryAttemptTimeout = hammer.DefaultDeliveryAttemptTimeout
 	}
 	return s.subscriptionRepo.Store(subscription)
 }
