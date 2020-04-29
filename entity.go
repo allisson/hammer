@@ -33,6 +33,12 @@ var (
 	DefaultPaginationLimit = env.GetInt("HAMMER_DEFAULT_PAGINATION_LIMIT", 25)
 	// MaxPaginationLimit represents the max value for pagination limit on resource list
 	MaxPaginationLimit = env.GetInt("HAMMER_MAX_PAGINATION_LIMIT", 50)
+	// DefaultMaxDeliveryAttempts represents a default max delivery attempts for subscription
+	DefaultMaxDeliveryAttempts = env.GetInt("HAMMER_DEFAULT_MAX_DELIVERY_ATTEMPTS", 5)
+	// DefaultDeliveryAttemptDelay represents a default attempt delay for subscription
+	DefaultDeliveryAttemptDelay = env.GetInt("HAMMER_DEFAULT_DELIVERY_ATTEMPT_DELAY", 60)
+	// DefaultDeliveryAttemptTimeout represents a default attempt timeout for subscription
+	DefaultDeliveryAttemptTimeout = env.GetInt("HAMMER_DEFAULT_DELIVERY_ATTEMPT_TIMEOUT", 5)
 )
 
 // Error data
@@ -90,6 +96,13 @@ func (s Subscription) Validate() error {
 		validation.Field(&s.DeliveryAttemptDelay, validation.Min(1)),
 		validation.Field(&s.DeliveryAttemptTimeout, validation.Min(1)),
 	)
+}
+
+// ListSubscriptionsResponse data
+type ListSubscriptionsResponse struct {
+	Limit         int            `json:"limit"`
+	Offset        int            `json:"offset"`
+	Subscriptions []Subscription `json:"subscriptions"`
 }
 
 // Message data
