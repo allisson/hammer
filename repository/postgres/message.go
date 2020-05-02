@@ -15,78 +15,31 @@ type Message struct {
 // Find returns hammer.Message by id
 func (m *Message) Find(id string) (hammer.Message, error) {
 	message := hammer.Message{}
-	sqlStatement := `
-		SELECT *
-		FROM messages
-		WHERE id = $1
-	`
-	err := m.db.Get(&message, sqlStatement, id)
+	err := m.db.Get(&message, sqlMessageFind, id)
 	return message, err
 }
 
 // FindAll returns []hammer.Message by limit and offset
 func (m *Message) FindAll(limit, offset int) ([]hammer.Message, error) {
 	messages := []hammer.Message{}
-	sqlStatement := `
-		SELECT *
-		FROM messages
-		ORDER BY id DESC
-		LIMIT $1
-		OFFSET $2
-	`
-	err := m.db.Select(&messages, sqlStatement, limit, offset)
+	err := m.db.Select(&messages, sqlMessageFindAll, limit, offset)
 	return messages, err
 }
 
 // FindByTopic returns []hammer.Message by topic, limit and offset
 func (m *Message) FindByTopic(topicID string, limit, offset int) ([]hammer.Message, error) {
 	messages := []hammer.Message{}
-	sqlStatement := `
-		SELECT *
-		FROM messages
-		WHERE topic_id = $1
-		ORDER BY id DESC
-		LIMIT $2
-		OFFSET $3
-	`
-	err := m.db.Select(&messages, sqlStatement, topicID, limit, offset)
+	err := m.db.Select(&messages, sqlMessageFindByTopic, topicID, limit, offset)
 	return messages, err
 }
 
 func (m *Message) create(message *hammer.Message) error {
-	sqlStatement := `
-		INSERT INTO messages (
-			"id",
-			"topic_id",
-			"data",
-			"created_deliveries",
-			"created_at",
-			"updated_at"
-		)
-		VALUES (
-			:id,
-			:topic_id,
-			:data,
-			:created_deliveries,
-			:created_at,
-			:updated_at
-		)
-	`
-	_, err := m.db.NamedExec(sqlStatement, message)
+	_, err := m.db.NamedExec(sqlMessageCreate, message)
 	return err
 }
 
 func (m *Message) update(message *hammer.Message) error {
-	sqlStatement := `
-		UPDATE messages
-		SET topic_id = :topic_id,
-			data = :data,
-			created_deliveries = :created_deliveries,
-			created_at = :created_at,
-			updated_at = :updated_at
-		WHERE id = :id
-	`
-	_, err := m.db.NamedExec(sqlStatement, message)
+	_, err := m.db.NamedExec(sqlMessageUpdate, message)
 	return err
 }
 

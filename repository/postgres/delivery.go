@@ -15,72 +15,24 @@ type Delivery struct {
 // Find returns hammer.Delivery by id
 func (d *Delivery) Find(id string) (hammer.Delivery, error) {
 	delivery := hammer.Delivery{}
-	sqlStatement := `
-		SELECT *
-		FROM deliveries
-		WHERE id = $1
-	`
-	err := d.db.Get(&delivery, sqlStatement, id)
+	err := d.db.Get(&delivery, sqlDeliveryFind, id)
 	return delivery, err
 }
 
 // FindAll returns []hammer.Delivery by limit and offset
 func (d *Delivery) FindAll(limit, offset int) ([]hammer.Delivery, error) {
 	deliveries := []hammer.Delivery{}
-	sqlStatement := `
-		SELECT *
-		FROM deliveries
-		ORDER BY id DESC
-		LIMIT $1
-		OFFSET $2
-	`
-	err := d.db.Select(&deliveries, sqlStatement, limit, offset)
+	err := d.db.Select(&deliveries, sqlDeliveryFindAll, limit, offset)
 	return deliveries, err
 }
 
 func (d *Delivery) create(delivery *hammer.Delivery) error {
-	sqlStatement := `
-		INSERT INTO deliveries (
-			"id",
-			"topic_id",
-			"subscription_id",
-			"message_id",
-			"scheduled_at",
-			"delivery_attempts",
-			"status",
-			"created_at",
-			"updated_at"
-		)
-		VALUES (
-			:id,
-			:topic_id,
-			:subscription_id,
-			:message_id,
-			:scheduled_at,
-			:delivery_attempts,
-			:status,
-			:created_at,
-			:updated_at
-		)
-	`
-	_, err := d.db.NamedExec(sqlStatement, delivery)
+	_, err := d.db.NamedExec(sqlDeliveryCreate, delivery)
 	return err
 }
 
 func (d *Delivery) update(delivery *hammer.Delivery) error {
-	sqlStatement := `
-		UPDATE deliveries
-		SET topic_id = :topic_id,
-			subscription_id = :subscription_id,
-			message_id = :message_id,
-			scheduled_at = :scheduled_at,
-			delivery_attempts = :delivery_attempts,
-			status = :status,
-			created_at = :created_at,
-			updated_at = :updated_at
-		WHERE id = :id
-	`
-	_, err := d.db.NamedExec(sqlStatement, delivery)
+	_, err := d.db.NamedExec(sqlDeliveryUpdate, delivery)
 	return err
 }
 
