@@ -22,13 +22,24 @@ func TestDelivery(t *testing.T) {
 	})
 
 	t.Run("Test FindAll", func(t *testing.T) {
-		expectedDeliverys := []hammer.Delivery{hammer.MakeTestDelivery()}
+		expectedDeliveries := []hammer.Delivery{hammer.MakeTestDelivery()}
 		deliveryRepo := &mocks.DeliveryRepository{}
 		deliveryService := NewDelivery(deliveryRepo)
-		deliveryRepo.On("FindAll", mock.Anything, mock.Anything).Return(expectedDeliverys, nil)
+		deliveryRepo.On("FindAll", mock.Anything, mock.Anything).Return(expectedDeliveries, nil)
 
 		deliveries, err := deliveryService.FindAll(50, 0)
 		assert.Nil(t, err)
-		assert.Equal(t, expectedDeliverys, deliveries)
+		assert.Equal(t, expectedDeliveries, deliveries)
+	})
+
+	t.Run("Test FindToDispatch", func(t *testing.T) {
+		expectedDeliveries := []hammer.Delivery{hammer.MakeTestDelivery()}
+		deliveryRepo := &mocks.DeliveryRepository{}
+		deliveryService := NewDelivery(deliveryRepo)
+		deliveryRepo.On("FindToDispatch", mock.Anything, mock.Anything).Return(expectedDeliveries, nil)
+
+		deliveries, err := deliveryService.FindToDispatch(50, 0)
+		assert.Nil(t, err)
+		assert.Equal(t, expectedDeliveries, deliveries)
 	})
 }

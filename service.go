@@ -28,4 +28,5 @@ type MessageService interface {
 type DeliveryService interface {
 	Find(id string) (Delivery, error)
 	FindAll(limit, offset int) ([]Delivery, error)
+	FindToDispatch(limit, offset int) ([]Delivery, error)
 }

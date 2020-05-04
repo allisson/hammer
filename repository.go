@@ -27,6 +27,7 @@ type MessageRepository interface {
 type DeliveryRepository interface {
 	Find(id string) (Delivery, error)
 	FindAll(limit, offset int) ([]Delivery, error)
+	FindToDispatch(limit, offset int) ([]Delivery, error)
 	Store(tx TxRepository, delivery *Delivery) error
 }
 
