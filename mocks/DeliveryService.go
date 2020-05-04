@@ -12,6 +12,20 @@ type DeliveryService struct {
 	mock.Mock
 }
 
+// Dispatch provides a mock function with given fields: delivery
+func (_m *DeliveryService) Dispatch(delivery *hammer.Delivery) error {
+	ret := _m.Called(delivery)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*hammer.Delivery) error); ok {
+		r0 = rf(delivery)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Find provides a mock function with given fields: id
 func (_m *DeliveryService) Find(id string) (hammer.Delivery, error) {
 	ret := _m.Called(id)

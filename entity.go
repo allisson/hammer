@@ -155,6 +155,7 @@ type DeliveryAttempt struct {
 	ResponseStatusCode int       `json:"response_status_code" db:"response_status_code"`
 	ExecutionDuration  int       `json:"execution_duration" db:"execution_duration"`
 	Success            bool      `json:"success" db:"success"`
+	Error              string    `json:"error" db:"error"`
 	CreatedAt          time.Time `json:"created_at" db:"created_at"`
 }
 
