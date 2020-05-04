@@ -131,26 +131,20 @@ const (
 			"id",
 			"topic_id",
 			"data",
-			"created_deliveries",
-			"created_at",
-			"updated_at"
+			"created_at"
 		)
 		VALUES (
 			:id,
 			:topic_id,
 			:data,
-			:created_deliveries,
-			:created_at,
-			:updated_at
+			:created_at
 		)
 	`
 	sqlMessageUpdate = `
 		UPDATE messages
 		SET topic_id = :topic_id,
 			data = :data,
-			created_deliveries = :created_deliveries,
-			created_at = :created_at,
-			updated_at = :updated_at
+			created_at = :created_at
 		WHERE id = :id
 	`
 	// Subscription Statements

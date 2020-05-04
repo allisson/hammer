@@ -32,14 +32,11 @@ CREATE TABLE IF NOT EXISTS messages(
     id VARCHAR PRIMARY KEY,
     topic_id VARCHAR NOT NULL,
     data TEXT NOT NULL,
-    created_deliveries BOOLEAN NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     FOREIGN KEY (topic_id) REFERENCES topics (id) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS topic_id_idx ON messages (topic_id);
-CREATE INDEX IF NOT EXISTS created_deliveries_idx ON messages (created_deliveries);
 
 -- deliveries table
 

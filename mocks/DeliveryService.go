@@ -12,29 +12,6 @@ type DeliveryService struct {
 	mock.Mock
 }
 
-// Create provides a mock function with given fields: message
-func (_m *DeliveryService) Create(message *hammer.Message) ([]hammer.Delivery, error) {
-	ret := _m.Called(message)
-
-	var r0 []hammer.Delivery
-	if rf, ok := ret.Get(0).(func(*hammer.Message) []hammer.Delivery); ok {
-		r0 = rf(message)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]hammer.Delivery)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(*hammer.Message) error); ok {
-		r1 = rf(message)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // Find provides a mock function with given fields: id
 func (_m *DeliveryService) Find(id string) (hammer.Delivery, error) {
 	ret := _m.Called(id)

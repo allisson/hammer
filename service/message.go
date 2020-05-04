@@ -5,14 +5,15 @@ import (
 	"time"
 
 	"github.com/allisson/hammer"
-	"go.uber.org/zap"
 )
 
 // Message is a implementation of hammer.MessageService
 type Message struct {
-	topicRepo     hammer.TopicRepository
-	messageRepo   hammer.MessageRepository
-	txFactoryRepo hammer.TxFactoryRepository
+	topicRepo        hammer.TopicRepository
+	messageRepo      hammer.MessageRepository
+	subscriptionRepo hammer.SubscriptionRepository
+	deliveryRepo     hammer.DeliveryRepository
+	txFactoryRepo    hammer.TxFactoryRepository
 }
 
 // Find returns hammer.Message by id
@@ -41,11 +42,13 @@ func (m *Message) Create(message *hammer.Message) error {
 		return err
 	}
 
-	// Create message
+	// Start tx
 	tx, err := m.txFactoryRepo.New()
 	if err != nil {
 		return err
 	}
+
+	// Create message
 	id, err := generateID()
 	if err != nil {
 		return err
@@ -53,18 +56,47 @@ func (m *Message) Create(message *hammer.Message) error {
 	now := time.Now().UTC()
 	message.ID = id
 	message.CreatedAt = now
-	message.UpdatedAt = now
-	message.CreatedDeliveries = false
 	err = m.messageRepo.Store(tx, message)
 	if err != nil {
 		return err
 	}
+
+	// Get subscriptions
+	subscriptions, err := m.subscriptionRepo.FindByTopic(message.TopicID)
+	if err != nil {
+		rollback(tx, "message-get-subscriptions")
+		return err
+	}
+
+	// Create deliveries
+	for _, subscription := range subscriptions {
+		id, err := generateID()
+		if err != nil {
+			rollback(tx, "message-subscription-generate-id")
+			return err
+		}
+		now := time.Now().UTC()
+		delivery := hammer.Delivery{
+			ID:             id,
+			TopicID:        message.TopicID,
+			SubscriptionID: subscription.ID,
+			MessageID:      message.ID,
+			ScheduledAt:    now,
+			Status:         hammer.DeliveryStatusPending,
+			CreatedAt:      now,
+			UpdatedAt:      now,
+		}
+		err = m.deliveryRepo.Store(tx, &delivery)
+		if err != nil {
+			rollback(tx, "message-delivery-create-rollback")
+			return err
+		}
+	}
+
+	// tx Commit
 	err = tx.Commit()
 	if err != nil {
-		rErr := tx.Rollback()
-		if rErr != nil {
-			logger.Error("message-create-rollback", zap.Error(rErr))
-		}
+		rollback(tx, "message-create-rollback")
 		return err
 	}
 
@@ -72,10 +104,12 @@ func (m *Message) Create(message *hammer.Message) error {
 }
 
 // NewMessage returns a new Message with MessageRepo
-func NewMessage(topicRepo hammer.TopicRepository, messageRepo hammer.MessageRepository, txFactoryRepo hammer.TxFactoryRepository) Message {
+func NewMessage(topicRepo hammer.TopicRepository, messageRepo hammer.MessageRepository, subscriptionRepo hammer.SubscriptionRepository, deliveryRepo hammer.DeliveryRepository, txFactoryRepo hammer.TxFactoryRepository) Message {
 	return Message{
-		topicRepo:     topicRepo,
-		messageRepo:   messageRepo,
-		txFactoryRepo: txFactoryRepo,
+		topicRepo:        topicRepo,
+		messageRepo:      messageRepo,
+		subscriptionRepo: subscriptionRepo,
+		deliveryRepo:     deliveryRepo,
+		txFactoryRepo:    txFactoryRepo,
 	}
 }
