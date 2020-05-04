@@ -23,6 +23,7 @@ const (
 			"response_status_code",
 			"execution_duration",
 			"success",
+			"error",
 			"created_at"
 		)
 		VALUES (
@@ -33,6 +34,7 @@ const (
 			:response_status_code,
 			:execution_duration,
 			:success,
+			:error,
 			:created_at
 		)
 	`
@@ -44,6 +46,7 @@ const (
 			response_status_code = :response_status_code,
 			execution_duration = :execution_duration,
 			success = :success,
+			error = :error,
 			created_at = :created_at
 		WHERE id = :id
 	`

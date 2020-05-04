@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS delivery_attempts(
     response_status_code INT NOT NULL,
     execution_duration INT NOT NULL,
     success BOOLEAN NOT NULL,
+    error TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     FOREIGN KEY (delivery_id) REFERENCES deliveries (id) ON DELETE CASCADE
 );
