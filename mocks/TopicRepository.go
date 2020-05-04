@@ -56,13 +56,13 @@ func (_m *TopicRepository) FindAll(limit int, offset int) ([]hammer.Topic, error
 	return r0, r1
 }
 
-// Store provides a mock function with given fields: topic
-func (_m *TopicRepository) Store(topic *hammer.Topic) error {
-	ret := _m.Called(topic)
+// Store provides a mock function with given fields: tx, topic
+func (_m *TopicRepository) Store(tx hammer.TxRepository, topic *hammer.Topic) error {
+	ret := _m.Called(tx, topic)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*hammer.Topic) error); ok {
-		r0 = rf(topic)
+	if rf, ok := ret.Get(0).(func(hammer.TxRepository, *hammer.Topic) error); ok {
+		r0 = rf(tx, topic)
 	} else {
 		r0 = ret.Error(0)
 	}

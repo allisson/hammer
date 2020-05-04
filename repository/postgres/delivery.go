@@ -26,26 +26,16 @@ func (d *Delivery) FindAll(limit, offset int) ([]hammer.Delivery, error) {
 	return deliveries, err
 }
 
-func (d *Delivery) create(delivery *hammer.Delivery) error {
-	_, err := d.db.NamedExec(sqlDeliveryCreate, delivery)
-	return err
-}
-
-func (d *Delivery) update(delivery *hammer.Delivery) error {
-	_, err := d.db.NamedExec(sqlDeliveryUpdate, delivery)
-	return err
-}
-
 // Store a hammer.Delivery on database (create or update)
-func (d *Delivery) Store(delivery *hammer.Delivery) error {
+func (d *Delivery) Store(tx hammer.TxRepository, delivery *hammer.Delivery) error {
 	_, err := d.Find(delivery.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return d.create(delivery)
+			return tx.Exec(sqlDeliveryCreate, delivery)
 		}
 		return err
 	}
-	return d.update(delivery)
+	return tx.Exec(sqlDeliveryUpdate, delivery)
 }
 
 // NewDelivery returns a new Delivery with db connection

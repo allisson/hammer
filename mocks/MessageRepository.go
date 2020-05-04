@@ -79,13 +79,13 @@ func (_m *MessageRepository) FindByTopic(topicID string, limit int, offset int) 
 	return r0, r1
 }
 
-// Store provides a mock function with given fields: message
-func (_m *MessageRepository) Store(message *hammer.Message) error {
-	ret := _m.Called(message)
+// Store provides a mock function with given fields: tx, message
+func (_m *MessageRepository) Store(tx hammer.TxRepository, message *hammer.Message) error {
+	ret := _m.Called(tx, message)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*hammer.Message) error); ok {
-		r0 = rf(message)
+	if rf, ok := ret.Get(0).(func(hammer.TxRepository, *hammer.Message) error); ok {
+		r0 = rf(tx, message)
 	} else {
 		r0 = ret.Error(0)
 	}

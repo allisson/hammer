@@ -79,13 +79,13 @@ func (_m *SubscriptionRepository) FindByTopic(topicID string) ([]hammer.Subscrip
 	return r0, r1
 }
 
-// Store provides a mock function with given fields: subscription
-func (_m *SubscriptionRepository) Store(subscription *hammer.Subscription) error {
-	ret := _m.Called(subscription)
+// Store provides a mock function with given fields: tx, subscription
+func (_m *SubscriptionRepository) Store(tx hammer.TxRepository, subscription *hammer.Subscription) error {
+	ret := _m.Called(tx, subscription)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*hammer.Subscription) error); ok {
-		r0 = rf(subscription)
+	if rf, ok := ret.Get(0).(func(hammer.TxRepository, *hammer.Subscription) error); ok {
+		r0 = rf(tx, subscription)
 	} else {
 		r0 = ret.Error(0)
 	}

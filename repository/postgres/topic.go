@@ -26,26 +26,16 @@ func (t *Topic) FindAll(limit, offset int) ([]hammer.Topic, error) {
 	return topics, err
 }
 
-func (t *Topic) create(topic *hammer.Topic) error {
-	_, err := t.db.NamedExec(sqlTopicCreate, topic)
-	return err
-}
-
-func (t *Topic) update(topic *hammer.Topic) error {
-	_, err := t.db.NamedExec(sqlTopicUpdate, topic)
-	return err
-}
-
 // Store a hammer.Topic on database (create or update)
-func (t *Topic) Store(topic *hammer.Topic) error {
+func (t *Topic) Store(tx hammer.TxRepository, topic *hammer.Topic) error {
 	_, err := t.Find(topic.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return t.create(topic)
+			return tx.Exec(sqlTopicCreate, topic)
 		}
 		return err
 	}
-	return t.update(topic)
+	return tx.Exec(sqlTopicUpdate, topic)
 }
 
 // NewTopic returns a new Topic with db connection

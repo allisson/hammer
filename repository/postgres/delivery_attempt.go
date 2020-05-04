@@ -26,26 +26,16 @@ func (d *DeliveryAttempt) FindAll(limit, offset int) ([]hammer.DeliveryAttempt, 
 	return deliveryAttempts, err
 }
 
-func (d *DeliveryAttempt) create(deliveryAttempt *hammer.DeliveryAttempt) error {
-	_, err := d.db.NamedExec(sqlDeliveryAttemptCreate, deliveryAttempt)
-	return err
-}
-
-func (d *DeliveryAttempt) update(deliveryAttempt *hammer.DeliveryAttempt) error {
-	_, err := d.db.NamedExec(sqlDeliveryAttemptUpdate, deliveryAttempt)
-	return err
-}
-
 // Store a hammer.DeliveryAttempt on database (create or update)
-func (d *DeliveryAttempt) Store(deliveryAttempt *hammer.DeliveryAttempt) error {
+func (d *DeliveryAttempt) Store(tx hammer.TxRepository, deliveryAttempt *hammer.DeliveryAttempt) error {
 	_, err := d.Find(deliveryAttempt.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return d.create(deliveryAttempt)
+			return tx.Exec(sqlDeliveryAttemptCreate, deliveryAttempt)
 		}
 		return err
 	}
-	return d.update(deliveryAttempt)
+	return tx.Exec(sqlDeliveryAttemptUpdate, deliveryAttempt)
 }
 
 // NewDeliveryAttempt returns a new DeliveryAttempt with db connection

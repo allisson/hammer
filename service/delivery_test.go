@@ -15,7 +15,8 @@ func TestDelivery(t *testing.T) {
 		deliveryRepo := &mocks.DeliveryRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
 		messageRepo := &mocks.MessageRepository{}
-		deliveryService := NewDelivery(deliveryRepo, subscriptionRepo, messageRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		deliveryService := NewDelivery(deliveryRepo, subscriptionRepo, messageRepo, txFactoryRepo)
 		deliveryRepo.On("Find", mock.Anything).Return(expectedDelivery, nil)
 
 		delivery, err := deliveryService.Find(expectedDelivery.ID)
@@ -28,7 +29,8 @@ func TestDelivery(t *testing.T) {
 		deliveryRepo := &mocks.DeliveryRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
 		messageRepo := &mocks.MessageRepository{}
-		deliveryService := NewDelivery(deliveryRepo, subscriptionRepo, messageRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		deliveryService := NewDelivery(deliveryRepo, subscriptionRepo, messageRepo, txFactoryRepo)
 		deliveryRepo.On("FindAll", mock.Anything, mock.Anything).Return(expectedDeliverys, nil)
 
 		deliveries, err := deliveryService.FindAll(50, 0)
@@ -43,10 +45,14 @@ func TestDelivery(t *testing.T) {
 		deliveryRepo := &mocks.DeliveryRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
 		messageRepo := &mocks.MessageRepository{}
-		deliveryService := NewDelivery(deliveryRepo, subscriptionRepo, messageRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		txRepo := &mocks.TxRepository{}
+		deliveryService := NewDelivery(deliveryRepo, subscriptionRepo, messageRepo, txFactoryRepo)
 		subscriptionRepo.On("FindByTopic", mock.Anything).Return([]hammer.Subscription{subscription1, subscription2}, nil)
-		deliveryRepo.On("Store", mock.Anything).Return(nil)
-		messageRepo.On("Store", mock.Anything).Return(nil)
+		txFactoryRepo.On("New").Return(txRepo, nil)
+		deliveryRepo.On("Store", mock.Anything, mock.Anything).Return(nil)
+		messageRepo.On("Store", mock.Anything, mock.Anything).Return(nil)
+		txRepo.On("Commit").Return(nil)
 
 		deliveries, err := deliveryService.Create(&message)
 		assert.Nil(t, err)
