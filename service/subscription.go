@@ -5,12 +5,14 @@ import (
 	"time"
 
 	"github.com/allisson/hammer"
+	"go.uber.org/zap"
 )
 
 // Subscription is a implementation of hammer.SubscriptionService
 type Subscription struct {
 	topicRepo        hammer.TopicRepository
 	subscriptionRepo hammer.SubscriptionRepository
+	txFactoryRepo    hammer.TxFactoryRepository
 }
 
 func (s *Subscription) topicExists(topicID string) error {
@@ -49,6 +51,10 @@ func (s *Subscription) Create(subscription *hammer.Subscription) error {
 	}
 
 	// Create new subscription with default values
+	tx, err := s.txFactoryRepo.New()
+	if err != nil {
+		return err
+	}
 	now := time.Now().UTC()
 	subscription.CreatedAt = now
 	subscription.UpdatedAt = now
@@ -68,7 +74,20 @@ func (s *Subscription) Create(subscription *hammer.Subscription) error {
 	if subscription.DeliveryAttemptTimeout <= 0 {
 		subscription.DeliveryAttemptTimeout = hammer.DefaultDeliveryAttemptTimeout
 	}
-	return s.subscriptionRepo.Store(subscription)
+	err = s.subscriptionRepo.Store(tx, subscription)
+	if err != nil {
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		rErr := tx.Rollback()
+		if rErr != nil {
+			logger.Error("subscription-create-rollback", zap.Error(rErr))
+		}
+		return err
+	}
+
+	return nil
 }
 
 // Update a hammer.Subscription on repository
@@ -89,16 +108,34 @@ func (s *Subscription) Update(subscription *hammer.Subscription) error {
 	}
 
 	// Update subscription
+	tx, err := s.txFactoryRepo.New()
+	if err != nil {
+		return err
+	}
 	subscription.ID = subscriptionFromRepo.ID
 	subscription.TopicID = subscriptionFromRepo.TopicID
 	subscription.UpdatedAt = time.Now().UTC()
-	return s.subscriptionRepo.Store(subscription)
+	err = s.subscriptionRepo.Store(tx, subscription)
+	if err != nil {
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		rErr := tx.Rollback()
+		if rErr != nil {
+			logger.Error("subscription-update-rollback", zap.Error(rErr))
+		}
+		return err
+	}
+
+	return nil
 }
 
 // NewSubscription returns a new Subscription with SubscriptionRepo
-func NewSubscription(topicRepo hammer.TopicRepository, subscriptionRepo hammer.SubscriptionRepository) Subscription {
+func NewSubscription(topicRepo hammer.TopicRepository, subscriptionRepo hammer.SubscriptionRepository, txFactoryRepo hammer.TxFactoryRepository) Subscription {
 	return Subscription{
 		topicRepo:        topicRepo,
 		subscriptionRepo: subscriptionRepo,
+		txFactoryRepo:    txFactoryRepo,
 	}
 }

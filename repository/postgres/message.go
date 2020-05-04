@@ -33,26 +33,16 @@ func (m *Message) FindByTopic(topicID string, limit, offset int) ([]hammer.Messa
 	return messages, err
 }
 
-func (m *Message) create(message *hammer.Message) error {
-	_, err := m.db.NamedExec(sqlMessageCreate, message)
-	return err
-}
-
-func (m *Message) update(message *hammer.Message) error {
-	_, err := m.db.NamedExec(sqlMessageUpdate, message)
-	return err
-}
-
 // Store a hammer.Message on database (create or update)
-func (m *Message) Store(message *hammer.Message) error {
+func (m *Message) Store(tx hammer.TxRepository, message *hammer.Message) error {
 	_, err := m.Find(message.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return m.create(message)
+			return tx.Exec(sqlMessageCreate, message)
 		}
 		return err
 	}
-	return m.update(message)
+	return tx.Exec(sqlMessageUpdate, message)
 }
 
 // NewMessage returns a new Message with db connection

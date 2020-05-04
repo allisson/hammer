@@ -24,6 +24,7 @@ type txnTestHelper struct {
 	messageRepo         Message
 	deliveryRepo        Delivery
 	deliveryAttemptRepo DeliveryAttempt
+	txFactory           TxFactory
 }
 
 func newTxnTestHelper() txnTestHelper {
@@ -36,6 +37,7 @@ func newTxnTestHelper() txnTestHelper {
 		messageRepo:         NewMessage(db),
 		deliveryRepo:        NewDelivery(db),
 		deliveryAttemptRepo: NewDeliveryAttempt(db),
+		txFactory:           NewTxFactory(db),
 	}
 }
 
@@ -44,8 +46,12 @@ func TestTopic(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
+		tx, err := th.txFactory.New()
+		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
-		err := th.topicRepo.Store(&topic)
+		err = th.topicRepo.Store(tx, &topic)
+		assert.Nil(t, err)
+		err = tx.Commit()
 		assert.Nil(t, err)
 	})
 
@@ -53,11 +59,20 @@ func TestTopic(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
+		tx, err := th.txFactory.New()
+		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
-		err := th.topicRepo.Store(&topic)
+		err = th.topicRepo.Store(tx, &topic)
+		assert.Nil(t, err)
+		err = tx.Commit()
+		assert.Nil(t, err)
+
+		tx, err = th.txFactory.New()
 		assert.Nil(t, err)
 		topic.Name = "My Topic III"
-		err = th.topicRepo.Store(&topic)
+		err = th.topicRepo.Store(tx, &topic)
+		assert.Nil(t, err)
+		err = tx.Commit()
 		assert.Nil(t, err)
 		topicFromRepo, err := th.topicRepo.Find(topic.ID)
 		assert.Nil(t, err)
@@ -68,8 +83,12 @@ func TestTopic(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
+		tx, err := th.txFactory.New()
+		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
-		err := th.topicRepo.Store(&topic)
+		err = th.topicRepo.Store(tx, &topic)
+		assert.Nil(t, err)
+		err = tx.Commit()
 		assert.Nil(t, err)
 		topicFromRepo, err := th.topicRepo.Find(topic.ID)
 		assert.Nil(t, err)
@@ -81,11 +100,15 @@ func TestTopic(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
+		tx, err := th.txFactory.New()
+		assert.Nil(t, err)
 		topic1 := hammer.MakeTestTopic()
 		topic2 := hammer.MakeTestTopic()
-		err := th.topicRepo.Store(&topic1)
+		err = th.topicRepo.Store(tx, &topic1)
 		assert.Nil(t, err)
-		err = th.topicRepo.Store(&topic2)
+		err = th.topicRepo.Store(tx, &topic2)
+		assert.Nil(t, err)
+		err = tx.Commit()
 		assert.Nil(t, err)
 		topics, err := th.topicRepo.FindAll(50, 0)
 		assert.Nil(t, err)

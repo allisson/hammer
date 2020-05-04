@@ -14,7 +14,8 @@ func TestTopic(t *testing.T) {
 	t.Run("Test Find", func(t *testing.T) {
 		expectedTopic := hammer.MakeTestTopic()
 		topicRepo := &mocks.TopicRepository{}
-		topicService := NewTopic(topicRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		topicService := NewTopic(topicRepo, txFactoryRepo)
 		topicRepo.On("Find", mock.Anything).Return(expectedTopic, nil)
 
 		topic, err := topicService.Find(expectedTopic.ID)
@@ -25,7 +26,8 @@ func TestTopic(t *testing.T) {
 	t.Run("Test FindAll", func(t *testing.T) {
 		expectedTopics := []hammer.Topic{hammer.MakeTestTopic()}
 		topicRepo := &mocks.TopicRepository{}
-		topicService := NewTopic(topicRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		topicService := NewTopic(topicRepo, txFactoryRepo)
 		topicRepo.On("FindAll", mock.Anything, mock.Anything).Return(expectedTopics, nil)
 
 		topics, err := topicService.FindAll(50, 0)
@@ -36,9 +38,13 @@ func TestTopic(t *testing.T) {
 	t.Run("Test Create", func(t *testing.T) {
 		topic := hammer.MakeTestTopic()
 		topicRepo := &mocks.TopicRepository{}
-		topicService := NewTopic(topicRepo)
-		topicRepo.On("Store", mock.Anything).Return(nil)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		txRepo := &mocks.TxRepository{}
+		topicService := NewTopic(topicRepo, txFactoryRepo)
+		txFactoryRepo.On("New").Return(txRepo, nil)
+		topicRepo.On("Store", mock.Anything, mock.Anything).Return(nil)
 		topicRepo.On("Find", mock.Anything).Return(hammer.Topic{}, sql.ErrNoRows)
+		txRepo.On("Commit").Return(nil)
 
 		err := topicService.Create(&topic)
 		assert.Nil(t, err)
@@ -47,7 +53,8 @@ func TestTopic(t *testing.T) {
 	t.Run("Test Create with topic already exists on repository", func(t *testing.T) {
 		topic := hammer.MakeTestTopic()
 		topicRepo := &mocks.TopicRepository{}
-		topicService := NewTopic(topicRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		topicService := NewTopic(topicRepo, txFactoryRepo)
 		topicRepo.On("Find", mock.Anything).Return(hammer.Topic{}, nil)
 
 		err := topicService.Create(&topic)
@@ -57,9 +64,13 @@ func TestTopic(t *testing.T) {
 	t.Run("Test Update", func(t *testing.T) {
 		topic := hammer.MakeTestTopic()
 		topicRepo := &mocks.TopicRepository{}
-		topicService := NewTopic(topicRepo)
-		topicRepo.On("Store", mock.Anything).Return(nil)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		txRepo := &mocks.TxRepository{}
+		topicService := NewTopic(topicRepo, txFactoryRepo)
+		txFactoryRepo.On("New").Return(txRepo, nil)
+		topicRepo.On("Store", mock.Anything, mock.Anything).Return(nil)
 		topicRepo.On("Find", mock.Anything).Return(hammer.Topic{}, nil)
+		txRepo.On("Commit").Return(nil)
 
 		topic.Name = "My Topic"
 		err := topicService.Update(&topic)
@@ -69,7 +80,8 @@ func TestTopic(t *testing.T) {
 	t.Run("Test Update with topic does not exists on repository", func(t *testing.T) {
 		topic := hammer.MakeTestTopic()
 		topicRepo := &mocks.TopicRepository{}
-		topicService := NewTopic(topicRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		topicService := NewTopic(topicRepo, txFactoryRepo)
 		topicRepo.On("Find", mock.Anything).Return(topic, sql.ErrNoRows)
 
 		topic.Name = "My Topic"

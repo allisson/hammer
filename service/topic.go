@@ -5,11 +5,22 @@ import (
 	"time"
 
 	"github.com/allisson/hammer"
+	"go.uber.org/zap"
 )
+
+var (
+	logger *zap.Logger
+)
+
+func init() {
+	// Set logger
+	logger, _ = zap.NewProduction()
+}
 
 // Topic is a implementation of hammer.TopicService
 type Topic struct {
-	topicRepo hammer.TopicRepository
+	topicRepo     hammer.TopicRepository
+	txFactoryRepo hammer.TxFactoryRepository
 }
 
 // Find returns hammer.Topic by id
@@ -31,10 +42,27 @@ func (t *Topic) Create(topic *hammer.Topic) error {
 	}
 
 	// Create new topic
+	tx, err := t.txFactoryRepo.New()
+	if err != nil {
+		return err
+	}
 	now := time.Now().UTC()
 	topic.CreatedAt = now
 	topic.UpdatedAt = now
-	return t.topicRepo.Store(topic)
+	err = t.topicRepo.Store(tx, topic)
+	if err != nil {
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		rErr := tx.Rollback()
+		if rErr != nil {
+			logger.Error("topic-create-rollback", zap.Error(rErr))
+		}
+		return err
+	}
+
+	return nil
 }
 
 // Update a hammer.Topic on repository
@@ -49,12 +77,32 @@ func (t *Topic) Update(topic *hammer.Topic) error {
 	}
 
 	// Update topic
+	tx, err := t.txFactoryRepo.New()
+	if err != nil {
+		return err
+	}
 	topic.ID = topicFromRepo.ID
 	topic.UpdatedAt = time.Now().UTC()
-	return t.topicRepo.Store(topic)
+	err = t.topicRepo.Store(tx, topic)
+	if err != nil {
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		rErr := tx.Rollback()
+		if rErr != nil {
+			logger.Error("topic-update-rollback", zap.Error(rErr))
+		}
+		return err
+	}
+
+	return nil
 }
 
 // NewTopic returns a new Topic with topicRepo
-func NewTopic(topicRepo hammer.TopicRepository) Topic {
-	return Topic{topicRepo: topicRepo}
+func NewTopic(topicRepo hammer.TopicRepository, txFactoryRepo hammer.TxFactoryRepository) Topic {
+	return Topic{
+		topicRepo:     topicRepo,
+		txFactoryRepo: txFactoryRepo,
+	}
 }

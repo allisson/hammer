@@ -35,26 +35,16 @@ func (s *Subscription) FindByTopic(topicID string) ([]hammer.Subscription, error
 	return subscriptions, err
 }
 
-func (s *Subscription) create(subscription *hammer.Subscription) error {
-	_, err := s.db.NamedExec(sqlSubscriptionCreate, subscription)
-	return err
-}
-
-func (s *Subscription) update(subscription *hammer.Subscription) error {
-	_, err := s.db.NamedExec(sqlSubscriptionUpdate, subscription)
-	return err
-}
-
 // Store a hammer.Subscription on database (create or update)
-func (s *Subscription) Store(subscription *hammer.Subscription) error {
+func (s *Subscription) Store(tx hammer.TxRepository, subscription *hammer.Subscription) error {
 	_, err := s.Find(subscription.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return s.create(subscription)
+			return tx.Exec(sqlSubscriptionCreate, subscription)
 		}
 		return err
 	}
-	return s.update(subscription)
+	return tx.Exec(sqlSubscriptionUpdate, subscription)
 }
 
 // NewSubscription returns a new Subscription with db connection

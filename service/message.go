@@ -5,12 +5,14 @@ import (
 	"time"
 
 	"github.com/allisson/hammer"
+	"go.uber.org/zap"
 )
 
 // Message is a implementation of hammer.MessageService
 type Message struct {
-	topicRepo   hammer.TopicRepository
-	messageRepo hammer.MessageRepository
+	topicRepo     hammer.TopicRepository
+	messageRepo   hammer.MessageRepository
+	txFactoryRepo hammer.TxFactoryRepository
 }
 
 // Find returns hammer.Message by id
@@ -40,6 +42,10 @@ func (m *Message) Create(message *hammer.Message) error {
 	}
 
 	// Create message
+	tx, err := m.txFactoryRepo.New()
+	if err != nil {
+		return err
+	}
 	id, err := generateID()
 	if err != nil {
 		return err
@@ -49,13 +55,27 @@ func (m *Message) Create(message *hammer.Message) error {
 	message.CreatedAt = now
 	message.UpdatedAt = now
 	message.CreatedDeliveries = false
-	return m.messageRepo.Store(message)
+	err = m.messageRepo.Store(tx, message)
+	if err != nil {
+		return err
+	}
+	err = tx.Commit()
+	if err != nil {
+		rErr := tx.Rollback()
+		if rErr != nil {
+			logger.Error("message-create-rollback", zap.Error(rErr))
+		}
+		return err
+	}
+
+	return nil
 }
 
 // NewMessage returns a new Message with MessageRepo
-func NewMessage(topicRepo hammer.TopicRepository, messageRepo hammer.MessageRepository) Message {
+func NewMessage(topicRepo hammer.TopicRepository, messageRepo hammer.MessageRepository, txFactoryRepo hammer.TxFactoryRepository) Message {
 	return Message{
-		topicRepo:   topicRepo,
-		messageRepo: messageRepo,
+		topicRepo:     topicRepo,
+		messageRepo:   messageRepo,
+		txFactoryRepo: txFactoryRepo,
 	}
 }

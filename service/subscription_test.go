@@ -15,7 +15,8 @@ func TestSubscription(t *testing.T) {
 		expectedSubscription := hammer.MakeTestSubscription()
 		topicRepo := &mocks.TopicRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
-		subscriptionService := NewSubscription(topicRepo, subscriptionRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		subscriptionService := NewSubscription(topicRepo, subscriptionRepo, txFactoryRepo)
 		subscriptionRepo.On("Find", mock.Anything).Return(expectedSubscription, nil)
 
 		subscription, err := subscriptionService.Find(expectedSubscription.ID)
@@ -27,7 +28,8 @@ func TestSubscription(t *testing.T) {
 		expectedSubscriptions := []hammer.Subscription{hammer.MakeTestSubscription()}
 		topicRepo := &mocks.TopicRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
-		subscriptionService := NewSubscription(topicRepo, subscriptionRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		subscriptionService := NewSubscription(topicRepo, subscriptionRepo, txFactoryRepo)
 		subscriptionRepo.On("FindAll", mock.Anything, mock.Anything).Return(expectedSubscriptions, nil)
 
 		subscriptions, err := subscriptionService.FindAll(50, 0)
@@ -41,10 +43,14 @@ func TestSubscription(t *testing.T) {
 		subscription.TopicID = topic.ID
 		topicRepo := &mocks.TopicRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
-		subscriptionService := NewSubscription(topicRepo, subscriptionRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		txRepo := &mocks.TxRepository{}
+		subscriptionService := NewSubscription(topicRepo, subscriptionRepo, txFactoryRepo)
 		topicRepo.On("Find", mock.Anything).Return(topic, nil)
-		subscriptionRepo.On("Store", mock.Anything).Return(nil)
+		txFactoryRepo.On("New").Return(txRepo, nil)
+		subscriptionRepo.On("Store", mock.Anything, mock.Anything).Return(nil)
 		subscriptionRepo.On("Find", mock.Anything).Return(hammer.Subscription{}, sql.ErrNoRows)
+		txRepo.On("Commit").Return(nil)
 
 		err := subscriptionService.Create(&subscription)
 		assert.Nil(t, err)
@@ -57,7 +63,8 @@ func TestSubscription(t *testing.T) {
 		subscription.TopicID = topic.ID
 		topicRepo := &mocks.TopicRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
-		subscriptionService := NewSubscription(topicRepo, subscriptionRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		subscriptionService := NewSubscription(topicRepo, subscriptionRepo, txFactoryRepo)
 		topicRepo.On("Find", mock.Anything).Return(topic, sql.ErrNoRows)
 		subscriptionRepo.On("Find", mock.Anything).Return(hammer.Subscription{}, sql.ErrNoRows)
 
@@ -71,7 +78,8 @@ func TestSubscription(t *testing.T) {
 		subscription.TopicID = topic.ID
 		topicRepo := &mocks.TopicRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
-		subscriptionService := NewSubscription(topicRepo, subscriptionRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		subscriptionService := NewSubscription(topicRepo, subscriptionRepo, txFactoryRepo)
 		topicRepo.On("Find", mock.Anything).Return(topic, nil)
 		subscriptionRepo.On("Find", mock.Anything).Return(hammer.Subscription{}, nil)
 
@@ -85,10 +93,14 @@ func TestSubscription(t *testing.T) {
 		subscription.TopicID = topic.ID
 		topicRepo := &mocks.TopicRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
-		subscriptionService := NewSubscription(topicRepo, subscriptionRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		txRepo := &mocks.TxRepository{}
+		subscriptionService := NewSubscription(topicRepo, subscriptionRepo, txFactoryRepo)
 		topicRepo.On("Find", mock.Anything).Return(topic, nil)
-		subscriptionRepo.On("Store", mock.Anything).Return(nil)
+		txFactoryRepo.On("New").Return(txRepo, nil)
+		subscriptionRepo.On("Store", mock.Anything, mock.Anything).Return(nil)
 		subscriptionRepo.On("Find", mock.Anything).Return(hammer.Subscription{}, nil)
+		txRepo.On("Commit").Return(nil)
 
 		subscription.Name = "My Subscription"
 		err := subscriptionService.Update(&subscription)
@@ -101,7 +113,8 @@ func TestSubscription(t *testing.T) {
 		subscription.TopicID = topic.ID
 		topicRepo := &mocks.TopicRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
-		subscriptionService := NewSubscription(topicRepo, subscriptionRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		subscriptionService := NewSubscription(topicRepo, subscriptionRepo, txFactoryRepo)
 		topicRepo.On("Find", mock.Anything).Return(topic, sql.ErrNoRows)
 		subscriptionRepo.On("Find", mock.Anything).Return(hammer.Subscription{}, sql.ErrNoRows)
 
@@ -116,7 +129,8 @@ func TestSubscription(t *testing.T) {
 		subscription.TopicID = topic.ID
 		topicRepo := &mocks.TopicRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
-		subscriptionService := NewSubscription(topicRepo, subscriptionRepo)
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		subscriptionService := NewSubscription(topicRepo, subscriptionRepo, txFactoryRepo)
 		topicRepo.On("Find", mock.Anything).Return(topic, nil)
 		subscriptionRepo.On("Find", mock.Anything).Return(hammer.Subscription{}, sql.ErrNoRows)
 

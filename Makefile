@@ -3,7 +3,7 @@ PLATFORM := $(shell uname | tr A-Z a-z)
 lint:
 	if [ ! -f ./bin/golangci-lint ] ; \
 	then \
-		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.25.1; \
+		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.26.0; \
 	fi;
 	./bin/golangci-lint run
 
@@ -26,7 +26,8 @@ mock:
 	mockery -name MessageRepository
 	mockery -name DeliveryRepository
 	mockery -name DeliveryAttemptRepository
-	mockery -name LockRepository
+	mockery -name TxRepository
+	mockery -name TxFactoryRepository
 	mockery -name TopicService
 	mockery -name SubscriptionService
 	mockery -name MessageService

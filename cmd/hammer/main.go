@@ -53,11 +53,12 @@ func main() {
 	topicRepo := repository.NewTopic(sqlDB)
 	subscriptionRepo := repository.NewSubscription(sqlDB)
 	messageRepo := repository.NewMessage(sqlDB)
+	txFactoryRepo := repository.NewTxFactory(sqlDB)
 
 	// Create services
-	topicService := service.NewTopic(&topicRepo)
-	subscriptionService := service.NewSubscription(&topicRepo, &subscriptionRepo)
-	messageService := service.NewMessage(&topicRepo, &messageRepo)
+	topicService := service.NewTopic(&topicRepo, &txFactoryRepo)
+	subscriptionService := service.NewSubscription(&topicRepo, &subscriptionRepo, &txFactoryRepo)
+	messageService := service.NewMessage(&topicRepo, &messageRepo, &txFactoryRepo)
 
 	// Create handlers
 	pingHandler := h.NewPingHandler()

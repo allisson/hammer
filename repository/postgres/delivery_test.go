@@ -13,6 +13,8 @@ func TestDelivery(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
+		tx, err := th.txFactory.New()
+		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
@@ -22,13 +24,15 @@ func TestDelivery(t *testing.T) {
 		delivery.TopicID = topic.ID
 		delivery.SubscriptionID = subscription.ID
 		delivery.MessageID = message.ID
-		err := th.topicRepo.Store(&topic)
+		err = th.topicRepo.Store(tx, &topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(&subscription)
+		err = th.subscriptionRepo.Store(tx, &subscription)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(&message)
+		err = th.messageRepo.Store(tx, &message)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(&delivery)
+		err = th.deliveryRepo.Store(tx, &delivery)
+		assert.Nil(t, err)
+		err = tx.Commit()
 		assert.Nil(t, err)
 	})
 
@@ -36,6 +40,8 @@ func TestDelivery(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
+		tx, err := th.txFactory.New()
+		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
@@ -45,16 +51,23 @@ func TestDelivery(t *testing.T) {
 		delivery.TopicID = topic.ID
 		delivery.SubscriptionID = subscription.ID
 		delivery.MessageID = message.ID
-		err := th.topicRepo.Store(&topic)
+		err = th.topicRepo.Store(tx, &topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(&subscription)
+		err = th.subscriptionRepo.Store(tx, &subscription)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(&message)
+		err = th.messageRepo.Store(tx, &message)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(&delivery)
+		err = th.deliveryRepo.Store(tx, &delivery)
+		assert.Nil(t, err)
+		err = tx.Commit()
+		assert.Nil(t, err)
+
+		tx, err = th.txFactory.New()
 		assert.Nil(t, err)
 		delivery.Status = "completed"
-		err = th.deliveryRepo.Store(&delivery)
+		err = th.deliveryRepo.Store(tx, &delivery)
+		assert.Nil(t, err)
+		err = tx.Commit()
 		assert.Nil(t, err)
 		deliveryFromRepo, err := th.deliveryRepo.Find(delivery.ID)
 		assert.Nil(t, err)
@@ -65,6 +78,8 @@ func TestDelivery(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
+		tx, err := th.txFactory.New()
+		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
@@ -74,13 +89,15 @@ func TestDelivery(t *testing.T) {
 		delivery.TopicID = topic.ID
 		delivery.SubscriptionID = subscription.ID
 		delivery.MessageID = message.ID
-		err := th.topicRepo.Store(&topic)
+		err = th.topicRepo.Store(tx, &topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(&subscription)
+		err = th.subscriptionRepo.Store(tx, &subscription)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(&message)
+		err = th.messageRepo.Store(tx, &message)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(&delivery)
+		err = th.deliveryRepo.Store(tx, &delivery)
+		assert.Nil(t, err)
+		err = tx.Commit()
 		assert.Nil(t, err)
 		deliveryFromRepo, err := th.deliveryRepo.Find(delivery.ID)
 		assert.Nil(t, err)
@@ -92,6 +109,8 @@ func TestDelivery(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
+		tx, err := th.txFactory.New()
+		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
@@ -105,15 +124,17 @@ func TestDelivery(t *testing.T) {
 		delivery2.TopicID = topic.ID
 		delivery2.SubscriptionID = subscription.ID
 		delivery2.MessageID = message.ID
-		err := th.topicRepo.Store(&topic)
+		err = th.topicRepo.Store(tx, &topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(&subscription)
+		err = th.subscriptionRepo.Store(tx, &subscription)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(&message)
+		err = th.messageRepo.Store(tx, &message)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(&delivery1)
+		err = th.deliveryRepo.Store(tx, &delivery1)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(&delivery2)
+		err = th.deliveryRepo.Store(tx, &delivery2)
+		assert.Nil(t, err)
+		err = tx.Commit()
 		assert.Nil(t, err)
 		deliveries, err := th.deliveryRepo.FindAll(50, 0)
 		assert.Nil(t, err)
