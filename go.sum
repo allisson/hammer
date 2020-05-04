@@ -3,6 +3,8 @@ github.com/DATA-DOG/go-txdb v0.1.3 h1:R4v6OuOcy2O147e2zHxU0B4NDtF+INb5R9q/CV7AEM
 github.com/DATA-DOG/go-txdb v0.1.3/go.mod h1:DhAhxMXZpUJVGnT+p9IbzJoRKvlArO2pkHjnGX7o0n0=
 github.com/allisson/go-env v0.2.0 h1:d/ERxdL7BhbAUjE5SmSWbaM0RBrMzGVHmKJ6SHM4pdI=
 github.com/allisson/go-env v0.2.0/go.mod h1:It6Dwy/LfOpLY/uIJiBpqQFifCosR4vPbnoBt4RYSkM=
+github.com/allisson/go-pglock v0.1.1 h1:h+D3gr+II7v43waMkUlD6BzAttL9/URLxJTZAYzVu6k=
+github.com/allisson/go-pglock v0.1.1/go.mod h1:b6BwM/Ynu1pMcb1P33uhWVQsUhvyzlXjiqTDYvzgc3I=
 github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496 h1:zV3ejI06GQ59hwDQAvmK1qxOQGB3WuVTRoY0okPTAv0=
 github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496/go.mod h1:oGkLhpf+kjZl6xBf758TQhh5XrAeiJv/7FRz/2spLIg=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -23,8 +25,9 @@ github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORN
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
 github.com/lib/pq v1.0.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
-github.com/lib/pq v1.5.0 h1:Hq6pEflc2Q3hP5iEH3Q6XopXrJXxjhwbvMpj9eZnpp0=
-github.com/lib/pq v1.5.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
+github.com/lib/pq v1.4.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
+github.com/lib/pq v1.5.1 h1:Jn6HYxiYrtQ92CopqJLvfPCJUrrruw1+1cn0jM9dKrI=
+github.com/lib/pq v1.5.1/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
 github.com/mattn/go-sqlite3 v1.9.0/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
 github.com/oklog/ulid v1.3.1 h1:EGfNDEx6MqHz8B3uNV6QAib1UR2Lm97sHi3ocA6ESJ4=
 github.com/oklog/ulid/v2 v2.0.2 h1:r4fFzBm+bv0wNKNh5eXTwU7i85y5x+uwkxCUTNVQqLc=

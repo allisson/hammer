@@ -3,7 +3,10 @@
 package mocks
 
 import (
+	http "net/http"
+
 	hammer "github.com/allisson/hammer"
+
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -12,13 +15,13 @@ type DeliveryService struct {
 	mock.Mock
 }
 
-// Dispatch provides a mock function with given fields: delivery
-func (_m *DeliveryService) Dispatch(delivery *hammer.Delivery) error {
-	ret := _m.Called(delivery)
+// Dispatch provides a mock function with given fields: delivery, httpClient
+func (_m *DeliveryService) Dispatch(delivery *hammer.Delivery, httpClient *http.Client) error {
+	ret := _m.Called(delivery, httpClient)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*hammer.Delivery) error); ok {
-		r0 = rf(delivery)
+	if rf, ok := ret.Get(0).(func(*hammer.Delivery, *http.Client) error); ok {
+		r0 = rf(delivery, httpClient)
 	} else {
 		r0 = ret.Error(0)
 	}
