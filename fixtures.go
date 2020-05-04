@@ -45,11 +45,9 @@ func MakeTestSubscription() Subscription {
 func MakeTestMessage() Message {
 	id := fmt.Sprintf("%d", randonInt())
 	return Message{
-		ID:                fmt.Sprintf("Message_%s", id),
-		Data:              fmt.Sprintf("data_%s", id),
-		CreatedDeliveries: false,
-		CreatedAt:         time.Now().UTC(),
-		UpdatedAt:         time.Now().UTC(),
+		ID:        fmt.Sprintf("Message_%s", id),
+		Data:      fmt.Sprintf("data_%s", id),
+		CreatedAt: time.Now().UTC(),
 	}
 }
 
