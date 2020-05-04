@@ -107,12 +107,10 @@ type ListSubscriptionsResponse struct {
 
 // Message data
 type Message struct {
-	ID                string    `json:"id" db:"id"`
-	TopicID           string    `json:"topic_id" db:"topic_id"`
-	Data              string    `json:"data" db:"data"`
-	CreatedDeliveries bool      `json:"created_deliveries" db:"created_deliveries"`
-	CreatedAt         time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt         time.Time `json:"updated_at" db:"updated_at"`
+	ID        string    `json:"id" db:"id"`
+	TopicID   string    `json:"topic_id" db:"topic_id"`
+	Data      string    `json:"data" db:"data"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 // Validate message
