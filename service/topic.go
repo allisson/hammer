@@ -55,10 +55,7 @@ func (t *Topic) Create(topic *hammer.Topic) error {
 	}
 	err = tx.Commit()
 	if err != nil {
-		rErr := tx.Rollback()
-		if rErr != nil {
-			logger.Error("topic-create-rollback", zap.Error(rErr))
-		}
+		rollback(tx, "topic-create-rollback")
 		return err
 	}
 
@@ -89,10 +86,7 @@ func (t *Topic) Update(topic *hammer.Topic) error {
 	}
 	err = tx.Commit()
 	if err != nil {
-		rErr := tx.Rollback()
-		if rErr != nil {
-			logger.Error("topic-update-rollback", zap.Error(rErr))
-		}
+		rollback(tx, "topic-update-rollback")
 		return err
 	}
 

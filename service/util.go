@@ -4,7 +4,9 @@ import (
 	mathrand "math/rand"
 	"time"
 
+	"github.com/allisson/hammer"
 	"github.com/oklog/ulid/v2"
+	"go.uber.org/zap"
 )
 
 func generateID() (string, error) {
@@ -13,4 +15,11 @@ func generateID() (string, error) {
 	entropy := mathrand.New(source)
 	id, err := ulid.New(ulid.Timestamp(time.Now()), entropy)
 	return id.String(), err
+}
+
+func rollback(tx hammer.TxRepository, message string) {
+	err := tx.Rollback()
+	if err != nil {
+		logger.Error(message, zap.Error(err))
+	}
 }

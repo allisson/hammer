@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/allisson/hammer"
-	"go.uber.org/zap"
 )
 
 // Subscription is a implementation of hammer.SubscriptionService
@@ -80,10 +79,7 @@ func (s *Subscription) Create(subscription *hammer.Subscription) error {
 	}
 	err = tx.Commit()
 	if err != nil {
-		rErr := tx.Rollback()
-		if rErr != nil {
-			logger.Error("subscription-create-rollback", zap.Error(rErr))
-		}
+		rollback(tx, "subscription-create-rollback")
 		return err
 	}
 
@@ -121,10 +117,7 @@ func (s *Subscription) Update(subscription *hammer.Subscription) error {
 	}
 	err = tx.Commit()
 	if err != nil {
-		rErr := tx.Rollback()
-		if rErr != nil {
-			logger.Error("subscription-update-rollback", zap.Error(rErr))
-		}
+		rollback(tx, "subscription-update-rollback")
 		return err
 	}
 
