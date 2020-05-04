@@ -1,5 +1,7 @@
 package hammer
 
+import "net/http"
+
 // TopicService interface
 type TopicService interface {
 	Find(id string) (Topic, error)
@@ -29,5 +31,5 @@ type DeliveryService interface {
 	Find(id string) (Delivery, error)
 	FindAll(limit, offset int) ([]Delivery, error)
 	FindToDispatch(limit, offset int) ([]Delivery, error)
-	Dispatch(delivery *Delivery) error
+	Dispatch(delivery *Delivery, httpClient *http.Client) error
 }

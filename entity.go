@@ -39,6 +39,10 @@ var (
 	DefaultDeliveryAttemptDelay = env.GetInt("HAMMER_DEFAULT_DELIVERY_ATTEMPT_DELAY", 60)
 	// DefaultDeliveryAttemptTimeout represents a default attempt timeout for subscription
 	DefaultDeliveryAttemptTimeout = env.GetInt("HAMMER_DEFAULT_DELIVERY_ATTEMPT_TIMEOUT", 5)
+	// WorkerDatabaseDelay represents a delay for database access by workers
+	WorkerDatabaseDelay = env.GetInt("HAMMER_WORKER_DATABASE_DELAY", 5)
+	// WorkerDefaultFetchLimit represents the default value for fetch limit
+	WorkerDefaultFetchLimit = env.GetInt("HAMMER_WORKER_DEFAULT_FETCH_LIMIT", 100)
 )
 
 // Error data

@@ -3,7 +3,6 @@ package service
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"time"
@@ -103,7 +102,6 @@ func (d *Delivery) FindToDispatch(limit, offset int) ([]hammer.Delivery, error) 
 // Dispatch message to destination
 func (d *Delivery) Dispatch(delivery *hammer.Delivery, httpClient *http.Client) error {
 	dr := makeRequest(delivery, httpClient)
-	fmt.Println(dr)
 
 	// Start tx
 	tx, err := d.txFactoryRepo.New()
