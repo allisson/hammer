@@ -56,6 +56,29 @@ func (_m *DeliveryRepository) FindAll(limit int, offset int) ([]hammer.Delivery,
 	return r0, r1
 }
 
+// FindToDispatch provides a mock function with given fields: limit, offset
+func (_m *DeliveryRepository) FindToDispatch(limit int, offset int) ([]hammer.Delivery, error) {
+	ret := _m.Called(limit, offset)
+
+	var r0 []hammer.Delivery
+	if rf, ok := ret.Get(0).(func(int, int) []hammer.Delivery); ok {
+		r0 = rf(limit, offset)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]hammer.Delivery)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int, int) error); ok {
+		r1 = rf(limit, offset)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Store provides a mock function with given fields: tx, delivery
 func (_m *DeliveryRepository) Store(tx hammer.TxRepository, delivery *hammer.Delivery) error {
 	ret := _m.Called(tx, delivery)

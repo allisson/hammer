@@ -129,28 +129,41 @@ type ListMessagesResponse struct {
 
 // Delivery data
 type Delivery struct {
-	ID               string    `json:"id" db:"id"`
-	TopicID          string    `json:"topic_id" db:"topic_id"`
-	SubscriptionID   string    `json:"subscription_id" db:"subscription_id"`
-	MessageID        string    `json:"message_id" db:"message_id"`
-	ScheduledAt      time.Time `json:"scheduled_at" db:"scheduled_at"`
-	DeliveryAttempts int       `json:"delivery_attempts" db:"delivery_attempts"`
-	Status           string    `json:"status" db:"status"`
-	CreatedAt        time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt        time.Time `json:"updated_at" db:"updated_at"`
+	ID                     string    `json:"id" db:"id"`
+	TopicID                string    `json:"topic_id" db:"topic_id"`
+	SubscriptionID         string    `json:"subscription_id" db:"subscription_id"`
+	MessageID              string    `json:"message_id" db:"message_id"`
+	Data                   string    `json:"data" db:"data"`
+	URL                    string    `json:"url" db:"url"`
+	SecretToken            string    `json:"secret_token" db:"secret_token"`
+	MaxDeliveryAttempts    int       `json:"max_delivery_attempts" db:"max_delivery_attempts"`
+	DeliveryAttemptDelay   int       `json:"delivery_attempt_delay" db:"delivery_attempt_delay"`
+	DeliveryAttemptTimeout int       `json:"delivery_attempt_timeout" db:"delivery_attempt_timeout"`
+	ScheduledAt            time.Time `json:"scheduled_at" db:"scheduled_at"`
+	DeliveryAttempts       int       `json:"delivery_attempts" db:"delivery_attempts"`
+	Status                 string    `json:"status" db:"status"`
+	CreatedAt              time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt              time.Time `json:"updated_at" db:"updated_at"`
 }
 
 // DeliveryAttempt data
 type DeliveryAttempt struct {
 	ID                 string    `json:"id" db:"id"`
 	DeliveryID         string    `json:"delivery_id" db:"delivery_id"`
-	URL                string    `json:"url" db:"url"`
-	RequestHeaders     string    `json:"request_headers" db:"request_headers"`
-	RequestBody        string    `json:"request_body" db:"request_body"`
-	ResponseHeaders    string    `json:"response_headers" db:"response_headers"`
-	ResponseBody       string    `json:"response_body" db:"response_body"`
+	Request            string    `json:"request" db:"request"`
+	Response           string    `json:"response" db:"response"`
 	ResponseStatusCode int       `json:"response_status_code" db:"response_status_code"`
 	ExecutionDuration  int       `json:"execution_duration" db:"execution_duration"`
 	Success            bool      `json:"success" db:"success"`
 	CreatedAt          time.Time `json:"created_at" db:"created_at"`
+}
+
+// WebhookMessage data
+type WebhookMessage struct {
+	TopicID        string    `json:"topic_id" db:"topic_id"`
+	SubscriptionID string    `json:"subscription_id" db:"subscription_id"`
+	MessageID      string    `json:"message_id" db:"message_id"`
+	SecretToken    string    `json:"secret_token" db:"secret_token"`
+	Data           string    `json:"data" db:"data"`
+	CreatedAt      time.Time `json:"created_at" db:"created_at"`
 }

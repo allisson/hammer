@@ -55,11 +55,17 @@ func MakeTestMessage() Message {
 func MakeTestDelivery() Delivery {
 	id := fmt.Sprintf("%d", randonInt())
 	return Delivery{
-		ID:          fmt.Sprintf("Delivery_%s", id),
-		Status:      "pending",
-		ScheduledAt: time.Now().UTC(),
-		CreatedAt:   time.Now().UTC(),
-		UpdatedAt:   time.Now().UTC(),
+		ID:                     fmt.Sprintf("Delivery_%s", id),
+		Data:                   fmt.Sprintf("data_%s", id),
+		URL:                    fmt.Sprintf("https://example.com/%s/", id),
+		SecretToken:            fmt.Sprintf("token-%s", id),
+		MaxDeliveryAttempts:    DefaultMaxDeliveryAttempts,
+		DeliveryAttemptDelay:   DefaultDeliveryAttemptDelay,
+		DeliveryAttemptTimeout: DefaultDeliveryAttemptTimeout,
+		Status:                 "pending",
+		ScheduledAt:            time.Now().UTC(),
+		CreatedAt:              time.Now().UTC(),
+		UpdatedAt:              time.Now().UTC(),
 	}
 }
 
@@ -68,7 +74,6 @@ func MakeTestDeliveryAttempt() DeliveryAttempt {
 	id := fmt.Sprintf("%d", randonInt())
 	return DeliveryAttempt{
 		ID:        fmt.Sprintf("DeliveryAttempt_%s", id),
-		URL:       fmt.Sprintf("https://example.com/%s/", id),
 		Success:   false,
 		CreatedAt: time.Now().UTC(),
 	}

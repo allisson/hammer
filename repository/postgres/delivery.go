@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/allisson/hammer"
 	"github.com/jmoiron/sqlx"
@@ -23,6 +24,15 @@ func (d *Delivery) Find(id string) (hammer.Delivery, error) {
 func (d *Delivery) FindAll(limit, offset int) ([]hammer.Delivery, error) {
 	deliveries := []hammer.Delivery{}
 	err := d.db.Select(&deliveries, sqlDeliveryFindAll, limit, offset)
+	return deliveries, err
+}
+
+// FindToDispatch returns []hammer.Delivery ready to dispatch by limit and offset
+func (d *Delivery) FindToDispatch(limit, offset int) ([]hammer.Delivery, error) {
+	deliveries := []hammer.Delivery{}
+	status := "pending"
+	now := time.Now().UTC()
+	err := d.db.Select(&deliveries, sqlDeliveryFindToDispatch, status, now, limit, offset)
 	return deliveries, err
 }
 

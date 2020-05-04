@@ -18,11 +18,8 @@ const (
 		INSERT INTO delivery_attempts (
 			"id",
 			"delivery_id",
-			"url",
-			"request_headers",
-			"request_body",
-			"response_headers",
-			"response_body",
+			"request",
+			"response",
 			"response_status_code",
 			"execution_duration",
 			"success",
@@ -31,11 +28,8 @@ const (
 		VALUES (
 			:id,
 			:delivery_id,
-			:url,
-			:request_headers,
-			:request_body,
-			:response_headers,
-			:response_body,
+			:request,
+			:response,
 			:response_status_code,
 			:execution_duration,
 			:success,
@@ -45,11 +39,8 @@ const (
 	sqlDeliveryAttemptUpdate = `
 		UPDATE delivery_attempts
 		SET delivery_id = :delivery_id,
-			url = :url,
-			request_headers = :request_headers,
-			request_body = :request_body,
-			response_headers = :response_headers,
-			response_body = :response_body,
+			request = :request,
+			response = :response,
 			response_status_code = :response_status_code,
 			execution_duration = :execution_duration,
 			success = :success,
@@ -69,12 +60,26 @@ const (
 		LIMIT $1
 		OFFSET $2
 	`
+	sqlDeliveryFindToDispatch = `
+		SELECT *
+		FROM deliveries
+		WHERE status = $1 AND scheduled_at <= $2
+		ORDER BY id ASC
+		LIMIT $3
+		OFFSET $4
+	`
 	sqlDeliveryCreate = `
 		INSERT INTO deliveries (
 			"id",
 			"topic_id",
 			"subscription_id",
 			"message_id",
+			"data",
+			"url",
+			"secret_token",
+			"max_delivery_attempts",
+			"delivery_attempt_delay",
+			"delivery_attempt_timeout",
 			"scheduled_at",
 			"delivery_attempts",
 			"status",
@@ -86,6 +91,12 @@ const (
 			:topic_id,
 			:subscription_id,
 			:message_id,
+			:data,
+			:url,
+			:secret_token,
+			:max_delivery_attempts,
+			:delivery_attempt_delay,
+			:delivery_attempt_timeout,
 			:scheduled_at,
 			:delivery_attempts,
 			:status,
@@ -98,6 +109,12 @@ const (
 		SET topic_id = :topic_id,
 			subscription_id = :subscription_id,
 			message_id = :message_id,
+			data = :data,
+			url = :url,
+			secret_token = :secret_token,
+			max_delivery_attempts = :max_delivery_attempts,
+			delivery_attempt_delay = :delivery_attempt_delay,
+			delivery_attempt_timeout = :delivery_attempt_timeout,
 			scheduled_at = :scheduled_at,
 			delivery_attempts = :delivery_attempts,
 			status = :status,

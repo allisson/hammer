@@ -77,14 +77,20 @@ func (m *Message) Create(message *hammer.Message) error {
 		}
 		now := time.Now().UTC()
 		delivery := hammer.Delivery{
-			ID:             id,
-			TopicID:        message.TopicID,
-			SubscriptionID: subscription.ID,
-			MessageID:      message.ID,
-			ScheduledAt:    now,
-			Status:         hammer.DeliveryStatusPending,
-			CreatedAt:      now,
-			UpdatedAt:      now,
+			ID:                     id,
+			TopicID:                message.TopicID,
+			SubscriptionID:         subscription.ID,
+			MessageID:              message.ID,
+			Data:                   message.Data,
+			URL:                    subscription.URL,
+			SecretToken:            subscription.SecretToken,
+			MaxDeliveryAttempts:    subscription.MaxDeliveryAttempts,
+			DeliveryAttemptDelay:   subscription.DeliveryAttemptDelay,
+			DeliveryAttemptTimeout: subscription.DeliveryAttemptTimeout,
+			ScheduledAt:            now,
+			Status:                 hammer.DeliveryStatusPending,
+			CreatedAt:              now,
+			UpdatedAt:              now,
 		}
 		err = m.deliveryRepo.Store(tx, &delivery)
 		if err != nil {

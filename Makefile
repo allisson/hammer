@@ -13,7 +13,7 @@ test:
 download-golang-migrate-binary:
 	if [ ! -f ./migrate.$(PLATFORM)-amd64 ] ; \
 	then \
-		curl -sfL https://github.com/golang-migrate/migrate/releases/download/v4.10.0/migrate.$(PLATFORM)-amd64.tar.gz | tar -xvz; \
+		curl -sfL https://github.com/golang-migrate/migrate/releases/download/v4.11.0/migrate.$(PLATFORM)-amd64.tar.gz | tar -xvz; \
 	fi;
 
 db-migrate: download-golang-migrate-binary
