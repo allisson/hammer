@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
@@ -32,6 +33,47 @@ func stringToInt(s string) int64 {
 	return int64(h.Sum32())
 }
 
+type taskJob struct {
+	lock            *pglock.Lock
+	deliveryService hammer.DeliveryService
+}
+
+func (t *taskJob) DeliveriesToDispatch() ([]hammer.Delivery, error) {
+	return t.deliveryService.FindToDispatch(hammer.WorkerDefaultFetchLimit, 0)
+}
+
+func (t *taskJob) Dispatch(delivery hammer.Delivery, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	// Get lock
+	lockID := stringToInt(delivery.ID)
+	ok, err := t.lock.Lock(lockID)
+	if err != nil {
+		logger.Error("lock-delivery", zap.Error(err))
+		return
+	}
+	if !ok {
+		return
+	}
+
+	// Create http client with timeout
+	httpClient := &http.Client{Timeout: time.Duration(delivery.DeliveryAttemptTimeout) * time.Second}
+
+	// Dispatch
+	err = t.deliveryService.Dispatch(&delivery, httpClient)
+	if err != nil {
+		logger.Error("delivery-service-dispatch", zap.Error(err))
+		return
+	}
+	logger.Info("delivery-made", zap.String("delivery_id", delivery.ID), zap.String("message_id", delivery.MessageID))
+
+	// Unlock
+	err = t.lock.Unlock(lockID)
+	if err != nil {
+		logger.Error("unlock-delivery", zap.Error(err))
+	}
+}
+
 func init() {
 	// Set logger
 	logger, _ = zap.NewProduction()
@@ -48,39 +90,9 @@ func init() {
 	sqlDB = db
 }
 
-func dispatch(lock *pglock.Lock, deliveryService hammer.DeliveryService, delivery *hammer.Delivery) {
-	// Get lock
-	lockID := stringToInt(delivery.ID)
-	ok, err := lock.Lock(lockID)
-	if err != nil {
-		logger.Error("lock-delivery", zap.Error(err))
-		return
-	}
-	if !ok {
-		return
-	}
-
-	// Create http client with timeout
-	httpClient := &http.Client{Timeout: time.Duration(delivery.DeliveryAttemptTimeout) * time.Second}
-
-	// Dispatch
-	err = deliveryService.Dispatch(delivery, httpClient)
-	if err != nil {
-		logger.Error("delivery-service-dispatch", zap.Error(err))
-		return
-	}
-	logger.Info("delivery-made", zap.String("delivery_id", delivery.ID))
-
-	// Unlock
-	err = lock.Unlock(lockID)
-	if err != nil {
-		logger.Error("unlock-delivery", zap.Error(err))
-	}
-}
-
-func getDeliveries(lock *pglock.Lock, deliveryService hammer.DeliveryService) {
+func getDeliveries(job *taskJob) {
 	for {
-		deliveries, err := deliveryService.FindToDispatch(hammer.WorkerDefaultFetchLimit, 0)
+		deliveries, err := job.DeliveriesToDispatch()
 		if err != nil {
 			logger.Error("get-deliveries-find-to-dispatch", zap.Error(err))
 			continue
@@ -91,9 +103,18 @@ func getDeliveries(lock *pglock.Lock, deliveryService hammer.DeliveryService) {
 		}
 
 		// Create wait group
+		wg := sync.WaitGroup{}
+		wg.Add(len(deliveries))
+
+		// Create wait group
 		for _, delivery := range deliveries {
-			dispatch(lock, deliveryService, &delivery)
+			// https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
+			go func(delivery hammer.Delivery, wg *sync.WaitGroup) {
+				job.Dispatch(delivery, wg)
+			}(delivery, &wg)
 		}
+
+		wg.Wait()
 
 		// Sleep with delay of hammer.WorkerDatabaseDelay
 		time.Sleep(time.Duration(hammer.WorkerDatabaseDelay) * time.Second)
@@ -112,8 +133,11 @@ func main() {
 	// Create services
 	deliveryService := service.NewDelivery(&deliveryRepo, &deliveryAttemptRepo, &txFactoryRepo)
 
+	// Create taskJob
+	job := taskJob{lock: &lock, deliveryService: &deliveryService}
+
 	// Start dispatch deliveries
-	go getDeliveries(&lock, &deliveryService)
+	go getDeliveries(&job)
 
 	// Make graceful shutdown
 	logger.Info("worker-started")
