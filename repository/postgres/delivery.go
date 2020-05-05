@@ -28,8 +28,8 @@ func (d *Delivery) FindAll(limit, offset int) ([]hammer.Delivery, error) {
 }
 
 // FindToDispatch returns []hammer.Delivery ready to dispatch by limit and offset
-func (d *Delivery) FindToDispatch(limit, offset int) ([]hammer.Delivery, error) {
-	deliveries := []hammer.Delivery{}
+func (d *Delivery) FindToDispatch(limit, offset int) ([]string, error) {
+	deliveries := []string{}
 	status := "pending"
 	now := time.Now().UTC()
 	err := d.db.Select(&deliveries, sqlDeliveryFindToDispatch, status, now, limit, offset)

@@ -2,6 +2,7 @@ package main
 
 import (
 	"hash/fnv"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/signal"
@@ -24,6 +25,11 @@ var (
 	sqlDB  *sqlx.DB
 )
 
+func randomInt(min, max int) int {
+	rand.Seed(time.Now().UnixNano())
+	return rand.Intn(max-min) + min
+}
+
 func stringToInt(s string) int64 {
 	h := fnv.New32a()
 	_, err := h.Write([]byte(s))
@@ -38,21 +44,40 @@ type taskJob struct {
 	deliveryService hammer.DeliveryService
 }
 
-func (t *taskJob) DeliveriesToDispatch() ([]hammer.Delivery, error) {
+func (t *taskJob) unlock(lockID int64) {
+	err := t.lock.Unlock(lockID)
+	if err != nil {
+		logger.Error("unlock-delivery", zap.Error(err))
+	}
+}
+
+func (t *taskJob) DeliveriesToDispatch() ([]string, error) {
 	return t.deliveryService.FindToDispatch(hammer.WorkerDefaultFetchLimit, 0)
 }
 
-func (t *taskJob) Dispatch(delivery hammer.Delivery, wg *sync.WaitGroup) {
+func (t *taskJob) Dispatch(deliveryID string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	// Get lock
-	lockID := stringToInt(delivery.ID)
+	lockID := stringToInt(deliveryID)
 	ok, err := t.lock.Lock(lockID)
 	if err != nil {
 		logger.Error("lock-delivery", zap.Error(err))
 		return
 	}
 	if !ok {
+		return
+	}
+	defer t.unlock(lockID)
+
+	// Get delivery
+	delivery, err := t.deliveryService.Find(deliveryID)
+	if err != nil {
+		return
+	}
+
+	// Check delivery
+	if delivery.Status != hammer.DeliveryStatusPending || delivery.ScheduledAt.After(time.Now().UTC()) {
 		return
 	}
 
@@ -66,12 +91,6 @@ func (t *taskJob) Dispatch(delivery hammer.Delivery, wg *sync.WaitGroup) {
 		return
 	}
 	logger.Info("delivery-made", zap.String("delivery_id", delivery.ID), zap.String("message_id", delivery.MessageID))
-
-	// Unlock
-	err = t.lock.Unlock(lockID)
-	if err != nil {
-		logger.Error("unlock-delivery", zap.Error(err))
-	}
 }
 
 func init() {
@@ -106,14 +125,21 @@ func getDeliveries(job *taskJob) {
 		wg := sync.WaitGroup{}
 		wg.Add(len(deliveries))
 
+		// Shuffle deliveries
+		rand.Seed(time.Now().UnixNano())
+		rand.Shuffle(len(deliveries), func(i, j int) { deliveries[i], deliveries[j] = deliveries[j], deliveries[i] })
+
 		// Create wait group
-		for _, delivery := range deliveries {
+		for _, deliveryID := range deliveries {
+			// Random sleep to avoid lock race condition
+			time.Sleep(time.Duration(randomInt(100, 200)) * time.Millisecond)
 			// https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
-			go func(delivery hammer.Delivery, wg *sync.WaitGroup) {
-				job.Dispatch(delivery, wg)
-			}(delivery, &wg)
+			go func(deliveryID string, wg *sync.WaitGroup) {
+				job.Dispatch(deliveryID, wg)
+			}(deliveryID, &wg)
 		}
 
+		// Wait for goroutines to finish
 		wg.Wait()
 
 		// Sleep with delay of hammer.WorkerDatabaseDelay
