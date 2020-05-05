@@ -184,6 +184,6 @@ func TestDelivery(t *testing.T) {
 		deliveries, err := th.deliveryRepo.FindToDispatch(50, 0)
 		assert.Nil(t, err)
 		assert.Equal(t, 1, len(deliveries))
-		assert.Equal(t, delivery1.ID, deliveries[0].ID)
+		assert.Equal(t, delivery1.ID, deliveries[0])
 	})
 }

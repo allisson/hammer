@@ -39,7 +39,7 @@ func TestDelivery(t *testing.T) {
 	})
 
 	t.Run("Test FindToDispatch", func(t *testing.T) {
-		expectedDeliveries := []hammer.Delivery{hammer.MakeTestDelivery()}
+		expectedDeliveries := []string{hammer.MakeTestDelivery().ID}
 		deliveryRepo := &mocks.DeliveryRepository{}
 		deliveryAttemptRepo := &mocks.DeliveryAttemptRepository{}
 		txFactoryRepo := &mocks.TxFactoryRepository{}

@@ -74,15 +74,15 @@ func (_m *DeliveryService) FindAll(limit int, offset int) ([]hammer.Delivery, er
 }
 
 // FindToDispatch provides a mock function with given fields: limit, offset
-func (_m *DeliveryService) FindToDispatch(limit int, offset int) ([]hammer.Delivery, error) {
+func (_m *DeliveryService) FindToDispatch(limit int, offset int) ([]string, error) {
 	ret := _m.Called(limit, offset)
 
-	var r0 []hammer.Delivery
-	if rf, ok := ret.Get(0).(func(int, int) []hammer.Delivery); ok {
+	var r0 []string
+	if rf, ok := ret.Get(0).(func(int, int) []string); ok {
 		r0 = rf(limit, offset)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]hammer.Delivery)
+			r0 = ret.Get(0).([]string)
 		}
 	}
 
