@@ -66,8 +66,8 @@ const (
 	sqlDeliveryFindToDispatch = `
 		SELECT id
 		FROM deliveries
-		WHERE status = $1 AND scheduled_at <= $2
-		ORDER BY scheduled_at ASC
+		WHERE status = $1 AND scheduled_at < $2
+		ORDER BY id ASC
 		LIMIT $3
 		OFFSET $4
 	`

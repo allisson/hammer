@@ -90,7 +90,13 @@ func (t *taskJob) Dispatch(deliveryID string, wg *sync.WaitGroup) {
 		logger.Error("delivery-service-dispatch", zap.Error(err))
 		return
 	}
-	logger.Info("delivery-made", zap.String("delivery_id", delivery.ID), zap.String("message_id", delivery.MessageID))
+	logger.Info(
+		"delivery-attempt-made",
+		zap.String("id", delivery.ID),
+		zap.String("status", delivery.Status),
+		zap.Int("attempts", delivery.DeliveryAttempts),
+		zap.Int("max_delivery_attempts", delivery.MaxDeliveryAttempts),
+	)
 }
 
 func init() {
@@ -114,10 +120,12 @@ func getDeliveries(job *taskJob) {
 		deliveries, err := job.DeliveriesToDispatch()
 		if err != nil {
 			logger.Error("get-deliveries-find-to-dispatch", zap.Error(err))
+			time.Sleep(time.Duration(hammer.WorkerDatabaseDelay) * time.Second)
 			continue
 		}
 
 		if len(deliveries) == 0 {
+			time.Sleep(time.Duration(hammer.WorkerDatabaseDelay) * time.Second)
 			continue
 		}
 
