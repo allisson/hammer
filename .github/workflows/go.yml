@@ -35,5 +35,5 @@ jobs:
       run: make lint
     - name: Build
       env:
-        DATABASE_URL: 'postgres://test:test@localhost:5432/hammer?sslmode=disable'
+        HAMMER_DATABASE_URL: 'postgres://test:test@localhost:5432/hammer?sslmode=disable'
       run: make db-migrate && make test

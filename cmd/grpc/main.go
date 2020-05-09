@@ -21,6 +21,7 @@ import (
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/lib/pq"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
@@ -39,7 +40,7 @@ func init() {
 	logger, _ = zap.NewProduction()
 
 	// Set database connection
-	db, err := sqlx.Open("postgres", env.GetString("DATABASE_URL", ""))
+	db, err := sqlx.Open("postgres", env.GetString("HAMMER_DATABASE_URL", ""))
 	if err != nil {
 		logger.Fatal("failed-to-start-database-client", zap.Error(err))
 	}

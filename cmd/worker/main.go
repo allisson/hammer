@@ -16,6 +16,7 @@ import (
 	repository "github.com/allisson/hammer/repository/postgres"
 	"github.com/allisson/hammer/service"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
@@ -104,7 +105,7 @@ func init() {
 	logger, _ = zap.NewProduction()
 
 	// Set database connection
-	db, err := sqlx.Open("postgres", env.GetString("DATABASE_URL", ""))
+	db, err := sqlx.Open("postgres", env.GetString("HAMMER_DATABASE_URL", ""))
 	if err != nil {
 		logger.Fatal("sqlx-open", zap.Error(err))
 	}

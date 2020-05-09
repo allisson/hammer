@@ -14,7 +14,7 @@ import (
 )
 
 func init() {
-	txdb.Register("pgx", "postgres", env.GetString("DATABASE_URL", ""))
+	txdb.Register("pgx", "postgres", env.GetString("HAMMER_DATABASE_URL", ""))
 }
 
 type txnTestHelper struct {
