@@ -14,9 +14,15 @@ import (
 	hammerGrpc "github.com/allisson/hammer/grpc"
 	repository "github.com/allisson/hammer/repository/postgres"
 	"github.com/allisson/hammer/service"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
@@ -68,6 +74,15 @@ func runGateway() {
 	}
 }
 
+func metricsServer() {
+	port := env.GetInt("HAMMER_METRICS_PORT", 4001)
+	http.Handle("/metrics", promhttp.Handler())
+	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	if err != nil {
+		logger.Error("metrics-server-failed-to-start", zap.Error(err))
+	}
+}
+
 func main() {
 	// Create repositories
 	topicRepo := repository.NewTopic(sqlDB)
@@ -96,11 +111,33 @@ func main() {
 	go runGateway()
 
 	// Create grpc server
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
+			grpc_ctxtags.StreamServerInterceptor(),
+			grpc_prometheus.StreamServerInterceptor,
+			grpc_zap.StreamServerInterceptor(logger),
+			grpc_recovery.StreamServerInterceptor(),
+		)),
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			grpc_ctxtags.UnaryServerInterceptor(),
+			grpc_prometheus.UnaryServerInterceptor,
+			grpc_zap.UnaryServerInterceptor(logger),
+			grpc_recovery.UnaryServerInterceptor(),
+		)),
+	)
 	server := hammerGrpc.NewServer(topicHandler, subscriptionHandler, messageHandler)
 
 	// Register grpc services
 	pb.RegisterHammerServer(grpcServer, &server)
+
+	// Enable grpc_prometheus histograms
+	grpc_prometheus.EnableHandlingTimeHistogram()
+
+	// Register grpc_prometheus default metrics
+	grpc_prometheus.Register(grpcServer)
+
+	// Load metrics server
+	go metricsServer()
 
 	// Start grpc server and make graceful shutdown
 	idleConnsClosed := make(chan struct{})

@@ -77,7 +77,7 @@ func (t *taskJob) Dispatch(deliveryID string, wg *sync.WaitGroup) {
 	}
 
 	// Check delivery
-	if delivery.Status != hammer.DeliveryStatusPending || delivery.ScheduledAt.After(time.Now().UTC()) {
+	if delivery.Status != hammer.DeliveryStatusPending {
 		return
 	}
 
@@ -123,6 +123,7 @@ func getDeliveries(job *taskJob) {
 			time.Sleep(time.Duration(hammer.WorkerDatabaseDelay) * time.Second)
 			continue
 		}
+		logger.Info("fetch_deliveries", zap.Int("count", len(deliveries)))
 
 		if len(deliveries) == 0 {
 			time.Sleep(time.Duration(hammer.WorkerDatabaseDelay) * time.Second)
