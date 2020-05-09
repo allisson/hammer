@@ -1,0 +1,9 @@
+# dirs
+.github
+docker
+.git
+
+# binaries
+bin/golangci-lint
+migrate.linux-amd64
+migrate.darwin-amd64

@@ -41,7 +41,7 @@ mock:
 run-worker:
 	go run cmd/worker/main.go
 
-run-grpc:
-	go run cmd/grpc/main.go
+run-server:
+	go run cmd/server/main.go
 
-.PHONY: lint test download-golang-migrate-binary db-migrate mock run-worker run-grpc
+.PHONY: lint test download-golang-migrate-binary db-migrate mock run-worker run-server
