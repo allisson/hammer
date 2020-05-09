@@ -24,7 +24,6 @@ CREATE TABLE IF NOT EXISTS subscriptions(
 );
 
 CREATE INDEX IF NOT EXISTS topic_id_idx ON subscriptions (topic_id);
-CREATE INDEX IF NOT EXISTS created_at_idx ON subscriptions (created_at);
 
 -- messages table
 
