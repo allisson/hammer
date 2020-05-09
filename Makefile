@@ -22,7 +22,7 @@ download-golang-migrate-binary:
 	fi;
 
 db-migrate: download-golang-migrate-binary
-	./migrate.$(PLATFORM)-amd64 -source file://db/migrations -database ${DATABASE_URL} up
+	./migrate.$(PLATFORM)-amd64 -source file://db/migrations -database ${HAMMER_DATABASE_URL} up
 
 mock:
 	@rm -rf mocks
