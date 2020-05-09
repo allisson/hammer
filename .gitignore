@@ -20,3 +20,6 @@ migrate.linux-amd64
 
 # golangci-lint
 /bin/golangci-lint
+
+# dotenv
+.env

@@ -16,6 +16,7 @@ import (
 	repository "github.com/allisson/hammer/repository/postgres"
 	"github.com/allisson/hammer/service"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
@@ -77,7 +78,7 @@ func (t *taskJob) Dispatch(deliveryID string, wg *sync.WaitGroup) {
 	}
 
 	// Check delivery
-	if delivery.Status != hammer.DeliveryStatusPending || delivery.ScheduledAt.After(time.Now().UTC()) {
+	if delivery.Status != hammer.DeliveryStatusPending {
 		return
 	}
 
@@ -104,7 +105,7 @@ func init() {
 	logger, _ = zap.NewProduction()
 
 	// Set database connection
-	db, err := sqlx.Open("postgres", env.GetString("DATABASE_URL", ""))
+	db, err := sqlx.Open("postgres", env.GetString("HAMMER_DATABASE_URL", ""))
 	if err != nil {
 		logger.Fatal("sqlx-open", zap.Error(err))
 	}
@@ -123,6 +124,7 @@ func getDeliveries(job *taskJob) {
 			time.Sleep(time.Duration(hammer.WorkerDatabaseDelay) * time.Second)
 			continue
 		}
+		logger.Info("fetch_deliveries", zap.Int("count", len(deliveries)))
 
 		if len(deliveries) == 0 {
 			time.Sleep(time.Duration(hammer.WorkerDatabaseDelay) * time.Second)
