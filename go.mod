@@ -6,12 +6,16 @@ require (
 	github.com/DATA-DOG/go-txdb v0.1.3
 	github.com/allisson/go-env v0.2.0
 	github.com/allisson/go-pglock v0.1.1
-	github.com/go-chi/chi v4.1.1+incompatible
 	github.com/go-ozzo/ozzo-validation/v4 v4.2.1
+	github.com/golang/protobuf v1.4.1
+	github.com/grpc-ecosystem/grpc-gateway v1.14.5
 	github.com/jmoiron/sqlx v1.2.0
-	github.com/lib/pq v1.5.1
+	github.com/lib/pq v1.5.2
 	github.com/oklog/ulid/v2 v2.0.2
-	github.com/steinfletcher/apitest v1.4.6
 	github.com/stretchr/testify v1.5.1
 	go.uber.org/zap v1.15.0
+	golang.org/x/net v0.0.0-20191002035440-2ec189313ef0
+	google.golang.org/genproto v0.0.0-20200507105951-43844f6eee31
+	google.golang.org/grpc v1.29.1
+	google.golang.org/protobuf v1.22.0
 )

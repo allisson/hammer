@@ -1,5 +1,10 @@
 PLATFORM := $(shell uname | tr A-Z a-z)
 
+build-protobuf:
+	cd api/v1 && protoc -I/usr/local/include -I. -I$(GOPATH)/src -I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis --go_out=plugins=grpc:. hammer.proto
+	cd api/v1 && protoc -I/usr/local/include -I. -I$(GOPATH)/src -I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis --grpc-gateway_out=logtostderr=true:. hammer.proto
+	cd api/v1 && protoc -I/usr/local/include -I. -I$(GOPATH)/src -I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis --swagger_out=logtostderr=true:. hammer.proto
+
 lint:
 	if [ ! -f ./bin/golangci-lint ] ; \
 	then \
@@ -33,10 +38,10 @@ mock:
 	mockery -name MessageService
 	mockery -name DeliveryService
 
-run-web:
-	go run cmd/web/main.go
-
 run-worker:
 	go run cmd/worker/main.go
 
-.PHONY: lint test download-golang-migrate-binary db-migrate mock run-web run-worker
+run-grpc:
+	go run cmd/grpc/main.go
+
+.PHONY: lint test download-golang-migrate-binary db-migrate mock run-worker run-grpc
