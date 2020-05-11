@@ -46,7 +46,7 @@ func MakeTestMessage() Message {
 	id := fmt.Sprintf("%d", randonInt())
 	return Message{
 		ID:        fmt.Sprintf("Message_%s", id),
-		Data:      fmt.Sprintf("data_%s", id),
+		Data:      `{"id": "id", "name": "Allisson"}`,
 		CreatedAt: time.Now().UTC(),
 	}
 }

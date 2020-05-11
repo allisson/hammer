@@ -76,6 +76,7 @@ func TestMessage(t *testing.T) {
 		err := messageService.Create(&message)
 		assert.Nil(t, err)
 		assert.NotEqual(t, "", message.ID)
+		assert.Equal(t, "eyJpZCI6ICJpZCIsICJuYW1lIjogIkFsbGlzc29uIn0=", message.Data)
 	})
 
 	t.Run("Test Create with topic does not exists on repository", func(t *testing.T) {
