@@ -26,23 +26,18 @@ var (
 	sqlDB  *sqlx.DB
 )
 
-func randomInt(min, max int) int {
-	rand.Seed(time.Now().UnixNano())
-	return rand.Intn(max-min) + min
+type taskJob struct {
+	lock            *pglock.Lock
+	deliveryService hammer.DeliveryService
 }
 
-func stringToInt(s string) int64 {
+func (t *taskJob) stringToInt(s string) int64 {
 	h := fnv.New32a()
 	_, err := h.Write([]byte(s))
 	if err != nil {
 		return 0
 	}
 	return int64(h.Sum32())
-}
-
-type taskJob struct {
-	lock            *pglock.Lock
-	deliveryService hammer.DeliveryService
 }
 
 func (t *taskJob) unlock(lockID int64) {
@@ -60,13 +55,10 @@ func (t *taskJob) Dispatch(deliveryID string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	// Get lock
-	lockID := stringToInt(deliveryID)
-	ok, err := t.lock.Lock(lockID)
+	lockID := t.stringToInt(deliveryID)
+	err := t.lock.WaitAndLock(lockID)
 	if err != nil {
 		logger.Error("lock-delivery", zap.Error(err))
-		return
-	}
-	if !ok {
 		return
 	}
 	defer t.unlock(lockID)
@@ -74,11 +66,12 @@ func (t *taskJob) Dispatch(deliveryID string, wg *sync.WaitGroup) {
 	// Get delivery
 	delivery, err := t.deliveryService.Find(deliveryID)
 	if err != nil {
+		logger.Error("delivery-service-find", zap.Error(err))
 		return
 	}
 
 	// Check delivery
-	if delivery.Status != hammer.DeliveryStatusPending {
+	if delivery.Status != hammer.DeliveryStatusPending || time.Now().UTC().Before(delivery.ScheduledAt) {
 		return
 	}
 
@@ -139,10 +132,7 @@ func getDeliveries(job *taskJob) {
 		rand.Seed(time.Now().UnixNano())
 		rand.Shuffle(len(deliveries), func(i, j int) { deliveries[i], deliveries[j] = deliveries[j], deliveries[i] })
 
-		// Create wait group
 		for _, deliveryID := range deliveries {
-			// Random sleep to avoid lock race condition
-			time.Sleep(time.Duration(randomInt(100, 200)) * time.Millisecond)
 			// https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
 			go func(deliveryID string, wg *sync.WaitGroup) {
 				job.Dispatch(deliveryID, wg)
