@@ -2,6 +2,7 @@ package service
 
 import (
 	"database/sql"
+	b64 "encoding/base64"
 	"time"
 
 	"github.com/allisson/hammer"
@@ -56,6 +57,7 @@ func (m *Message) Create(message *hammer.Message) error {
 	now := time.Now().UTC()
 	message.ID = id
 	message.CreatedAt = now
+	message.Data = b64.StdEncoding.EncodeToString([]byte(message.Data))
 	err = m.messageRepo.Store(tx, message)
 	if err != nil {
 		return err
