@@ -11,6 +11,7 @@ type Server struct {
 	topicHandler        TopicHandler
 	subscriptionHandler SubscriptionHandler
 	messageHandler      MessageHandler
+	deliveryHandler     DeliveryHandler
 }
 
 // CreateTopic creates a new topic
@@ -58,11 +59,22 @@ func (s *Server) ListMessages(ctx context.Context, request *pb.ListMessagesReque
 	return s.messageHandler.ListMessages(ctx, request)
 }
 
+// GetDelivery gets the delivery
+func (s *Server) GetDelivery(ctx context.Context, request *pb.GetDeliveryRequest) (*pb.Delivery, error) {
+	return s.deliveryHandler.GetDelivery(ctx, request)
+}
+
+// ListDeliveries get a list of deliveries
+func (s *Server) ListDeliveries(ctx context.Context, request *pb.ListDeliveriesRequest) (*pb.ListDeliveriesResponse, error) {
+	return s.deliveryHandler.ListDeliveries(ctx, request)
+}
+
 // NewServer returns a new server
-func NewServer(topicHandler TopicHandler, subscriptionHandler SubscriptionHandler, messageHandler MessageHandler) Server {
+func NewServer(topicHandler TopicHandler, subscriptionHandler SubscriptionHandler, messageHandler MessageHandler, deliveryHandler DeliveryHandler) Server {
 	return Server{
 		topicHandler:        topicHandler,
 		subscriptionHandler: subscriptionHandler,
 		messageHandler:      messageHandler,
+		deliveryHandler:     deliveryHandler,
 	}
 }

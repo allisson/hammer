@@ -11,6 +11,100 @@
     "application/json"
   ],
   "paths": {
+    "/v1/deliveries": {
+      "get": {
+        "summary": "List deliveires",
+        "operationId": "Hammer_ListDeliveries",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListDeliveriesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "topic_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "subscription_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "message_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Hammer"
+        ]
+      }
+    },
+    "/v1/deliveries/{id}": {
+      "get": {
+        "summary": "Gets the delivery",
+        "operationId": "Hammer_GetDelivery",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Delivery"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Hammer"
+        ]
+      }
+    },
     "/v1/messages": {
       "get": {
         "summary": "List messages",
@@ -381,6 +475,76 @@
         }
       },
       "title": "Request for the CreateTopic method"
+    },
+    "v1Delivery": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "topic_id": {
+          "type": "string"
+        },
+        "subscription_id": {
+          "type": "string"
+        },
+        "message_id": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "secret_token": {
+          "type": "string"
+        },
+        "max_delivery_attempts": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "delivery_attempt_delay": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "delivery_attempt_timeout": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "scheduled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "delivery_attempts": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "status": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "A delivery resource"
+    },
+    "v1ListDeliveriesResponse": {
+      "type": "object",
+      "properties": {
+        "deliveries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1Delivery"
+          }
+        }
+      },
+      "title": "Response for list messages"
     },
     "v1ListMessagesResponse": {
       "type": "object",
