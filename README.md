@@ -133,6 +133,8 @@ Grpc-Metadata-Content-Type: application/grpc
 
 ### Get delivery attempt data
 
+The execution_duration are in milliseconds.
+
 ```bash
 http http://localhost:8000/v1/delivery-attempts delivery_id==01E853WTM362FWJVB41YREBFAS
 HTTP/1.1 200 OK
