@@ -15,32 +15,31 @@ type DeliveryAttempt struct {
 // Find returns hammer.DeliveryAttempt by id
 func (d *DeliveryAttempt) Find(id string) (hammer.DeliveryAttempt, error) {
 	deliveryAttempt := hammer.DeliveryAttempt{}
-	data := map[string]interface{}{
-		"table": "delivery_attempts",
-		"id":    id,
+	findOptions := hammer.FindOptions{
+		FindFilters: []hammer.FindFilter{
+			{
+				FieldName: "id",
+				Operator:  "=",
+				Value:     id,
+			},
+		},
 	}
-	query, args, err := buildQuery(sqlFind, data)
-	if err != nil {
-		return deliveryAttempt, err
-	}
-	err = d.db.Get(&deliveryAttempt, query, args...)
+	sql, args := buildSQLQuery("delivery_attempts", findOptions)
+	err := d.db.Get(&deliveryAttempt, sql, args...)
 	return deliveryAttempt, err
 }
 
 // FindAll returns []hammer.DeliveryAttempt by limit and offset
 func (d *DeliveryAttempt) FindAll(limit, offset int) ([]hammer.DeliveryAttempt, error) {
 	deliveryAttempts := []hammer.DeliveryAttempt{}
-	data := map[string]interface{}{
-		"table":   "delivery_attempts",
-		"limit":   limit,
-		"offset":  offset,
-		"orderBy": "id DESC",
+	findOptions := hammer.FindOptions{
+		FindPagination: &hammer.FindPagination{
+			Limit:  uint(limit),
+			Offset: uint(offset),
+		},
 	}
-	query, args, err := buildQuery(sqlFindAll, data)
-	if err != nil {
-		return deliveryAttempts, err
-	}
-	err = d.db.Select(&deliveryAttempts, query, args...)
+	sql, args := buildSQLQuery("delivery_attempts", findOptions)
+	err := d.db.Select(&deliveryAttempts, sql, args...)
 	return deliveryAttempts, err
 }
 

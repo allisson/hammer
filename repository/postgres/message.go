@@ -15,48 +15,52 @@ type Message struct {
 // Find returns hammer.Message by id
 func (m *Message) Find(id string) (hammer.Message, error) {
 	message := hammer.Message{}
-	data := map[string]interface{}{
-		"table": "messages",
-		"id":    id,
+	findOptions := hammer.FindOptions{
+		FindFilters: []hammer.FindFilter{
+			{
+				FieldName: "id",
+				Operator:  "=",
+				Value:     id,
+			},
+		},
 	}
-	query, args, err := buildQuery(sqlFind, data)
-	if err != nil {
-		return message, err
-	}
-	err = m.db.Get(&message, query, args...)
+	sql, args := buildSQLQuery("messages", findOptions)
+	err := m.db.Get(&message, sql, args...)
 	return message, err
 }
 
 // FindAll returns []hammer.Message by limit and offset
 func (m *Message) FindAll(limit, offset int) ([]hammer.Message, error) {
 	messages := []hammer.Message{}
-	data := map[string]interface{}{
-		"limit":   limit,
-		"offset":  offset,
-		"orderBy": "id DESC",
+	findOptions := hammer.FindOptions{
+		FindPagination: &hammer.FindPagination{
+			Limit:  uint(limit),
+			Offset: uint(offset),
+		},
 	}
-	query, args, err := buildQuery(sqlMessageFindAll, data)
-	if err != nil {
-		return messages, err
-	}
-	err = m.db.Select(&messages, query, args...)
+	sql, args := buildSQLQuery("messages", findOptions)
+	err := m.db.Select(&messages, sql, args...)
 	return messages, err
 }
 
 // FindByTopic returns []hammer.Message by topic, limit and offset
 func (m *Message) FindByTopic(topicID string, limit, offset int) ([]hammer.Message, error) {
 	messages := []hammer.Message{}
-	data := map[string]interface{}{
-		"topic_id": topicID,
-		"limit":    limit,
-		"offset":   offset,
-		"orderBy":  "id DESC",
+	findOptions := hammer.FindOptions{
+		FindFilters: []hammer.FindFilter{
+			{
+				FieldName: "topic_id",
+				Operator:  "=",
+				Value:     topicID,
+			},
+		},
+		FindPagination: &hammer.FindPagination{
+			Limit:  uint(limit),
+			Offset: uint(offset),
+		},
 	}
-	query, args, err := buildQuery(sqlMessageFindAll, data)
-	if err != nil {
-		return messages, err
-	}
-	err = m.db.Select(&messages, query, args...)
+	sql, args := buildSQLQuery("messages", findOptions)
+	err := m.db.Select(&messages, sql, args...)
 	return messages, err
 }
 

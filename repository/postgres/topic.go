@@ -15,32 +15,31 @@ type Topic struct {
 // Find returns hammer.Topic by id
 func (t *Topic) Find(id string) (hammer.Topic, error) {
 	topic := hammer.Topic{}
-	data := map[string]interface{}{
-		"table": "topics",
-		"id":    id,
+	findOptions := hammer.FindOptions{
+		FindFilters: []hammer.FindFilter{
+			{
+				FieldName: "id",
+				Operator:  "=",
+				Value:     id,
+			},
+		},
 	}
-	query, args, err := buildQuery(sqlFind, data)
-	if err != nil {
-		return topic, err
-	}
-	err = t.db.Get(&topic, query, args...)
+	sql, args := buildSQLQuery("topics", findOptions)
+	err := t.db.Get(&topic, sql, args...)
 	return topic, err
 }
 
 // FindAll returns []hammer.Topic by limit and offset
 func (t *Topic) FindAll(limit, offset int) ([]hammer.Topic, error) {
 	topics := []hammer.Topic{}
-	data := map[string]interface{}{
-		"table":   "topics",
-		"limit":   limit,
-		"offset":  offset,
-		"orderBy": "id ASC",
+	findOptions := hammer.FindOptions{
+		FindPagination: &hammer.FindPagination{
+			Limit:  uint(limit),
+			Offset: uint(offset),
+		},
 	}
-	query, args, err := buildQuery(sqlFindAll, data)
-	if err != nil {
-		return topics, err
-	}
-	err = t.db.Select(&topics, query, args...)
+	sql, args := buildSQLQuery("topics", findOptions)
+	err := t.db.Select(&topics, sql, args...)
 	return topics, err
 }
 
