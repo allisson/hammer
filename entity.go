@@ -31,6 +31,8 @@ var (
 	ErrSubscriptionDoesNotExists = errors.New("subscription_does_not_exists")
 	// ErrMessageDoesNotExists is used when the message does not exists on repository.
 	ErrMessageDoesNotExists = errors.New("message_does_not_exists")
+	// ErrDeliveryDoesNotExists is used when the delivery does not exists on repository.
+	ErrDeliveryDoesNotExists = errors.New("delivery_does_not_exists")
 	// DefaultPaginationLimit represents a default pagination limit on resource list
 	DefaultPaginationLimit = env.GetInt("HAMMER_DEFAULT_PAGINATION_LIMIT", 25)
 	// MaxPaginationLimit represents the max value for pagination limit on resource list

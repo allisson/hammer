@@ -65,6 +65,18 @@ service Hammer {
       get: "/v1/messages"
     };
   }
+  // Gets the delivery
+  rpc GetDelivery(GetDeliveryRequest) returns (Delivery) {
+    option (google.api.http) = {
+      get: "/v1/deliveries/{id}"
+    };
+  }
+  // List deliveires
+  rpc ListDeliveries(ListDeliveriesRequest) returns (ListDeliveriesResponse) {
+    option (google.api.http) = {
+      get: "/v1/deliveries"
+    };
+  }
 }
 
 // A topic resource
@@ -159,4 +171,42 @@ message ListMessagesRequest {
 // Response for list messages
 message ListMessagesResponse {
   repeated Message messages = 1;
+}
+
+// A delivery resource
+message Delivery {
+  string id = 1;
+  string topic_id = 2;
+  string subscription_id = 3;
+  string message_id = 4;
+  string data = 5;
+  string url = 6;
+  string secret_token = 7;
+  uint32 max_delivery_attempts = 8;
+  uint32 delivery_attempt_delay = 9;
+  uint32 delivery_attempt_timeout = 10;
+  google.protobuf.Timestamp scheduled_at = 11;
+  uint32 delivery_attempts = 12;
+  string status = 13;
+  google.protobuf.Timestamp created_at = 14;
+  google.protobuf.Timestamp updated_at = 15;
+}
+
+// Request for the GetDelivery method
+message GetDeliveryRequest {
+  string id = 1;
+}
+
+// Request for list deliveries
+message ListDeliveriesRequest {
+  uint32 limit = 1;
+  uint32 offset = 2;
+  string topic_id = 3;
+  string subscription_id = 4;
+  string message_id = 5;
+}
+
+// Response for list messages
+message ListDeliveriesResponse {
+  repeated Delivery deliveries = 1;
 }
