@@ -61,6 +61,12 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [

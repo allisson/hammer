@@ -204,6 +204,7 @@ message ListDeliveriesRequest {
   string topic_id = 3;
   string subscription_id = 4;
   string message_id = 5;
+  string status = 6;
 }
 
 // Response for list messages

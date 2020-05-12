@@ -104,6 +104,14 @@ func (d *DeliveryHandler) ListDeliveries(ctx context.Context, request *pb.ListDe
 		}
 		findOptions.FindFilters = append(findOptions.FindFilters, messageFilter)
 	}
+	if request.Status != "" {
+		statusFilter := hammer.FindFilter{
+			FieldName: "status",
+			Operator:  "=",
+			Value:     request.Status,
+		}
+		findOptions.FindFilters = append(findOptions.FindFilters, statusFilter)
+	}
 	deliveries, err := d.deliveryService.FindAll(findOptions)
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())
