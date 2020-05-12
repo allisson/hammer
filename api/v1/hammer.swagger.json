@@ -67,6 +67,30 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "created_at_gt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_gte",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_lt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_lte",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -143,6 +167,30 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "created_at_gt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_gte",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_lt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_lte",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -216,6 +264,30 @@
           },
           {
             "name": "topic_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_gt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_gte",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_lt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_lte",
             "in": "query",
             "required": false,
             "type": "string"
@@ -320,6 +392,30 @@
             "required": false,
             "type": "integer",
             "format": "int64"
+          },
+          {
+            "name": "created_at_gt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_gte",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_lt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_lte",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -421,6 +517,30 @@
             "required": false,
             "type": "integer",
             "format": "int64"
+          },
+          {
+            "name": "created_at_gt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_gte",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_lt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "created_at_lte",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [

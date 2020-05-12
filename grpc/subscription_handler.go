@@ -104,6 +104,8 @@ func (s *SubscriptionHandler) ListSubscriptions(ctx context.Context, request *pb
 			Offset: offset,
 		},
 	}
+	createdAtFilters := createdAtFilters(request.CreatedAtGt, request.CreatedAtGte, request.CreatedAtLt, request.CreatedAtLte)
+	findOptions.FindFilters = append(findOptions.FindFilters, createdAtFilters...)
 	subscriptions, err := s.subscriptionService.FindAll(findOptions)
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())

@@ -74,6 +74,8 @@ func (d *DeliveryAttemptHandler) ListDeliveryAttempts(ctx context.Context, reque
 		}
 		findOptions.FindFilters = append(findOptions.FindFilters, deliveryFilter)
 	}
+	createdAtFilters := createdAtFilters(request.CreatedAtGt, request.CreatedAtGte, request.CreatedAtLt, request.CreatedAtLte)
+	findOptions.FindFilters = append(findOptions.FindFilters, createdAtFilters...)
 	deliveryAttempts, err := d.deliveryAttemptService.FindAll(findOptions)
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())
