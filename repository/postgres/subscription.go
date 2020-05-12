@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"strings"
 
 	"github.com/allisson/hammer"
 	"github.com/jmoiron/sqlx"
@@ -16,40 +15,48 @@ type Subscription struct {
 // Find returns hammer.Subscription by id
 func (s *Subscription) Find(id string) (hammer.Subscription, error) {
 	subscription := hammer.Subscription{}
-	data := map[string]interface{}{
-		"table": "subscriptions",
-		"id":    id,
+	findOptions := hammer.FindOptions{
+		FindFilters: []hammer.FindFilter{
+			{
+				FieldName: "id",
+				Operator:  "=",
+				Value:     id,
+			},
+		},
 	}
-	query, args, err := buildQuery(sqlFind, data)
-	if err != nil {
-		return subscription, err
-	}
-	err = s.db.Get(&subscription, query, args...)
+	sql, args := buildSQLQuery("subscriptions", findOptions)
+	err := s.db.Get(&subscription, sql, args...)
 	return subscription, err
 }
 
 // FindAll returns []hammer.Subscription by limit and offset
 func (s *Subscription) FindAll(limit, offset int) ([]hammer.Subscription, error) {
 	subscriptions := []hammer.Subscription{}
-	data := map[string]interface{}{
-		"table":   "subscriptions",
-		"limit":   limit,
-		"offset":  offset,
-		"orderBy": "id ASC",
+	findOptions := hammer.FindOptions{
+		FindPagination: &hammer.FindPagination{
+			Limit:  uint(limit),
+			Offset: uint(offset),
+		},
 	}
-	query, args, err := buildQuery(sqlFindAll, data)
-	if err != nil {
-		return subscriptions, err
-	}
-	err = s.db.Select(&subscriptions, query, args...)
+	sql, args := buildSQLQuery("subscriptions", findOptions)
+	err := s.db.Select(&subscriptions, sql, args...)
 	return subscriptions, err
 }
 
 // FindByTopic returns hammer.Subscription by topic_id and topic_created_at
 func (s *Subscription) FindByTopic(topicID string) ([]hammer.Subscription, error) {
 	subscriptions := []hammer.Subscription{}
-	sqlStatement := strings.ReplaceAll(sqlSubscriptionFind, "WHERE id = $1", "WHERE topic_id = $1")
-	err := s.db.Select(&subscriptions, sqlStatement, topicID)
+	findOptions := hammer.FindOptions{
+		FindFilters: []hammer.FindFilter{
+			{
+				FieldName: "topic_id",
+				Operator:  "=",
+				Value:     topicID,
+			},
+		},
+	}
+	sql, args := buildSQLQuery("subscriptions", findOptions)
+	err := s.db.Select(&subscriptions, sql, args...)
 	return subscriptions, err
 }
 

@@ -16,32 +16,31 @@ type Delivery struct {
 // Find returns hammer.Delivery by id
 func (d *Delivery) Find(id string) (hammer.Delivery, error) {
 	delivery := hammer.Delivery{}
-	data := map[string]interface{}{
-		"table": "deliveries",
-		"id":    id,
+	findOptions := hammer.FindOptions{
+		FindFilters: []hammer.FindFilter{
+			{
+				FieldName: "id",
+				Operator:  "=",
+				Value:     id,
+			},
+		},
 	}
-	query, args, err := buildQuery(sqlFind, data)
-	if err != nil {
-		return delivery, err
-	}
-	err = d.db.Get(&delivery, query, args...)
+	sql, args := buildSQLQuery("deliveries", findOptions)
+	err := d.db.Get(&delivery, sql, args...)
 	return delivery, err
 }
 
 // FindAll returns []hammer.Delivery by limit and offset
 func (d *Delivery) FindAll(limit, offset int) ([]hammer.Delivery, error) {
 	deliveries := []hammer.Delivery{}
-	data := map[string]interface{}{
-		"table":   "deliveries",
-		"limit":   limit,
-		"offset":  offset,
-		"orderBy": "id DESC",
+	findOptions := hammer.FindOptions{
+		FindPagination: &hammer.FindPagination{
+			Limit:  uint(limit),
+			Offset: uint(offset),
+		},
 	}
-	query, args, err := buildQuery(sqlFindAll, data)
-	if err != nil {
-		return deliveries, err
-	}
-	err = d.db.Select(&deliveries, query, args...)
+	sql, args := buildSQLQuery("deliveries", findOptions)
+	err := d.db.Select(&deliveries, sql, args...)
 	return deliveries, err
 }
 

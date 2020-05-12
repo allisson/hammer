@@ -174,3 +174,28 @@ type WebhookMessage struct {
 	Data           string    `json:"data" db:"data"`
 	CreatedAt      time.Time `json:"created_at" db:"created_at"`
 }
+
+// FindFilter data
+type FindFilter struct {
+	FieldName string
+	Operator  string
+	Value     string
+}
+
+// FindPagination data
+type FindPagination struct {
+	Limit  uint
+	Offset uint
+}
+
+// FindOrderBy data
+type FindOrderBy struct {
+	FieldName string
+}
+
+// FindOptions data
+type FindOptions struct {
+	FindFilters    []FindFilter
+	FindPagination *FindPagination
+	FindOrderBy    *FindOrderBy
+}

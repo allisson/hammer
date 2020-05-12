@@ -1,29 +1,11 @@
 package repository
 
 import (
-	"bytes"
-	"fmt"
-	"strings"
-	"sync"
-	"text/template"
+	"github.com/allisson/hammer"
+	"github.com/huandu/go-sqlbuilder"
 )
 
-var queriesCache sync.Map
-
 const (
-	// Generic Statements
-	sqlFind = `
-		SELECT *
-		FROM {{.table}}
-		WHERE id = @id
-	`
-	sqlFindAll = `
-		SELECT *
-		FROM {{.table}}
-		{{if .orderBy}}ORDER BY @orderBy{{end}}
-		{{if .limit}}LIMIT @limit{{end}}
-		{{if .offset}}OFFSET @offset{{end}}
-	`
 	// DeliveryAttempt Statements
 	sqlDeliveryAttemptCreate = `
 		INSERT INTO delivery_attempts (
@@ -125,14 +107,6 @@ const (
 		WHERE id = :id
 	`
 	// Message Statements
-	sqlMessageFindAll = `
-		SELECT *
-		FROM messages
-		{{if .topicID}}WHERE topic_id = @topic_id{{end}}
-		{{if .orderBy}}ORDER BY @orderBy{{end}}
-		{{if .limit}}LIMIT @limit{{end}}
-		{{if .offset}}OFFSET @offset{{end}}
-	`
 	sqlMessageCreate = `
 		INSERT INTO messages (
 			"id",
@@ -155,11 +129,6 @@ const (
 		WHERE id = :id
 	`
 	// Subscription Statements
-	sqlSubscriptionFind = `
-		SELECT *
-		FROM subscriptions
-		WHERE id = $1
-	`
 	sqlSubscriptionCreate = `
 		INSERT INTO subscriptions (
 			"id",
@@ -223,35 +192,36 @@ const (
 	`
 )
 
-func buildQuery(text string, data map[string]interface{}) (string, []interface{}, error) {
-	var t *template.Template
-	v, ok := queriesCache.Load(text)
-	if !ok {
-		var err error
-		t, err = template.New("query").Parse(text)
-		if err != nil {
-			return "", nil, fmt.Errorf("could not parse sql query template: %w", err)
+func buildSQLQuery(tableName string, findOptions hammer.FindOptions) (sql string, args []interface{}) {
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder()
+	sb.Select("*").From(tableName)
+
+	// Pagination
+	if findOptions.FindPagination != nil {
+		sb.Limit(int(findOptions.FindPagination.Limit)).Offset(int(findOptions.FindPagination.Offset))
+	}
+
+	// Filters
+	for _, findFilter := range findOptions.FindFilters {
+		switch findFilter.Operator {
+		case "=":
+			sb.Where(sb.Equal(findFilter.FieldName, findFilter.Value))
+		case "gt":
+			sb.Where(sb.GreaterThan(findFilter.FieldName, findFilter.Value))
+		case "gte":
+			sb.Where(sb.GreaterEqualThan(findFilter.FieldName, findFilter.Value))
+		case "lt":
+			sb.Where(sb.LessThan(findFilter.FieldName, findFilter.Value))
+		case "lte":
+			sb.Where(sb.LessEqualThan(findFilter.FieldName, findFilter.Value))
 		}
-
-		queriesCache.Store(text, t)
-	} else {
-		t = v.(*template.Template)
 	}
 
-	var wr bytes.Buffer
-	if err := t.Execute(&wr, data); err != nil {
-		return "", nil, fmt.Errorf("could not apply sql query data: %w", err)
+	// Order by
+	if findOptions.FindOrderBy != nil {
+		sb.OrderBy(findOptions.FindOrderBy.FieldName)
 	}
 
-	query := wr.String()
-	args := []interface{}{}
-	for key, val := range data {
-		if !strings.Contains(query, "@"+key) {
-			continue
-		}
-
-		args = append(args, val)
-		query = strings.Replace(query, "@"+key, fmt.Sprintf("$%d", len(args)), -1)
-	}
-	return query, args, nil
+	// Return result
+	return sb.Build()
 }
