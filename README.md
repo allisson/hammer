@@ -158,3 +158,11 @@ Grpc-Metadata-Content-Type: application/grpc
     ]
 }
 ```
+
+## How to build docker images
+
+```
+docker build -f docker/server.Dockerfile -t hammer-server .
+docker build -f docker/worker.Dockerfile -t hammer-worker .
+docker build -f docker/migrate.Dockerfile -t hammer-migrate .
+```
