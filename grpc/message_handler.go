@@ -97,6 +97,8 @@ func (m *MessageHandler) ListMessages(ctx context.Context, request *pb.ListMessa
 		}
 		findOptions.FindFilters = append(findOptions.FindFilters, topicFilter)
 	}
+	createdAtFilters := createdAtFilters(request.CreatedAtGt, request.CreatedAtGte, request.CreatedAtLt, request.CreatedAtLte)
+	findOptions.FindFilters = append(findOptions.FindFilters, createdAtFilters...)
 	messages, err := m.messageService.FindAll(findOptions)
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())

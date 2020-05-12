@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS topics(
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE INDEX IF NOT EXISTS created_at_idx ON topics USING BRIN (created_at);
+
 -- subscriptions table
 
 CREATE TABLE IF NOT EXISTS subscriptions(
@@ -24,6 +26,7 @@ CREATE TABLE IF NOT EXISTS subscriptions(
 );
 
 CREATE INDEX IF NOT EXISTS topic_id_idx ON subscriptions (topic_id);
+CREATE INDEX IF NOT EXISTS created_at_idx ON subscriptions USING BRIN (created_at);
 
 -- messages table
 
@@ -36,6 +39,7 @@ CREATE TABLE IF NOT EXISTS messages(
 );
 
 CREATE INDEX IF NOT EXISTS topic_id_idx ON messages (topic_id);
+CREATE INDEX IF NOT EXISTS created_at_idx ON messages USING BRIN (created_at);
 
 -- deliveries table
 
@@ -63,8 +67,9 @@ CREATE TABLE IF NOT EXISTS deliveries(
 CREATE INDEX IF NOT EXISTS topic_id_idx ON deliveries (topic_id);
 CREATE INDEX IF NOT EXISTS subscription_id_idx ON deliveries (subscription_id);
 CREATE INDEX IF NOT EXISTS message_id_idx ON deliveries (message_id);
-CREATE INDEX IF NOT EXISTS scheduled_at_idx ON deliveries (scheduled_at);
+CREATE INDEX IF NOT EXISTS scheduled_at_idx ON deliveries USING BRIN (scheduled_at);
 CREATE INDEX IF NOT EXISTS status_idx ON deliveries (status);
+CREATE INDEX IF NOT EXISTS created_at_idx ON deliveries USING BRIN (created_at);
 
 -- delivery_attempts table
 
@@ -82,3 +87,4 @@ CREATE TABLE IF NOT EXISTS delivery_attempts(
 );
 
 CREATE INDEX IF NOT EXISTS delivery_id_idx ON delivery_attempts (delivery_id);
+CREATE INDEX IF NOT EXISTS created_at_idx ON delivery_attempts USING BRIN (created_at);

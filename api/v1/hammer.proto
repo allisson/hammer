@@ -113,6 +113,10 @@ message CreateTopicRequest {
 message ListTopicsRequest {
   uint32 limit = 1;
   uint32 offset = 2;
+  string created_at_gt = 3;
+  string created_at_gte = 4;
+  string created_at_lt = 5;
+  string created_at_lte = 6;
 }
 
 // Response for the ListTopics method
@@ -148,6 +152,10 @@ message CreateSubscriptionRequest {
 message ListSubscriptionsRequest {
   uint32 limit = 1;
   uint32 offset = 2;
+  string created_at_gt = 3;
+  string created_at_gte = 4;
+  string created_at_lt = 5;
+  string created_at_lte = 6;
 }
 
 // Response for the ListSubscriptions method
@@ -178,6 +186,10 @@ message ListMessagesRequest {
   uint32 limit = 1;
   uint32 offset = 2;
   string topic_id = 3;
+  string created_at_gt = 4;
+  string created_at_gte = 5;
+  string created_at_lt = 6;
+  string created_at_lte = 7;
 }
 
 // Response for the ListMessages method
@@ -217,6 +229,10 @@ message ListDeliveriesRequest {
   string subscription_id = 4;
   string message_id = 5;
   string status = 6;
+  string created_at_gt = 7;
+  string created_at_gte = 8;
+  string created_at_lt = 9;
+  string created_at_lte = 10;
 }
 
 // Response for the ListDeliveries method
@@ -247,6 +263,10 @@ message ListDeliveryAttemptsRequest {
   uint32 limit = 1;
   uint32 offset = 2;
   string delivery_id = 3;
+  string created_at_gt = 4;
+  string created_at_gte = 5;
+  string created_at_lt = 6;
+  string created_at_lte = 7;
 }
 
 // Response for the ListDeliveryAttempts method

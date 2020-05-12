@@ -92,6 +92,8 @@ func (t *TopicHandler) ListTopics(ctx context.Context, request *pb.ListTopicsReq
 			Offset: offset,
 		},
 	}
+	createdAtFilters := createdAtFilters(request.CreatedAtGt, request.CreatedAtGte, request.CreatedAtLt, request.CreatedAtLte)
+	findOptions.FindFilters = append(findOptions.FindFilters, createdAtFilters...)
 	topics, err := t.topicService.FindAll(findOptions)
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())
