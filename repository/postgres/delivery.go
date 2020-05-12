@@ -16,14 +16,32 @@ type Delivery struct {
 // Find returns hammer.Delivery by id
 func (d *Delivery) Find(id string) (hammer.Delivery, error) {
 	delivery := hammer.Delivery{}
-	err := d.db.Get(&delivery, sqlDeliveryFind, id)
+	data := map[string]interface{}{
+		"table": "deliveries",
+		"id":    id,
+	}
+	query, args, err := buildQuery(sqlFind, data)
+	if err != nil {
+		return delivery, err
+	}
+	err = d.db.Get(&delivery, query, args...)
 	return delivery, err
 }
 
 // FindAll returns []hammer.Delivery by limit and offset
 func (d *Delivery) FindAll(limit, offset int) ([]hammer.Delivery, error) {
 	deliveries := []hammer.Delivery{}
-	err := d.db.Select(&deliveries, sqlDeliveryFindAll, limit, offset)
+	data := map[string]interface{}{
+		"table":   "deliveries",
+		"limit":   limit,
+		"offset":  offset,
+		"orderBy": "id DESC",
+	}
+	query, args, err := buildQuery(sqlFindAll, data)
+	if err != nil {
+		return deliveries, err
+	}
+	err = d.db.Select(&deliveries, query, args...)
 	return deliveries, err
 }
 

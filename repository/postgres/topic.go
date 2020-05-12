@@ -15,14 +15,32 @@ type Topic struct {
 // Find returns hammer.Topic by id
 func (t *Topic) Find(id string) (hammer.Topic, error) {
 	topic := hammer.Topic{}
-	err := t.db.Get(&topic, sqlTopicFind, id)
+	data := map[string]interface{}{
+		"table": "topics",
+		"id":    id,
+	}
+	query, args, err := buildQuery(sqlFind, data)
+	if err != nil {
+		return topic, err
+	}
+	err = t.db.Get(&topic, query, args...)
 	return topic, err
 }
 
 // FindAll returns []hammer.Topic by limit and offset
 func (t *Topic) FindAll(limit, offset int) ([]hammer.Topic, error) {
 	topics := []hammer.Topic{}
-	err := t.db.Select(&topics, sqlTopicFindAll, limit, offset)
+	data := map[string]interface{}{
+		"table":   "topics",
+		"limit":   limit,
+		"offset":  offset,
+		"orderBy": "id ASC",
+	}
+	query, args, err := buildQuery(sqlFindAll, data)
+	if err != nil {
+		return topics, err
+	}
+	err = t.db.Select(&topics, query, args...)
 	return topics, err
 }
 

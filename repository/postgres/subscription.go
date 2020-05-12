@@ -16,14 +16,32 @@ type Subscription struct {
 // Find returns hammer.Subscription by id
 func (s *Subscription) Find(id string) (hammer.Subscription, error) {
 	subscription := hammer.Subscription{}
-	err := s.db.Get(&subscription, sqlSubscriptionFind, id)
+	data := map[string]interface{}{
+		"table": "subscriptions",
+		"id":    id,
+	}
+	query, args, err := buildQuery(sqlFind, data)
+	if err != nil {
+		return subscription, err
+	}
+	err = s.db.Get(&subscription, query, args...)
 	return subscription, err
 }
 
 // FindAll returns []hammer.Subscription by limit and offset
 func (s *Subscription) FindAll(limit, offset int) ([]hammer.Subscription, error) {
 	subscriptions := []hammer.Subscription{}
-	err := s.db.Select(&subscriptions, sqlSubscriptionFindAll, limit, offset)
+	data := map[string]interface{}{
+		"table":   "subscriptions",
+		"limit":   limit,
+		"offset":  offset,
+		"orderBy": "id ASC",
+	}
+	query, args, err := buildQuery(sqlFindAll, data)
+	if err != nil {
+		return subscriptions, err
+	}
+	err = s.db.Select(&subscriptions, query, args...)
 	return subscriptions, err
 }
 

@@ -1,19 +1,30 @@
 package repository
 
+import (
+	"bytes"
+	"fmt"
+	"strings"
+	"sync"
+	"text/template"
+)
+
+var queriesCache sync.Map
+
 const (
+	// Generic Statements
+	sqlFind = `
+		SELECT *
+		FROM {{.table}}
+		WHERE id = @id
+	`
+	sqlFindAll = `
+		SELECT *
+		FROM {{.table}}
+		{{if .orderBy}}ORDER BY @orderBy{{end}}
+		{{if .limit}}LIMIT @limit{{end}}
+		{{if .offset}}OFFSET @offset{{end}}
+	`
 	// DeliveryAttempt Statements
-	sqlDeliveryAttemptFind = `
-		SELECT *
-		FROM delivery_attempts
-		WHERE id = $1
-	`
-	sqlDeliveryAttemptFindAll = `
-		SELECT *
-		FROM delivery_attempts
-		ORDER BY id DESC
-		LIMIT $1
-		OFFSET $2
-	`
 	sqlDeliveryAttemptCreate = `
 		INSERT INTO delivery_attempts (
 			"id",
@@ -51,18 +62,6 @@ const (
 		WHERE id = :id
 	`
 	// Delivery Statements
-	sqlDeliveryFind = `
-		SELECT *
-		FROM deliveries
-		WHERE id = $1
-	`
-	sqlDeliveryFindAll = `
-		SELECT *
-		FROM deliveries
-		ORDER BY id DESC
-		LIMIT $1
-		OFFSET $2
-	`
 	sqlDeliveryFindToDispatch = `
 		SELECT id
 		FROM deliveries
@@ -126,25 +125,13 @@ const (
 		WHERE id = :id
 	`
 	// Message Statements
-	sqlMessageFind = `
-		SELECT *
-		FROM messages
-		WHERE id = $1
-	`
 	sqlMessageFindAll = `
 		SELECT *
 		FROM messages
-		ORDER BY id DESC
-		LIMIT $1
-		OFFSET $2
-	`
-	sqlMessageFindByTopic = `
-		SELECT *
-		FROM messages
-		WHERE topic_id = $1
-		ORDER BY id DESC
-		LIMIT $2
-		OFFSET $3
+		{{if .topicID}}WHERE topic_id = @topic_id{{end}}
+		{{if .orderBy}}ORDER BY @orderBy{{end}}
+		{{if .limit}}LIMIT @limit{{end}}
+		{{if .offset}}OFFSET @offset{{end}}
 	`
 	sqlMessageCreate = `
 		INSERT INTO messages (
@@ -172,13 +159,6 @@ const (
 		SELECT *
 		FROM subscriptions
 		WHERE id = $1
-	`
-	sqlSubscriptionFindAll = `
-		SELECT *
-		FROM subscriptions
-		ORDER BY id ASC
-		LIMIT $1
-		OFFSET $2
 	`
 	sqlSubscriptionCreate = `
 		INSERT INTO subscriptions (
@@ -220,18 +200,6 @@ const (
 		WHERE id = :id
 	`
 	// Topic Statements
-	sqlTopicFind = `
-		SELECT *
-		FROM topics
-		WHERE id = $1
-	`
-	sqlTopicFindAll = `
-		SELECT *
-		FROM topics
-		ORDER BY id ASC
-		LIMIT $1
-		OFFSET $2
-	`
 	sqlTopicCreate = `
 		INSERT INTO topics (
 			"id",
@@ -254,3 +222,36 @@ const (
 		WHERE id = :id
 	`
 )
+
+func buildQuery(text string, data map[string]interface{}) (string, []interface{}, error) {
+	var t *template.Template
+	v, ok := queriesCache.Load(text)
+	if !ok {
+		var err error
+		t, err = template.New("query").Parse(text)
+		if err != nil {
+			return "", nil, fmt.Errorf("could not parse sql query template: %w", err)
+		}
+
+		queriesCache.Store(text, t)
+	} else {
+		t = v.(*template.Template)
+	}
+
+	var wr bytes.Buffer
+	if err := t.Execute(&wr, data); err != nil {
+		return "", nil, fmt.Errorf("could not apply sql query data: %w", err)
+	}
+
+	query := wr.String()
+	args := []interface{}{}
+	for key, val := range data {
+		if !strings.Contains(query, "@"+key) {
+			continue
+		}
+
+		args = append(args, val)
+		query = strings.Replace(query, "@"+key, fmt.Sprintf("$%d", len(args)), -1)
+	}
+	return query, args, nil
+}

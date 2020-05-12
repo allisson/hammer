@@ -15,21 +15,48 @@ type Message struct {
 // Find returns hammer.Message by id
 func (m *Message) Find(id string) (hammer.Message, error) {
 	message := hammer.Message{}
-	err := m.db.Get(&message, sqlMessageFind, id)
+	data := map[string]interface{}{
+		"table": "messages",
+		"id":    id,
+	}
+	query, args, err := buildQuery(sqlFind, data)
+	if err != nil {
+		return message, err
+	}
+	err = m.db.Get(&message, query, args...)
 	return message, err
 }
 
 // FindAll returns []hammer.Message by limit and offset
 func (m *Message) FindAll(limit, offset int) ([]hammer.Message, error) {
 	messages := []hammer.Message{}
-	err := m.db.Select(&messages, sqlMessageFindAll, limit, offset)
+	data := map[string]interface{}{
+		"limit":   limit,
+		"offset":  offset,
+		"orderBy": "id DESC",
+	}
+	query, args, err := buildQuery(sqlMessageFindAll, data)
+	if err != nil {
+		return messages, err
+	}
+	err = m.db.Select(&messages, query, args...)
 	return messages, err
 }
 
 // FindByTopic returns []hammer.Message by topic, limit and offset
 func (m *Message) FindByTopic(topicID string, limit, offset int) ([]hammer.Message, error) {
 	messages := []hammer.Message{}
-	err := m.db.Select(&messages, sqlMessageFindByTopic, topicID, limit, offset)
+	data := map[string]interface{}{
+		"topic_id": topicID,
+		"limit":    limit,
+		"offset":   offset,
+		"orderBy":  "id DESC",
+	}
+	query, args, err := buildQuery(sqlMessageFindAll, data)
+	if err != nil {
+		return messages, err
+	}
+	err = m.db.Select(&messages, query, args...)
 	return messages, err
 }
 
