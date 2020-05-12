@@ -26,9 +26,23 @@ func (d *DeliveryHandler) buildResponse(delivery *hammer.Delivery) (*pb.Delivery
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())
 	}
+	scheduledAt, err := ptypes.TimestampProto(delivery.ScheduledAt)
+	if err != nil {
+		return response, status.Error(codes.Internal, err.Error())
+	}
 	response.Id = delivery.ID
 	response.TopicId = delivery.TopicID
+	response.SubscriptionId = delivery.SubscriptionID
+	response.MessageId = delivery.MessageID
 	response.Data = delivery.Data
+	response.Url = delivery.URL
+	response.SecretToken = delivery.SecretToken
+	response.MaxDeliveryAttempts = uint32(delivery.MaxDeliveryAttempts)
+	response.DeliveryAttemptDelay = uint32(delivery.DeliveryAttemptDelay)
+	response.DeliveryAttemptTimeout = uint32(delivery.DeliveryAttemptTimeout)
+	response.ScheduledAt = scheduledAt
+	response.DeliveryAttempts = uint32(delivery.DeliveryAttempts)
+	response.Status = delivery.Status
 	response.CreatedAt = createdAt
 	response.UpdatedAt = updatedAt
 
