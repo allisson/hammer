@@ -98,12 +98,14 @@ func main() {
 	subscriptionService := service.NewSubscription(&topicRepo, &subscriptionRepo, &txFactoryRepo)
 	messageService := service.NewMessage(&topicRepo, &messageRepo, &subscriptionRepo, &deliveryRepo, &txFactoryRepo)
 	deliveryService := service.NewDelivery(&deliveryRepo, &deliveryAttemptRepo, &txFactoryRepo)
+	deliveryAttemptService := service.NewDeliveryAttempt(&deliveryAttemptRepo)
 
 	// Create grpc handlers
 	topicHandler := hammerGrpc.NewTopicHandler(&topicService)
 	subscriptionHandler := hammerGrpc.NewSubscriptionHandler(&subscriptionService)
 	messageHandler := hammerGrpc.NewMessageHandler(&messageService)
 	deliveryHandler := hammerGrpc.NewDeliveryHandler(&deliveryService)
+	deliveryAttemptHandler := hammerGrpc.NewDeliveryAttemptHandler(&deliveryAttemptService)
 
 	// Start tcp server
 	listener, err := net.Listen("tcp", grpcEndpoint)
@@ -129,7 +131,7 @@ func main() {
 			grpc_recovery.UnaryServerInterceptor(),
 		)),
 	)
-	server := hammerGrpc.NewServer(topicHandler, subscriptionHandler, messageHandler, deliveryHandler)
+	server := hammerGrpc.NewServer(topicHandler, subscriptionHandler, messageHandler, deliveryHandler, deliveryAttemptHandler)
 
 	// Register grpc services
 	pb.RegisterHammerServer(grpcServer, &server)

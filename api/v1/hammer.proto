@@ -77,6 +77,18 @@ service Hammer {
       get: "/v1/deliveries"
     };
   }
+  // Gets the delivery attempt
+  rpc GetDeliveryAttempt(GetDeliveryAttemptRequest) returns (DeliveryAttempt) {
+    option (google.api.http) = {
+      get: "/v1/delivery-attempts/{id}"
+    };
+  }
+  // List deliveiry attempts
+  rpc ListDeliveryAttempts(ListDeliveryAttemptsRequest) returns (ListDeliveryAttemptsResponse) {
+    option (google.api.http) = {
+      get: "/v1/delivery-attempts"
+    };
+  }
 }
 
 // A topic resource
@@ -210,4 +222,34 @@ message ListDeliveriesRequest {
 // Response for list messages
 message ListDeliveriesResponse {
   repeated Delivery deliveries = 1;
+}
+
+// A delivery attempt resource
+message DeliveryAttempt {
+  string id = 1;
+  string delivery_id = 2;
+  string request = 3;
+  string response = 4;
+  uint32 response_status_code = 5;
+  uint32 execution_duration = 6;
+  bool success = 7;
+  string error = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
+// Request for the GetDeliveryAttempt method
+message GetDeliveryAttemptRequest {
+  string id = 1;
+}
+
+// Request for list delivery attempts
+message ListDeliveryAttemptsRequest {
+  uint32 limit = 1;
+  uint32 offset = 2;
+  string delivery_id = 3;
+}
+
+// Response for list delivery attempts
+message ListDeliveryAttemptsResponse {
+  repeated DeliveryAttempt delivery_attempts = 1;
 }

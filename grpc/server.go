@@ -8,10 +8,11 @@ import (
 
 // Server implements grpc server
 type Server struct {
-	topicHandler        TopicHandler
-	subscriptionHandler SubscriptionHandler
-	messageHandler      MessageHandler
-	deliveryHandler     DeliveryHandler
+	topicHandler           TopicHandler
+	subscriptionHandler    SubscriptionHandler
+	messageHandler         MessageHandler
+	deliveryHandler        DeliveryHandler
+	deliveryAttemptHandler DeliveryAttemptHandler
 }
 
 // CreateTopic creates a new topic
@@ -69,12 +70,23 @@ func (s *Server) ListDeliveries(ctx context.Context, request *pb.ListDeliveriesR
 	return s.deliveryHandler.ListDeliveries(ctx, request)
 }
 
+// GetDeliveryAttempt gets the delivery attempt
+func (s *Server) GetDeliveryAttempt(ctx context.Context, request *pb.GetDeliveryAttemptRequest) (*pb.DeliveryAttempt, error) {
+	return s.deliveryAttemptHandler.GetDeliveryAttempt(ctx, request)
+}
+
+// ListDeliveryAttempts get a list of delivery attempts
+func (s *Server) ListDeliveryAttempts(ctx context.Context, request *pb.ListDeliveryAttemptsRequest) (*pb.ListDeliveryAttemptsResponse, error) {
+	return s.deliveryAttemptHandler.ListDeliveryAttempts(ctx, request)
+}
+
 // NewServer returns a new server
-func NewServer(topicHandler TopicHandler, subscriptionHandler SubscriptionHandler, messageHandler MessageHandler, deliveryHandler DeliveryHandler) Server {
+func NewServer(topicHandler TopicHandler, subscriptionHandler SubscriptionHandler, messageHandler MessageHandler, deliveryHandler DeliveryHandler, deliveryAttemptHandler DeliveryAttemptHandler) Server {
 	return Server{
-		topicHandler:        topicHandler,
-		subscriptionHandler: subscriptionHandler,
-		messageHandler:      messageHandler,
-		deliveryHandler:     deliveryHandler,
+		topicHandler:           topicHandler,
+		subscriptionHandler:    subscriptionHandler,
+		messageHandler:         messageHandler,
+		deliveryHandler:        deliveryHandler,
+		deliveryAttemptHandler: deliveryAttemptHandler,
 	}
 }
