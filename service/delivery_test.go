@@ -31,9 +31,15 @@ func TestDelivery(t *testing.T) {
 		deliveryAttemptRepo := &mocks.DeliveryAttemptRepository{}
 		txFactoryRepo := &mocks.TxFactoryRepository{}
 		deliveryService := NewDelivery(deliveryRepo, deliveryAttemptRepo, txFactoryRepo)
-		deliveryRepo.On("FindAll", mock.Anything, mock.Anything).Return(expectedDeliveries, nil)
+		deliveryRepo.On("FindAll", mock.Anything).Return(expectedDeliveries, nil)
 
-		deliveries, err := deliveryService.FindAll(50, 0)
+		findOptions := hammer.FindOptions{
+			FindPagination: &hammer.FindPagination{
+				Limit:  50,
+				Offset: 0,
+			},
+		}
+		deliveries, err := deliveryService.FindAll(findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, expectedDeliveries, deliveries)
 	})

@@ -31,9 +31,9 @@ func (s *SubscriptionHandler) buildResponse(subscription *hammer.Subscription) (
 	response.Name = subscription.Name
 	response.Url = subscription.URL
 	response.SecretToken = subscription.SecretToken
-	response.MaxDeliveryAttempts = int32(subscription.MaxDeliveryAttempts)
-	response.DeliveryAttemptDelay = int32(subscription.DeliveryAttemptDelay)
-	response.DeliveryAttemptTimeout = int32(subscription.DeliveryAttemptTimeout)
+	response.MaxDeliveryAttempts = uint32(subscription.MaxDeliveryAttempts)
+	response.DeliveryAttemptDelay = uint32(subscription.DeliveryAttemptDelay)
+	response.DeliveryAttemptTimeout = uint32(subscription.DeliveryAttemptTimeout)
 	response.CreatedAt = createdAt
 	response.UpdatedAt = updatedAt
 
@@ -91,19 +91,20 @@ func (s *SubscriptionHandler) GetSubscription(ctx context.Context, request *pb.G
 
 // ListSubscriptions get a list of topics
 func (s *SubscriptionHandler) ListSubscriptions(ctx context.Context, request *pb.ListSubscriptionsRequest) (*pb.ListSubscriptionsResponse, error) {
-	if request.Limit == 0 {
-		request.Limit = int32(hammer.DefaultPaginationLimit)
-	}
-	if request.Offset < 0 {
-		request.Offset = 0
-	}
-	response := &pb.ListSubscriptionsResponse{
-		Limit:  request.Limit,
-		Offset: request.Offset,
-	}
+	// Get limit and offset
+	limit, offset := parsePagination(request.Limit, request.Offset)
+
+	// Create response
+	response := &pb.ListSubscriptionsResponse{}
 
 	// Get subscriptions
-	subscriptions, err := s.subscriptionService.FindAll(int(request.Limit), int(request.Offset))
+	findOptions := hammer.FindOptions{
+		FindPagination: &hammer.FindPagination{
+			Limit:  limit,
+			Offset: offset,
+		},
+	}
+	subscriptions, err := s.subscriptionService.FindAll(findOptions)
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())
 	}

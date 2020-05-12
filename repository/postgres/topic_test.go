@@ -110,7 +110,13 @@ func TestTopic(t *testing.T) {
 		assert.Nil(t, err)
 		err = tx.Commit()
 		assert.Nil(t, err)
-		topics, err := th.topicRepo.FindAll(50, 0)
+		findOptions := hammer.FindOptions{
+			FindPagination: &hammer.FindPagination{
+				Limit:  50,
+				Offset: 0,
+			},
+		}
+		topics, err := th.topicRepo.FindAll(findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(topics))
 	})

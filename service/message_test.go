@@ -34,24 +34,15 @@ func TestMessage(t *testing.T) {
 		deliveryRepo := &mocks.DeliveryRepository{}
 		txFactoryRepo := &mocks.TxFactoryRepository{}
 		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo, txFactoryRepo)
-		messageRepo.On("FindAll", mock.Anything, mock.Anything).Return(expectedMessages, nil)
+		messageRepo.On("FindAll", mock.Anything).Return(expectedMessages, nil)
 
-		messages, err := messageService.FindAll(50, 0)
-		assert.Nil(t, err)
-		assert.Equal(t, expectedMessages, messages)
-	})
-
-	t.Run("Test FindByTopic", func(t *testing.T) {
-		expectedMessages := []hammer.Message{hammer.MakeTestMessage()}
-		topicRepo := &mocks.TopicRepository{}
-		messageRepo := &mocks.MessageRepository{}
-		subscriptionRepo := &mocks.SubscriptionRepository{}
-		deliveryRepo := &mocks.DeliveryRepository{}
-		txFactoryRepo := &mocks.TxFactoryRepository{}
-		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo, txFactoryRepo)
-		messageRepo.On("FindByTopic", mock.Anything, mock.Anything, mock.Anything).Return(expectedMessages, nil)
-
-		messages, err := messageService.FindByTopic("topic_id", 50, 0)
+		findOptions := hammer.FindOptions{
+			FindPagination: &hammer.FindPagination{
+				Limit:  50,
+				Offset: 0,
+			},
+		}
+		messages, err := messageService.FindAll(findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, expectedMessages, messages)
 	})
@@ -67,7 +58,7 @@ func TestMessage(t *testing.T) {
 		txRepo := &mocks.TxRepository{}
 		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo, txFactoryRepo)
 		topicRepo.On("Find", mock.Anything).Return(hammer.Topic{}, nil)
-		subscriptionRepo.On("FindByTopic", mock.Anything).Return([]hammer.Subscription{hammer.MakeTestSubscription()}, nil)
+		subscriptionRepo.On("FindAll", mock.Anything).Return([]hammer.Subscription{hammer.MakeTestSubscription()}, nil)
 		txFactoryRepo.On("New").Return(txRepo, nil)
 		messageRepo.On("Store", mock.Anything, mock.Anything).Return(nil)
 		deliveryRepo.On("Store", mock.Anything, mock.Anything).Return(nil)

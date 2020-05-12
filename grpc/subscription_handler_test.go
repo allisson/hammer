@@ -63,7 +63,7 @@ func TestSubscriptionHandler(t *testing.T) {
 			Limit:  50,
 			Offset: 0,
 		}
-		subscriptionService.On("FindAll", mock.Anything, mock.Anything).Return([]hammer.Subscription{subscription}, nil)
+		subscriptionService.On("FindAll", mock.Anything).Return([]hammer.Subscription{subscription}, nil)
 
 		response, err := handler.ListSubscriptions(ctx, request)
 		assert.Nil(t, err)

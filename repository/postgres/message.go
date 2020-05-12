@@ -30,35 +30,8 @@ func (m *Message) Find(id string) (hammer.Message, error) {
 }
 
 // FindAll returns []hammer.Message by limit and offset
-func (m *Message) FindAll(limit, offset int) ([]hammer.Message, error) {
+func (m *Message) FindAll(findOptions hammer.FindOptions) ([]hammer.Message, error) {
 	messages := []hammer.Message{}
-	findOptions := hammer.FindOptions{
-		FindPagination: &hammer.FindPagination{
-			Limit:  uint(limit),
-			Offset: uint(offset),
-		},
-	}
-	sql, args := buildSQLQuery("messages", findOptions)
-	err := m.db.Select(&messages, sql, args...)
-	return messages, err
-}
-
-// FindByTopic returns []hammer.Message by topic, limit and offset
-func (m *Message) FindByTopic(topicID string, limit, offset int) ([]hammer.Message, error) {
-	messages := []hammer.Message{}
-	findOptions := hammer.FindOptions{
-		FindFilters: []hammer.FindFilter{
-			{
-				FieldName: "topic_id",
-				Operator:  "=",
-				Value:     topicID,
-			},
-		},
-		FindPagination: &hammer.FindPagination{
-			Limit:  uint(limit),
-			Offset: uint(offset),
-		},
-	}
 	sql, args := buildSQLQuery("messages", findOptions)
 	err := m.db.Select(&messages, sql, args...)
 	return messages, err

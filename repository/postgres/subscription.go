@@ -30,31 +30,8 @@ func (s *Subscription) Find(id string) (hammer.Subscription, error) {
 }
 
 // FindAll returns []hammer.Subscription by limit and offset
-func (s *Subscription) FindAll(limit, offset int) ([]hammer.Subscription, error) {
+func (s *Subscription) FindAll(findOptions hammer.FindOptions) ([]hammer.Subscription, error) {
 	subscriptions := []hammer.Subscription{}
-	findOptions := hammer.FindOptions{
-		FindPagination: &hammer.FindPagination{
-			Limit:  uint(limit),
-			Offset: uint(offset),
-		},
-	}
-	sql, args := buildSQLQuery("subscriptions", findOptions)
-	err := s.db.Select(&subscriptions, sql, args...)
-	return subscriptions, err
-}
-
-// FindByTopic returns hammer.Subscription by topic_id and topic_created_at
-func (s *Subscription) FindByTopic(topicID string) ([]hammer.Subscription, error) {
-	subscriptions := []hammer.Subscription{}
-	findOptions := hammer.FindOptions{
-		FindFilters: []hammer.FindFilter{
-			{
-				FieldName: "topic_id",
-				Operator:  "=",
-				Value:     topicID,
-			},
-		},
-	}
 	sql, args := buildSQLQuery("subscriptions", findOptions)
 	err := s.db.Select(&subscriptions, sql, args...)
 	return subscriptions, err

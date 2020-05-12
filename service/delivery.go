@@ -89,9 +89,9 @@ func (d *Delivery) Find(id string) (hammer.Delivery, error) {
 	return d.deliveryRepo.Find(id)
 }
 
-// FindAll returns []hammer.Delivery by limit and offset
-func (d *Delivery) FindAll(limit, offset int) ([]hammer.Delivery, error) {
-	return d.deliveryRepo.FindAll(limit, offset)
+// FindAll returns []hammer.Delivery by findOptions
+func (d *Delivery) FindAll(findOptions hammer.FindOptions) ([]hammer.Delivery, error) {
+	return d.deliveryRepo.FindAll(findOptions)
 }
 
 // FindToDispatch returns []string ready to dispatch by limit and offset

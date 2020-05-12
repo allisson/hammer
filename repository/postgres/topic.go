@@ -30,14 +30,8 @@ func (t *Topic) Find(id string) (hammer.Topic, error) {
 }
 
 // FindAll returns []hammer.Topic by limit and offset
-func (t *Topic) FindAll(limit, offset int) ([]hammer.Topic, error) {
+func (t *Topic) FindAll(findOptions hammer.FindOptions) ([]hammer.Topic, error) {
 	topics := []hammer.Topic{}
-	findOptions := hammer.FindOptions{
-		FindPagination: &hammer.FindPagination{
-			Limit:  uint(limit),
-			Offset: uint(offset),
-		},
-	}
 	sql, args := buildSQLQuery("topics", findOptions)
 	err := t.db.Select(&topics, sql, args...)
 	return topics, err

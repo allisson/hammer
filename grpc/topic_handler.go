@@ -79,19 +79,20 @@ func (t *TopicHandler) GetTopic(ctx context.Context, request *pb.GetTopicRequest
 
 // ListTopics get a list of topics
 func (t *TopicHandler) ListTopics(ctx context.Context, request *pb.ListTopicsRequest) (*pb.ListTopicsResponse, error) {
-	if request.Limit == 0 {
-		request.Limit = int32(hammer.DefaultPaginationLimit)
-	}
-	if request.Offset < 0 {
-		request.Offset = 0
-	}
-	response := &pb.ListTopicsResponse{
-		Limit:  request.Limit,
-		Offset: request.Offset,
-	}
+	// Get limit and offset
+	limit, offset := parsePagination(request.Limit, request.Offset)
+
+	// Create response
+	response := &pb.ListTopicsResponse{}
 
 	// Get topics
-	topics, err := t.topicService.FindAll(int(request.Limit), int(request.Offset))
+	findOptions := hammer.FindOptions{
+		FindPagination: &hammer.FindPagination{
+			Limit:  limit,
+			Offset: offset,
+		},
+	}
+	topics, err := t.topicService.FindAll(findOptions)
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())
 	}

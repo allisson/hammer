@@ -150,7 +150,13 @@ func TestDeliveryAttempt(t *testing.T) {
 		assert.Nil(t, err)
 		err = tx.Commit()
 		assert.Nil(t, err)
-		deliveryAttempts, err := th.deliveryAttemptRepo.FindAll(50, 0)
+		findOptions := hammer.FindOptions{
+			FindPagination: &hammer.FindPagination{
+				Limit:  50,
+				Offset: 0,
+			},
+		}
+		deliveryAttempts, err := th.deliveryAttemptRepo.FindAll(findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(deliveryAttempts))
 	})

@@ -33,13 +33,13 @@ func (_m *MessageRepository) Find(id string) (hammer.Message, error) {
 	return r0, r1
 }
 
-// FindAll provides a mock function with given fields: limit, offset
-func (_m *MessageRepository) FindAll(limit int, offset int) ([]hammer.Message, error) {
-	ret := _m.Called(limit, offset)
+// FindAll provides a mock function with given fields: findOptions
+func (_m *MessageRepository) FindAll(findOptions hammer.FindOptions) ([]hammer.Message, error) {
+	ret := _m.Called(findOptions)
 
 	var r0 []hammer.Message
-	if rf, ok := ret.Get(0).(func(int, int) []hammer.Message); ok {
-		r0 = rf(limit, offset)
+	if rf, ok := ret.Get(0).(func(hammer.FindOptions) []hammer.Message); ok {
+		r0 = rf(findOptions)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]hammer.Message)
@@ -47,31 +47,8 @@ func (_m *MessageRepository) FindAll(limit int, offset int) ([]hammer.Message, e
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(int, int) error); ok {
-		r1 = rf(limit, offset)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// FindByTopic provides a mock function with given fields: topicID, limit, offset
-func (_m *MessageRepository) FindByTopic(topicID string, limit int, offset int) ([]hammer.Message, error) {
-	ret := _m.Called(topicID, limit, offset)
-
-	var r0 []hammer.Message
-	if rf, ok := ret.Get(0).(func(string, int, int) []hammer.Message); ok {
-		r0 = rf(topicID, limit, offset)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]hammer.Message)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string, int, int) error); ok {
-		r1 = rf(topicID, limit, offset)
+	if rf, ok := ret.Get(1).(func(hammer.FindOptions) error); ok {
+		r1 = rf(findOptions)
 	} else {
 		r1 = ret.Error(1)
 	}

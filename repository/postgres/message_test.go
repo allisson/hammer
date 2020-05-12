@@ -94,31 +94,13 @@ func TestMessage(t *testing.T) {
 		assert.Nil(t, err)
 		err = tx.Commit()
 		assert.Nil(t, err)
-		messages, err := th.messageRepo.FindAll(50, 0)
-		assert.Nil(t, err)
-		assert.Equal(t, 2, len(messages))
-	})
-
-	t.Run("Test FindByTopic", func(t *testing.T) {
-		th := newTxnTestHelper()
-		defer th.db.Close()
-
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
-		topic := hammer.MakeTestTopic()
-		message1 := hammer.MakeTestMessage()
-		message1.TopicID = topic.ID
-		message2 := hammer.MakeTestMessage()
-		message2.TopicID = topic.ID
-		err = th.topicRepo.Store(tx, &topic)
-		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message1)
-		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message2)
-		assert.Nil(t, err)
-		err = tx.Commit()
-		assert.Nil(t, err)
-		messages, err := th.messageRepo.FindByTopic(topic.ID, 50, 0)
+		findOptions := hammer.FindOptions{
+			FindPagination: &hammer.FindPagination{
+				Limit:  50,
+				Offset: 0,
+			},
+		}
+		messages, err := th.messageRepo.FindAll(findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(messages))
 	})

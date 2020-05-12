@@ -33,13 +33,13 @@ func (_m *DeliveryAttemptRepository) Find(id string) (hammer.DeliveryAttempt, er
 	return r0, r1
 }
 
-// FindAll provides a mock function with given fields: limit, offset
-func (_m *DeliveryAttemptRepository) FindAll(limit int, offset int) ([]hammer.DeliveryAttempt, error) {
-	ret := _m.Called(limit, offset)
+// FindAll provides a mock function with given fields: findOptions
+func (_m *DeliveryAttemptRepository) FindAll(findOptions hammer.FindOptions) ([]hammer.DeliveryAttempt, error) {
+	ret := _m.Called(findOptions)
 
 	var r0 []hammer.DeliveryAttempt
-	if rf, ok := ret.Get(0).(func(int, int) []hammer.DeliveryAttempt); ok {
-		r0 = rf(limit, offset)
+	if rf, ok := ret.Get(0).(func(hammer.FindOptions) []hammer.DeliveryAttempt); ok {
+		r0 = rf(findOptions)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]hammer.DeliveryAttempt)
@@ -47,8 +47,8 @@ func (_m *DeliveryAttemptRepository) FindAll(limit int, offset int) ([]hammer.De
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(int, int) error); ok {
-		r1 = rf(limit, offset)
+	if rf, ok := ret.Get(1).(func(hammer.FindOptions) error); ok {
+		r1 = rf(findOptions)
 	} else {
 		r1 = ret.Error(1)
 	}

@@ -87,15 +87,13 @@ message CreateTopicRequest {
 
 // Request for list topics
 message ListTopicsRequest {
-  int32 limit = 1;
-  int32 offset = 2;
+  uint32 limit = 1;
+  uint32 offset = 2;
 }
 
 // Response for list topics
 message ListTopicsResponse {
-  int32 limit = 1;
-  int32 offset = 2;
-  repeated Topic topics = 3;
+  repeated Topic topics = 1;
 }
 
 // A subscription resource
@@ -105,9 +103,9 @@ message Subscription {
   string name = 3;
   string url = 4;
   string secret_token = 5;
-  int32 max_delivery_attempts = 6;
-  int32 delivery_attempt_delay = 7;
-  int32 delivery_attempt_timeout = 8;
+  uint32 max_delivery_attempts = 6;
+  uint32 delivery_attempt_delay = 7;
+  uint32 delivery_attempt_timeout = 8;
   google.protobuf.Timestamp created_at = 9;
   google.protobuf.Timestamp updated_at = 10;
 }
@@ -124,15 +122,13 @@ message CreateSubscriptionRequest {
 
 // Request for list subscriptions
 message ListSubscriptionsRequest {
-  int32 limit = 1;
-  int32 offset = 2;
+  uint32 limit = 1;
+  uint32 offset = 2;
 }
 
 // Response for list topics
 message ListSubscriptionsResponse {
-  int32 limit = 1;
-  int32 offset = 2;
-  repeated Subscription subscriptions = 3;
+  repeated Subscription subscriptions = 1;
 }
 
 // A message resource
@@ -155,14 +151,12 @@ message CreateMessageRequest {
 
 // Request for list messages
 message ListMessagesRequest {
-  int32 limit = 1;
-  int32 offset = 2;
+  uint32 limit = 1;
+  uint32 offset = 2;
   string topic_id = 3;
 }
 
 // Response for list messages
 message ListMessagesResponse {
-  int32 limit = 1;
-  int32 offset = 2;
-  repeated Message messages = 3;
+  repeated Message messages = 1;
 }

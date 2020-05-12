@@ -30,9 +30,15 @@ func TestSubscription(t *testing.T) {
 		subscriptionRepo := &mocks.SubscriptionRepository{}
 		txFactoryRepo := &mocks.TxFactoryRepository{}
 		subscriptionService := NewSubscription(topicRepo, subscriptionRepo, txFactoryRepo)
-		subscriptionRepo.On("FindAll", mock.Anything, mock.Anything).Return(expectedSubscriptions, nil)
+		subscriptionRepo.On("FindAll", mock.Anything).Return(expectedSubscriptions, nil)
 
-		subscriptions, err := subscriptionService.FindAll(50, 0)
+		findOptions := hammer.FindOptions{
+			FindPagination: &hammer.FindPagination{
+				Limit:  50,
+				Offset: 0,
+			},
+		}
+		subscriptions, err := subscriptionService.FindAll(findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, expectedSubscriptions, subscriptions)
 	})

@@ -30,9 +30,9 @@ func (s *Subscription) Find(id string) (hammer.Subscription, error) {
 	return s.subscriptionRepo.Find(id)
 }
 
-// FindAll returns []hammer.Subscription by limit and offset
-func (s *Subscription) FindAll(limit, offset int) ([]hammer.Subscription, error) {
-	return s.subscriptionRepo.FindAll(limit, offset)
+// FindAll returns []hammer.Subscription by findOptions
+func (s *Subscription) FindAll(findOptions hammer.FindOptions) ([]hammer.Subscription, error) {
+	return s.subscriptionRepo.FindAll(findOptions)
 }
 
 // Create a hammer.Subscription on repository
