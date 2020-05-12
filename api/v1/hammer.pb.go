@@ -199,7 +199,7 @@ func (x *CreateTopicRequest) GetTopic() *Topic {
 	return nil
 }
 
-// Request for list topics
+// Request for the ListTopics method
 type ListTopicsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -255,7 +255,7 @@ func (x *ListTopicsRequest) GetOffset() uint32 {
 	return 0
 }
 
-// Response for list topics
+// Response for the ListTopics method
 type ListTopicsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -519,7 +519,7 @@ func (x *CreateSubscriptionRequest) GetSubscription() *Subscription {
 	return nil
 }
 
-// Request for list subscriptions
+// Request for the ListSubscriptions method
 type ListSubscriptionsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -575,7 +575,7 @@ func (x *ListSubscriptionsRequest) GetOffset() uint32 {
 	return 0
 }
 
-// Response for list topics
+// Response for the ListSubscriptions method
 type ListSubscriptionsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -791,7 +791,7 @@ func (x *CreateMessageRequest) GetMessage() *Message {
 	return nil
 }
 
-// Request for list messages
+// Request for the ListMessages method
 type ListMessagesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -855,7 +855,7 @@ func (x *ListMessagesRequest) GetTopicId() string {
 	return ""
 }
 
-// Response for list messages
+// Response for the ListMessages method
 type ListMessagesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1111,7 +1111,7 @@ func (x *GetDeliveryRequest) GetId() string {
 	return ""
 }
 
-// Request for list deliveries
+// Request for the ListDeliveries method
 type ListDeliveriesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1199,7 +1199,7 @@ func (x *ListDeliveriesRequest) GetStatus() string {
 	return ""
 }
 
-// Response for list messages
+// Response for the ListDeliveries method
 type ListDeliveriesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1407,7 +1407,7 @@ func (x *GetDeliveryAttemptRequest) GetId() string {
 	return ""
 }
 
-// Request for list delivery attempts
+// Request for the ListDeliveryAttempts method
 type ListDeliveryAttemptsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1471,7 +1471,7 @@ func (x *ListDeliveryAttemptsRequest) GetDeliveryId() string {
 	return ""
 }
 
-// Response for list delivery attempts
+// Response for the ListDeliveryAttempts method
 type ListDeliveryAttemptsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2236,7 +2236,7 @@ type HammerClient interface {
 	ListDeliveries(ctx context.Context, in *ListDeliveriesRequest, opts ...grpc.CallOption) (*ListDeliveriesResponse, error)
 	// Gets the delivery attempt
 	GetDeliveryAttempt(ctx context.Context, in *GetDeliveryAttemptRequest, opts ...grpc.CallOption) (*DeliveryAttempt, error)
-	// List deliveiry attempts
+	// List delivery attempts
 	ListDeliveryAttempts(ctx context.Context, in *ListDeliveryAttemptsRequest, opts ...grpc.CallOption) (*ListDeliveryAttemptsResponse, error)
 }
 
@@ -2391,7 +2391,7 @@ type HammerServer interface {
 	ListDeliveries(context.Context, *ListDeliveriesRequest) (*ListDeliveriesResponse, error)
 	// Gets the delivery attempt
 	GetDeliveryAttempt(context.Context, *GetDeliveryAttemptRequest) (*DeliveryAttempt, error)
-	// List deliveiry attempts
+	// List delivery attempts
 	ListDeliveryAttempts(context.Context, *ListDeliveryAttemptsRequest) (*ListDeliveryAttemptsResponse, error)
 }
 

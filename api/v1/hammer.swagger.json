@@ -107,7 +107,7 @@
     },
     "/v1/delivery-attempts": {
       "get": {
-        "summary": "List deliveiry attempts",
+        "summary": "List delivery attempts",
         "operationId": "Hammer_ListDeliveryAttempts",
         "responses": {
           "200": {
@@ -657,7 +657,7 @@
           }
         }
       },
-      "title": "Response for list messages"
+      "title": "Response for the ListDeliveries method"
     },
     "v1ListDeliveryAttemptsResponse": {
       "type": "object",
@@ -669,7 +669,7 @@
           }
         }
       },
-      "title": "Response for list delivery attempts"
+      "title": "Response for the ListDeliveryAttempts method"
     },
     "v1ListMessagesResponse": {
       "type": "object",
@@ -681,7 +681,7 @@
           }
         }
       },
-      "title": "Response for list messages"
+      "title": "Response for the ListMessages method"
     },
     "v1ListSubscriptionsResponse": {
       "type": "object",
@@ -693,7 +693,7 @@
           }
         }
       },
-      "title": "Response for list topics"
+      "title": "Response for the ListSubscriptions method"
     },
     "v1ListTopicsResponse": {
       "type": "object",
@@ -705,7 +705,7 @@
           }
         }
       },
-      "title": "Response for list topics"
+      "title": "Response for the ListTopics method"
     },
     "v1Message": {
       "type": "object",
