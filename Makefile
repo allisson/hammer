@@ -37,6 +37,7 @@ mock:
 	mockery -name SubscriptionService
 	mockery -name MessageService
 	mockery -name DeliveryService
+	mockery -name DeliveryAttemptService
 
 run-worker:
 	go run cmd/worker/main.go

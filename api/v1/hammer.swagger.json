@@ -105,6 +105,82 @@
         ]
       }
     },
+    "/v1/delivery-attempts": {
+      "get": {
+        "summary": "List delivery attempts",
+        "operationId": "Hammer_ListDeliveryAttempts",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListDeliveryAttemptsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "delivery_id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Hammer"
+        ]
+      }
+    },
+    "/v1/delivery-attempts/{id}": {
+      "get": {
+        "summary": "Gets the delivery attempt",
+        "operationId": "Hammer_GetDeliveryAttempt",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeliveryAttempt"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Hammer"
+        ]
+      }
+    },
     "/v1/messages": {
       "get": {
         "summary": "List messages",
@@ -534,6 +610,43 @@
       },
       "title": "A delivery resource"
     },
+    "v1DeliveryAttempt": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "delivery_id": {
+          "type": "string"
+        },
+        "request": {
+          "type": "string"
+        },
+        "response": {
+          "type": "string"
+        },
+        "response_status_code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "execution_duration": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "success": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "error": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "title": "A delivery attempt resource"
+    },
     "v1ListDeliveriesResponse": {
       "type": "object",
       "properties": {
@@ -544,7 +657,19 @@
           }
         }
       },
-      "title": "Response for list messages"
+      "title": "Response for the ListDeliveries method"
+    },
+    "v1ListDeliveryAttemptsResponse": {
+      "type": "object",
+      "properties": {
+        "delivery_attempts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1DeliveryAttempt"
+          }
+        }
+      },
+      "title": "Response for the ListDeliveryAttempts method"
     },
     "v1ListMessagesResponse": {
       "type": "object",
@@ -556,7 +681,7 @@
           }
         }
       },
-      "title": "Response for list messages"
+      "title": "Response for the ListMessages method"
     },
     "v1ListSubscriptionsResponse": {
       "type": "object",
@@ -568,7 +693,7 @@
           }
         }
       },
-      "title": "Response for list topics"
+      "title": "Response for the ListSubscriptions method"
     },
     "v1ListTopicsResponse": {
       "type": "object",
@@ -580,7 +705,7 @@
           }
         }
       },
-      "title": "Response for list topics"
+      "title": "Response for the ListTopics method"
     },
     "v1Message": {
       "type": "object",

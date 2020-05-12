@@ -77,6 +77,18 @@ service Hammer {
       get: "/v1/deliveries"
     };
   }
+  // Gets the delivery attempt
+  rpc GetDeliveryAttempt(GetDeliveryAttemptRequest) returns (DeliveryAttempt) {
+    option (google.api.http) = {
+      get: "/v1/delivery-attempts/{id}"
+    };
+  }
+  // List delivery attempts
+  rpc ListDeliveryAttempts(ListDeliveryAttemptsRequest) returns (ListDeliveryAttemptsResponse) {
+    option (google.api.http) = {
+      get: "/v1/delivery-attempts"
+    };
+  }
 }
 
 // A topic resource
@@ -97,13 +109,13 @@ message CreateTopicRequest {
   Topic topic = 1;
 }
 
-// Request for list topics
+// Request for the ListTopics method
 message ListTopicsRequest {
   uint32 limit = 1;
   uint32 offset = 2;
 }
 
-// Response for list topics
+// Response for the ListTopics method
 message ListTopicsResponse {
   repeated Topic topics = 1;
 }
@@ -132,13 +144,13 @@ message CreateSubscriptionRequest {
   Subscription subscription = 1;
 }
 
-// Request for list subscriptions
+// Request for the ListSubscriptions method
 message ListSubscriptionsRequest {
   uint32 limit = 1;
   uint32 offset = 2;
 }
 
-// Response for list topics
+// Response for the ListSubscriptions method
 message ListSubscriptionsResponse {
   repeated Subscription subscriptions = 1;
 }
@@ -161,14 +173,14 @@ message CreateMessageRequest {
   Message message = 1;
 }
 
-// Request for list messages
+// Request for the ListMessages method
 message ListMessagesRequest {
   uint32 limit = 1;
   uint32 offset = 2;
   string topic_id = 3;
 }
 
-// Response for list messages
+// Response for the ListMessages method
 message ListMessagesResponse {
   repeated Message messages = 1;
 }
@@ -197,7 +209,7 @@ message GetDeliveryRequest {
   string id = 1;
 }
 
-// Request for list deliveries
+// Request for the ListDeliveries method
 message ListDeliveriesRequest {
   uint32 limit = 1;
   uint32 offset = 2;
@@ -207,7 +219,37 @@ message ListDeliveriesRequest {
   string status = 6;
 }
 
-// Response for list messages
+// Response for the ListDeliveries method
 message ListDeliveriesResponse {
   repeated Delivery deliveries = 1;
+}
+
+// A delivery attempt resource
+message DeliveryAttempt {
+  string id = 1;
+  string delivery_id = 2;
+  string request = 3;
+  string response = 4;
+  uint32 response_status_code = 5;
+  uint32 execution_duration = 6;
+  bool success = 7;
+  string error = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
+// Request for the GetDeliveryAttempt method
+message GetDeliveryAttemptRequest {
+  string id = 1;
+}
+
+// Request for the ListDeliveryAttempts method
+message ListDeliveryAttemptsRequest {
+  uint32 limit = 1;
+  uint32 offset = 2;
+  string delivery_id = 3;
+}
+
+// Response for the ListDeliveryAttempts method
+message ListDeliveryAttemptsResponse {
+  repeated DeliveryAttempt delivery_attempts = 1;
 }

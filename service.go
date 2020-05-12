@@ -32,3 +32,9 @@ type DeliveryService interface {
 	FindToDispatch(limit, offset int) ([]string, error)
 	Dispatch(delivery *Delivery, httpClient *http.Client) error
 }
+
+// DeliveryAttemptService interface
+type DeliveryAttemptService interface {
+	Find(id string) (DeliveryAttempt, error)
+	FindAll(findOptions FindOptions) ([]DeliveryAttempt, error)
+}
