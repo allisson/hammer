@@ -171,12 +171,13 @@ type DeliveryAttempt struct {
 
 // WebhookMessage data
 type WebhookMessage struct {
-	TopicID        string    `json:"topic_id" db:"topic_id"`
-	SubscriptionID string    `json:"subscription_id" db:"subscription_id"`
-	MessageID      string    `json:"message_id" db:"message_id"`
-	SecretToken    string    `json:"secret_token" db:"secret_token"`
-	Data           string    `json:"data" db:"data"`
-	CreatedAt      time.Time `json:"created_at" db:"created_at"`
+	ID             string    `json:"id"`
+	TopicID        string    `json:"topic_id"`
+	SubscriptionID string    `json:"subscription_id"`
+	MessageID      string    `json:"message_id"`
+	SecretToken    string    `json:"secret_token"`
+	Data           string    `json:"data"`
+	CreatedAt      time.Time `json:"created_at"`
 }
 
 // FindFilter data

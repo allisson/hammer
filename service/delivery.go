@@ -19,11 +19,12 @@ type dispatchResponse struct {
 	Error              string
 }
 
-func makeRequest(delivery *hammer.Delivery, httpClient *http.Client) dispatchResponse {
+func makeRequest(id string, delivery *hammer.Delivery, httpClient *http.Client) dispatchResponse {
 	dr := dispatchResponse{}
 
 	// Create WebhookMessage
 	webhookMessage := hammer.WebhookMessage{
+		ID:             id,
 		TopicID:        delivery.TopicID,
 		SubscriptionID: delivery.SubscriptionID,
 		MessageID:      delivery.MessageID,
@@ -101,7 +102,13 @@ func (d *Delivery) FindToDispatch(limit, offset int) ([]string, error) {
 
 // Dispatch message to destination
 func (d *Delivery) Dispatch(delivery *hammer.Delivery, httpClient *http.Client) error {
-	dr := makeRequest(delivery, httpClient)
+	// Generate delivery attempt id
+	id, err := generateID()
+	if err != nil {
+		return err
+	}
+
+	dr := makeRequest(id, delivery, httpClient)
 
 	// Start tx
 	tx, err := d.txFactoryRepo.New()
@@ -110,11 +117,6 @@ func (d *Delivery) Dispatch(delivery *hammer.Delivery, httpClient *http.Client) 
 	}
 
 	// Create delivery attempt
-	id, err := generateID()
-	if err != nil {
-		rollback(tx, "delivery-dispatch-generate-id")
-		return err
-	}
 	deliveryAttempt := hammer.DeliveryAttempt{
 		ID:                 id,
 		DeliveryID:         delivery.ID,
