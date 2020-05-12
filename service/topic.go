@@ -29,8 +29,8 @@ func (t *Topic) Find(id string) (hammer.Topic, error) {
 }
 
 // FindAll returns []hammer.Topic by limit and offset
-func (t *Topic) FindAll(limit, offset int) ([]hammer.Topic, error) {
-	return t.topicRepo.FindAll(limit, offset)
+func (t *Topic) FindAll(findOptions hammer.FindOptions) ([]hammer.Topic, error) {
+	return t.topicRepo.FindAll(findOptions)
 }
 
 // Create a hammer.Topic on repository

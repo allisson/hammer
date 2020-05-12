@@ -67,31 +67,7 @@ func TestMessageHandler(t *testing.T) {
 			Limit:  50,
 			Offset: 0,
 		}
-		messageService.On("FindAll", mock.Anything, mock.Anything).Return([]hammer.Message{message}, nil)
-
-		response, err := handler.ListMessages(ctx, request)
-		assert.Nil(t, err)
-		assert.Equal(t, 1, len(response.Messages))
-		assert.Equal(t, "id", response.Messages[0].Id)
-		assert.Equal(t, "{}", response.Messages[0].Data)
-	})
-
-	t.Run("Test ListMessages with topic id", func(t *testing.T) {
-		messageService := &mocks.MessageService{}
-		handler := NewMessageHandler(messageService)
-		ctx := context.Background()
-		message := hammer.Message{
-			ID:        "id",
-			TopicID:   "topic_id",
-			Data:      "{}",
-			CreatedAt: time.Now().UTC(),
-		}
-		request := &pb.ListMessagesRequest{
-			Limit:   50,
-			Offset:  0,
-			TopicId: "topic_id",
-		}
-		messageService.On("FindByTopic", mock.Anything, mock.Anything, mock.Anything).Return([]hammer.Message{message}, nil)
+		messageService.On("FindAll", mock.Anything).Return([]hammer.Message{message}, nil)
 
 		response, err := handler.ListMessages(ctx, request)
 		assert.Nil(t, err)

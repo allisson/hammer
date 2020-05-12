@@ -76,27 +76,28 @@ func (m *MessageHandler) GetMessage(ctx context.Context, request *pb.GetMessageR
 
 // ListMessages get a list of messages
 func (m *MessageHandler) ListMessages(ctx context.Context, request *pb.ListMessagesRequest) (*pb.ListMessagesResponse, error) {
-	if request.Limit == 0 {
-		request.Limit = int32(hammer.DefaultPaginationLimit)
-	}
-	if request.Offset < 0 {
-		request.Offset = 0
-	}
-	response := &pb.ListMessagesResponse{
-		Limit:  request.Limit,
-		Offset: request.Offset,
-	}
+	// Get limit and offset
+	limit, offset := parsePagination(request.Limit, request.Offset)
+
+	// Create response
+	response := &pb.ListMessagesResponse{}
 
 	// Get messages
-	var (
-		err      error
-		messages []hammer.Message
-	)
-	if request.TopicId != "" {
-		messages, err = m.messageService.FindByTopic(request.TopicId, int(request.Limit), int(request.Offset))
-	} else {
-		messages, err = m.messageService.FindAll(int(request.Limit), int(request.Offset))
+	findOptions := hammer.FindOptions{
+		FindPagination: &hammer.FindPagination{
+			Limit:  limit,
+			Offset: offset,
+		},
 	}
+	if request.TopicId != "" {
+		topicFilter := hammer.FindFilter{
+			FieldName: "topic_id",
+			Operator:  "=",
+			Value:     request.TopicId,
+		}
+		findOptions.FindFilters = append(findOptions.FindFilters, topicFilter)
+	}
+	messages, err := m.messageService.FindAll(findOptions)
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())
 	}

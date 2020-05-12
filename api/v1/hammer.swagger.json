@@ -35,14 +35,14 @@
             "in": "query",
             "required": false,
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           {
             "name": "offset",
             "in": "query",
             "required": false,
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           {
             "name": "topic_id",
@@ -142,14 +142,14 @@
             "in": "query",
             "required": false,
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           {
             "name": "offset",
             "in": "query",
             "required": false,
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           }
         ],
         "tags": [
@@ -243,14 +243,14 @@
             "in": "query",
             "required": false,
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           {
             "name": "offset",
             "in": "query",
             "required": false,
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           }
         ],
         "tags": [
@@ -385,14 +385,6 @@
     "v1ListMessagesResponse": {
       "type": "object",
       "properties": {
-        "limit": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "offset": {
-          "type": "integer",
-          "format": "int32"
-        },
         "messages": {
           "type": "array",
           "items": {
@@ -405,14 +397,6 @@
     "v1ListSubscriptionsResponse": {
       "type": "object",
       "properties": {
-        "limit": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "offset": {
-          "type": "integer",
-          "format": "int32"
-        },
         "subscriptions": {
           "type": "array",
           "items": {
@@ -425,14 +409,6 @@
     "v1ListTopicsResponse": {
       "type": "object",
       "properties": {
-        "limit": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "offset": {
-          "type": "integer",
-          "format": "int32"
-        },
         "topics": {
           "type": "array",
           "items": {
@@ -481,15 +457,15 @@
         },
         "max_delivery_attempts": {
           "type": "integer",
-          "format": "int32"
+          "format": "int64"
         },
         "delivery_attempt_delay": {
           "type": "integer",
-          "format": "int32"
+          "format": "int64"
         },
         "delivery_attempt_timeout": {
           "type": "integer",
-          "format": "int32"
+          "format": "int64"
         },
         "created_at": {
           "type": "string",

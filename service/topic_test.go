@@ -28,9 +28,15 @@ func TestTopic(t *testing.T) {
 		topicRepo := &mocks.TopicRepository{}
 		txFactoryRepo := &mocks.TxFactoryRepository{}
 		topicService := NewTopic(topicRepo, txFactoryRepo)
-		topicRepo.On("FindAll", mock.Anything, mock.Anything).Return(expectedTopics, nil)
+		topicRepo.On("FindAll", mock.Anything).Return(expectedTopics, nil)
 
-		topics, err := topicService.FindAll(50, 0)
+		findOptions := hammer.FindOptions{
+			FindPagination: &hammer.FindPagination{
+				Limit:  50,
+				Offset: 0,
+			},
+		}
+		topics, err := topicService.FindAll(findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, expectedTopics, topics)
 	})

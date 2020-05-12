@@ -95,31 +95,13 @@ func TestSubscription(t *testing.T) {
 		assert.Nil(t, err)
 		err = tx.Commit()
 		assert.Nil(t, err)
-		subscriptions, err := th.subscriptionRepo.FindAll(50, 0)
-		assert.Nil(t, err)
-		assert.Equal(t, 2, len(subscriptions))
-	})
-
-	t.Run("Test FindByTopic", func(t *testing.T) {
-		th := newTxnTestHelper()
-		defer th.db.Close()
-
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
-		topic := hammer.MakeTestTopic()
-		subscription1 := hammer.MakeTestSubscription()
-		subscription1.TopicID = topic.ID
-		subscription2 := hammer.MakeTestSubscription()
-		subscription2.TopicID = topic.ID
-		err = th.topicRepo.Store(tx, &topic)
-		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription1)
-		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription2)
-		assert.Nil(t, err)
-		err = tx.Commit()
-		assert.Nil(t, err)
-		subscriptions, err := th.subscriptionRepo.FindByTopic(topic.ID)
+		findOptions := hammer.FindOptions{
+			FindPagination: &hammer.FindPagination{
+				Limit:  50,
+				Offset: 0,
+			},
+		}
+		subscriptions, err := th.subscriptionRepo.FindAll(findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(subscriptions))
 	})

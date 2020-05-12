@@ -31,14 +31,8 @@ func (d *Delivery) Find(id string) (hammer.Delivery, error) {
 }
 
 // FindAll returns []hammer.Delivery by limit and offset
-func (d *Delivery) FindAll(limit, offset int) ([]hammer.Delivery, error) {
+func (d *Delivery) FindAll(findOptions hammer.FindOptions) ([]hammer.Delivery, error) {
 	deliveries := []hammer.Delivery{}
-	findOptions := hammer.FindOptions{
-		FindPagination: &hammer.FindPagination{
-			Limit:  uint(limit),
-			Offset: uint(offset),
-		},
-	}
 	sql, args := buildSQLQuery("deliveries", findOptions)
 	err := d.db.Select(&deliveries, sql, args...)
 	return deliveries, err

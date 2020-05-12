@@ -22,14 +22,9 @@ func (m *Message) Find(id string) (hammer.Message, error) {
 	return m.messageRepo.Find(id)
 }
 
-// FindAll returns []hammer.Message by limit and offset
-func (m *Message) FindAll(limit, offset int) ([]hammer.Message, error) {
-	return m.messageRepo.FindAll(limit, offset)
-}
-
-// FindByTopic returns []hammer.Message by topicID, limit and offset
-func (m *Message) FindByTopic(topicID string, limit, offset int) ([]hammer.Message, error) {
-	return m.messageRepo.FindByTopic(topicID, limit, offset)
+// FindAll returns []hammer.Message by findOptions
+func (m *Message) FindAll(findOptions hammer.FindOptions) ([]hammer.Message, error) {
+	return m.messageRepo.FindAll(findOptions)
 }
 
 // Create a hammer.Message on repository
@@ -64,7 +59,16 @@ func (m *Message) Create(message *hammer.Message) error {
 	}
 
 	// Get subscriptions
-	subscriptions, err := m.subscriptionRepo.FindByTopic(message.TopicID)
+	findOptions := hammer.FindOptions{
+		FindFilters: []hammer.FindFilter{
+			{
+				FieldName: "topic_id",
+				Operator:  "=",
+				Value:     message.TopicID,
+			},
+		},
+	}
+	subscriptions, err := m.subscriptionRepo.FindAll(findOptions)
 	if err != nil {
 		rollback(tx, "message-get-subscriptions")
 		return err

@@ -5,7 +5,7 @@ import "net/http"
 // TopicService interface
 type TopicService interface {
 	Find(id string) (Topic, error)
-	FindAll(limit, offset int) ([]Topic, error)
+	FindAll(findOptions FindOptions) ([]Topic, error)
 	Create(topic *Topic) error
 	Update(topic *Topic) error
 }
@@ -13,7 +13,7 @@ type TopicService interface {
 // SubscriptionService interface
 type SubscriptionService interface {
 	Find(id string) (Subscription, error)
-	FindAll(limit, offset int) ([]Subscription, error)
+	FindAll(findOptions FindOptions) ([]Subscription, error)
 	Create(subscription *Subscription) error
 	Update(subscription *Subscription) error
 }
@@ -21,15 +21,14 @@ type SubscriptionService interface {
 // MessageService interface
 type MessageService interface {
 	Find(id string) (Message, error)
-	FindAll(limit, offset int) ([]Message, error)
-	FindByTopic(topicID string, limit, offset int) ([]Message, error)
+	FindAll(findOptions FindOptions) ([]Message, error)
 	Create(message *Message) error
 }
 
 // DeliveryService interface
 type DeliveryService interface {
 	Find(id string) (Delivery, error)
-	FindAll(limit, offset int) ([]Delivery, error)
+	FindAll(findOptions FindOptions) ([]Delivery, error)
 	FindToDispatch(limit, offset int) ([]string, error)
 	Dispatch(delivery *Delivery, httpClient *http.Client) error
 }

@@ -61,7 +61,7 @@ func TestTopicHandler(t *testing.T) {
 			Limit:  50,
 			Offset: 0,
 		}
-		topicService.On("FindAll", mock.Anything, mock.Anything).Return([]hammer.Topic{topic}, nil)
+		topicService.On("FindAll", mock.Anything).Return([]hammer.Topic{topic}, nil)
 
 		response, err := handler.ListTopics(ctx, request)
 		assert.Nil(t, err)
