@@ -9,7 +9,18 @@ import (
 	"go.uber.org/zap"
 )
 
-func generateID() (string, error) {
+const charset = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+func generateRandomString(length int) string {
+	seededRand := mathrand.New(mathrand.NewSource(time.Now().UnixNano()))
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
+}
+
+func generateULID() (string, error) {
 	seed := time.Now().UnixNano()
 	source := mathrand.NewSource(seed)
 	entropy := mathrand.New(source)

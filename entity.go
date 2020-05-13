@@ -45,6 +45,8 @@ var (
 	DefaultDeliveryAttemptDelay = env.GetInt("HAMMER_DEFAULT_DELIVERY_ATTEMPT_DELAY", 60)
 	// DefaultDeliveryAttemptTimeout represents a default attempt timeout for subscription
 	DefaultDeliveryAttemptTimeout = env.GetInt("HAMMER_DEFAULT_DELIVERY_ATTEMPT_TIMEOUT", 5)
+	// DefaultSecretTokenLength represents a default length for a random string to secret token if it is not informed
+	DefaultSecretTokenLength = env.GetInt("HAMMER_DEFAULT_SECRET_TOKEN_LENGTH", 40)
 	// WorkerDatabaseDelay represents a delay for database access by workers
 	WorkerDatabaseDelay = env.GetInt("HAMMER_WORKER_DATABASE_DELAY", 5)
 	// WorkerDefaultFetchLimit represents the default value for fetch limit

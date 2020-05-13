@@ -63,6 +63,27 @@ func TestSubscription(t *testing.T) {
 		assert.NotEqual(t, "", subscription.SecretToken)
 	})
 
+	t.Run("Test Create without secret token", func(t *testing.T) {
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
+		subscription.TopicID = topic.ID
+		subscription.SecretToken = ""
+		topicRepo := &mocks.TopicRepository{}
+		subscriptionRepo := &mocks.SubscriptionRepository{}
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		txRepo := &mocks.TxRepository{}
+		subscriptionService := NewSubscription(topicRepo, subscriptionRepo, txFactoryRepo)
+		topicRepo.On("Find", mock.Anything).Return(topic, nil)
+		txFactoryRepo.On("New").Return(txRepo, nil)
+		subscriptionRepo.On("Store", mock.Anything, mock.Anything).Return(nil)
+		subscriptionRepo.On("Find", mock.Anything).Return(hammer.Subscription{}, sql.ErrNoRows)
+		txRepo.On("Commit").Return(nil)
+
+		err := subscriptionService.Create(&subscription)
+		assert.Nil(t, err)
+		assert.Equal(t, hammer.DefaultSecretTokenLength, len(subscription.SecretToken))
+	})
+
 	t.Run("Test Create with topic does not exists on repository", func(t *testing.T) {
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
