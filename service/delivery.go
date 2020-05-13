@@ -71,7 +71,8 @@ func makeRequest(id string, delivery *hammer.Delivery, httpClient *http.Client) 
 	// Update dispatch response
 	dr.ResponseStatusCode = response.StatusCode
 	dr.ExecutionDuration = int(latency.Milliseconds())
-	if dr.ResponseStatusCode == http.StatusOK || dr.ResponseStatusCode == http.StatusCreated {
+	switch dr.ResponseStatusCode {
+	case http.StatusOK, http.StatusCreated, http.StatusAccepted, http.StatusNoContent:
 		dr.Success = true
 	}
 
