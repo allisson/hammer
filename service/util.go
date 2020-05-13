@@ -1,7 +1,6 @@
 package service
 
 import (
-	"math/rand"
 	mathrand "math/rand"
 	"time"
 
@@ -13,7 +12,7 @@ import (
 const charset = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 func generateRandomString(length int) string {
-	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+	seededRand := mathrand.New(mathrand.NewSource(time.Now().UnixNano()))
 	b := make([]byte, length)
 	for i := range b {
 		b[i] = charset[seededRand.Intn(len(charset))]
