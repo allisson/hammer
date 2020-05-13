@@ -92,6 +92,8 @@ Grpc-Metadata-Content-Type: application/grpc
 
 ###  Run the worker
 
+The system will send a post request and the server must respond with the following status codes for the delivery to be considered successful: 200, 201, 202 and 204.
+
 ```bash
 make run-worker
 go run cmd/worker/main.go
