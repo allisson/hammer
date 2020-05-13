@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"database/sql"
 	"hash/fnv"
 	"math/rand"
 	"net/http"
@@ -22,8 +24,9 @@ import (
 )
 
 var (
-	logger *zap.Logger
-	sqlDB  *sqlx.DB
+	logger  *zap.Logger
+	sqlDB   *sqlx.DB
+	sqlConn *sql.Conn
 )
 
 type taskJob struct {
@@ -56,9 +59,12 @@ func (t *taskJob) Dispatch(deliveryID string, wg *sync.WaitGroup) {
 
 	// Get lock
 	lockID := t.stringToInt(deliveryID)
-	err := t.lock.WaitAndLock(lockID)
+	ok, err := t.lock.Lock(lockID)
 	if err != nil {
 		logger.Error("lock-delivery", zap.Error(err))
+		return
+	}
+	if !ok {
 		return
 	}
 	defer t.unlock(lockID)
@@ -107,6 +113,11 @@ func init() {
 		logger.Fatal("sqlx-ping", zap.Error(err))
 	}
 	sqlDB = db
+	conn, err := sqlDB.DB.Conn(context.Background())
+	if err != nil {
+		logger.Fatal("sql-conn", zap.Error(err))
+	}
+	sqlConn = conn
 }
 
 func getDeliveries(job *taskJob) {
@@ -117,7 +128,6 @@ func getDeliveries(job *taskJob) {
 			time.Sleep(time.Duration(hammer.WorkerDatabaseDelay) * time.Second)
 			continue
 		}
-		logger.Info("fetch_deliveries", zap.Int("count", len(deliveries)))
 
 		if len(deliveries) == 0 {
 			time.Sleep(time.Duration(hammer.WorkerDatabaseDelay) * time.Second)
@@ -149,7 +159,7 @@ func getDeliveries(job *taskJob) {
 
 func main() {
 	// Create a new lock
-	lock := pglock.NewLock(sqlDB.DB)
+	lock := pglock.NewLock(sqlConn)
 
 	// Create repositories
 	deliveryRepo := repository.NewDelivery(sqlDB)

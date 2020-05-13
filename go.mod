@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/DATA-DOG/go-txdb v0.1.3
 	github.com/allisson/go-env v0.2.0
-	github.com/allisson/go-pglock v0.1.1
+	github.com/allisson/go-pglock v1.0.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.2.1
 	github.com/golang/protobuf v1.4.1
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
