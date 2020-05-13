@@ -58,11 +58,7 @@ func (s *Subscription) Create(subscription *hammer.Subscription) error {
 	subscription.CreatedAt = now
 	subscription.UpdatedAt = now
 	if subscription.SecretToken == "" {
-		id, err := generateID()
-		if err != nil {
-			return err
-		}
-		subscription.SecretToken = id
+		subscription.SecretToken = generateRandomString(hammer.DefaultSecretTokenLength)
 	}
 	if subscription.MaxDeliveryAttempts <= 0 {
 		subscription.MaxDeliveryAttempts = hammer.DefaultMaxDeliveryAttempts

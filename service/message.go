@@ -45,7 +45,7 @@ func (m *Message) Create(message *hammer.Message) error {
 	}
 
 	// Create message
-	id, err := generateID()
+	id, err := generateULID()
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func (m *Message) Create(message *hammer.Message) error {
 
 	// Create deliveries
 	for _, subscription := range subscriptions {
-		id, err := generateID()
+		id, err := generateULID()
 		if err != nil {
 			rollback(tx, "message-subscription-generate-id")
 			return err

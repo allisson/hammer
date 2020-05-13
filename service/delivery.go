@@ -103,7 +103,7 @@ func (d *Delivery) FindToDispatch(limit, offset int) ([]string, error) {
 // Dispatch message to destination
 func (d *Delivery) Dispatch(delivery *hammer.Delivery, httpClient *http.Client) error {
 	// Generate delivery attempt id
-	id, err := generateID()
+	id, err := generateULID()
 	if err != nil {
 		return err
 	}
