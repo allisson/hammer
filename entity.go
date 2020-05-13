@@ -53,13 +53,6 @@ var (
 	WorkerDefaultFetchLimit = env.GetInt("HAMMER_WORKER_DEFAULT_FETCH_LIMIT", 100)
 )
 
-// Error data
-type Error struct {
-	Code    int    `json:"-"`
-	Message string `json:"message"`
-	Details string `json:"details"`
-}
-
 // Topic data
 type Topic struct {
 	ID        string    `json:"id" db:"id"`
@@ -74,13 +67,6 @@ func (t Topic) Validate() error {
 		validation.Field(&t.ID, validation.Required, validation.Match(idRegex)),
 		validation.Field(&t.Name, validation.Required),
 	)
-}
-
-// ListTopicsResponse data
-type ListTopicsResponse struct {
-	Limit  int     `json:"limit"`
-	Offset int     `json:"offset"`
-	Topics []Topic `json:"topics"`
 }
 
 // Subscription data
@@ -110,13 +96,6 @@ func (s Subscription) Validate() error {
 	)
 }
 
-// ListSubscriptionsResponse data
-type ListSubscriptionsResponse struct {
-	Limit         int            `json:"limit"`
-	Offset        int            `json:"offset"`
-	Subscriptions []Subscription `json:"subscriptions"`
-}
-
 // Message data
 type Message struct {
 	ID        string    `json:"id" db:"id"`
@@ -130,13 +109,6 @@ func (m Message) Validate() error {
 	return validation.ValidateStruct(&m,
 		validation.Field(&m.Data, validation.Required),
 	)
-}
-
-// ListMessagesResponse data
-type ListMessagesResponse struct {
-	Limit    int       `json:"limit"`
-	Offset   int       `json:"offset"`
-	Messages []Message `json:"messages"`
 }
 
 // Delivery data
