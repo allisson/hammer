@@ -184,8 +184,6 @@ curl -X GET 'http://localhost:8000/v1/delivery-attempts?delivery_id=01E87PJQET44
 }
 ```
 
-### 
-
 ## How to build docker images
 
 ```
