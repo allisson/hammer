@@ -69,13 +69,6 @@ func (t Topic) Validate() error {
 	)
 }
 
-// ListTopicsResponse data
-type ListTopicsResponse struct {
-	Limit  int     `json:"limit"`
-	Offset int     `json:"offset"`
-	Topics []Topic `json:"topics"`
-}
-
 // Subscription data
 type Subscription struct {
 	ID                     string    `json:"id" db:"id"`
@@ -103,13 +96,6 @@ func (s Subscription) Validate() error {
 	)
 }
 
-// ListSubscriptionsResponse data
-type ListSubscriptionsResponse struct {
-	Limit         int            `json:"limit"`
-	Offset        int            `json:"offset"`
-	Subscriptions []Subscription `json:"subscriptions"`
-}
-
 // Message data
 type Message struct {
 	ID        string    `json:"id" db:"id"`
@@ -123,13 +109,6 @@ func (m Message) Validate() error {
 	return validation.ValidateStruct(&m,
 		validation.Field(&m.Data, validation.Required),
 	)
-}
-
-// ListMessagesResponse data
-type ListMessagesResponse struct {
-	Limit    int       `json:"limit"`
-	Offset   int       `json:"offset"`
-	Messages []Message `json:"messages"`
 }
 
 // Delivery data
