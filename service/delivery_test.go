@@ -61,6 +61,7 @@ func TestDelivery(t *testing.T) {
 		httpServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// nolint
 			w.Write([]byte(`OK`))
+
 		}))
 		defer httpServer.Close()
 		delivery := hammer.MakeTestDelivery()

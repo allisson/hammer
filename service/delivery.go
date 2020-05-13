@@ -28,6 +28,7 @@ func makeRequest(id string, delivery *hammer.Delivery, httpClient *http.Client) 
 		TopicID:        delivery.TopicID,
 		SubscriptionID: delivery.SubscriptionID,
 		MessageID:      delivery.MessageID,
+		SecretToken:    delivery.SecretToken,
 		Data:           delivery.Data,
 		CreatedAt:      delivery.CreatedAt,
 	}

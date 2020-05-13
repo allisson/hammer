@@ -26,23 +26,27 @@ make db-migrate # create database schema
 make run-server # run the server (grpc + http)
 ```
 
-We are using https://httpie.org/ in the examples below.
+We are using curl in the examples below.
 
 ### Create a new topic
 
 ```bash
-http POST http://localhost:8000/v1/topics topic:='{"id": "person", "name": "Person"}'
-HTTP/1.1 200 OK
-Content-Length: 117
-Content-Type: application/json
-Date: Tue, 12 May 2020 18:51:45 GMT
-Grpc-Metadata-Content-Type: application/grpc
+curl -X POST 'http://localhost:8000/v1/topics' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+        "topic": {
+                "id": "topic",
+                "name": "Topic"
+        }
+}'
+```
 
+```javascript
 {
-    "created_at": "2020-05-12T18:51:45.065849Z",
-    "id": "person",
-    "name": "Person",
-    "updated_at": "2020-05-12T18:51:45.065849Z"
+  "id": "topic",
+  "name": "Topic",
+  "created_at": "2020-05-13T18:57:28.035492Z",
+  "updated_at": "2020-05-13T18:57:28.035492Z"
 }
 ```
 
@@ -51,42 +55,56 @@ Grpc-Metadata-Content-Type: application/grpc
 The max_delivery_attempts, delivery_attempt_delay and delivery_attempt_timeout are in seconds.
 
 ```bash
-http POST http://localhost:8000/v1/subscriptions subscription:='{"id": "httpbin-post", "topic_id": "person", "name": "Httpbin Post", "url": "https://httpbin.org/post", "secret_token": "my-super-secret-token", "max_delivery_attempts": 5, "delivery_attempt_delay": 60, "delivery_attempt_timeout": 5}'
-HTTP/1.1 200 OK
-Content-Length: 304
-Content-Type: application/json
-Date: Tue, 12 May 2020 18:54:22 GMT
-Grpc-Metadata-Content-Type: application/grpc
+curl -X POST 'http://localhost:8000/v1/subscriptions' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+	"subscription": {
+		"id": "httpbin-post",
+		"topic_id": "topic",
+		"name": "Httpbin Post",
+		"url": "https://httpbin.org/post",
+		"secret_token": "my-super-secret-token",
+		"max_delivery_attempts": 5,
+		"delivery_attempt_delay": 60,
+		"delivery_attempt_timeout": 5
+	}
+}'
+```
 
+```javascript
 {
-    "created_at": "2020-05-12T18:54:22.788427Z",
-    "delivery_attempt_delay": 60,
-    "delivery_attempt_timeout": 5,
-    "id": "httpbin-post",
-    "max_delivery_attempts": 5,
-    "name": "Httpbin Post",
-    "secret_token": "my-super-secret-token",
-    "topic_id": "person",
-    "updated_at": "2020-05-12T18:54:22.788427Z",
-    "url": "https://httpbin.org/post"
+  "id": "httpbin-post",
+  "topic_id": "topic",
+  "name": "Httpbin Post",
+  "url": "https://httpbin.org/post",
+  "secret_token": "my-super-secret-token",
+  "max_delivery_attempts": 5,
+  "delivery_attempt_delay": 60,
+  "delivery_attempt_timeout": 5,
+  "created_at": "2020-05-13T19:00:06.283020Z",
+  "updated_at": "2020-05-13T19:00:06.283020Z"
 }
 ```
 
 ### Create a new message
 
 ```bash
-http POST http://localhost:8000/v1/messages message:='{"topic_id": "person", "data": "{\"name\": \"Allisson\"}"}'
-HTTP/1.1 200 OK
-Content-Length: 136
-Content-Type: application/json
-Date: Tue, 12 May 2020 18:56:02 GMT
-Grpc-Metadata-Content-Type: application/grpc
+curl -X POST 'http://localhost:8000/v1/messages' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+	"message": {
+		"topic_id": "topic",
+		"data": "{\"name\": \"Allisson\"}"
+	}
+}'
+```
 
+```javascript
 {
-    "created_at": "2020-05-12T18:56:02.175614Z",
-    "data": "eyJuYW1lIjogIkFsbGlzc29uIn0=",
-    "id": "01E853WTKZVYWJFAQZ0EC4G125",
-    "topic_id": "person"
+  "id": "01E87PJQERSRN3SXQTEZB5X4FF",
+  "topic_id": "topic",
+  "data": "eyJuYW1lIjogIkFsbGlzc29uIn0=",
+  "created_at": "2020-05-13T19:01:03.064407Z"
 }
 ```
 
@@ -97,39 +115,47 @@ The system will send a post request and the server must respond with the followi
 ```bash
 make run-worker
 go run cmd/worker/main.go
-{"level":"info","ts":1589309806.2644632,"caller":"worker/main.go:169","msg":"worker-started"}
-{"level":"info","ts":1589309806.2704692,"caller":"worker/main.go:120","msg":"fetch_deliveries","count":1}
-{"level":"info","ts":1589309806.857866,"caller":"worker/main.go:87","msg":"delivery-attempt-made","id":"01E853WTM362FWJVB41YREBFAS","status":"completed","attempts":1,"max_delivery_attempts":5}
-{"level":"info","ts":1589309811.863363,"caller":"worker/main.go:120","msg":"fetch_deliveries","count":0}
-{"level":"info","ts":1589309816.868973,"caller":"worker/main.go:120","msg":"fetch_deliveries","count":0}
+{"level":"info","ts":1589396500.632363,"caller":"worker/main.go:179","msg":"worker-started"}
+{"level":"info","ts":1589396501.42912,"caller":"worker/main.go:93","msg":"delivery-attempt-made","id":"01E87PJQET446MJ8G5BPN5VGGX","status":"completed","attempts":1,"max_delivery_attempts":5}
+```
+
+Submitted payload:
+
+```javascript
+{
+  "created_at":"2020-05-13T16:01:03.066423-03:00",
+  "data":"eyJuYW1lIjogIkFsbGlzc29uIn0=",
+  "id":"01E87PKW55K0VX9F82NHE04VYR",
+  "message_id":"01E87PJQERSRN3SXQTEZB5X4FF",
+  "secret_token":"my-super-secret-token",
+  "subscription_id":"httpbin-post",
+  "topic_id":"topic"
+}
 ```
 
 ### Get delivery data
 
 ```bash
-http http://localhost:8000/v1/deliveries/01E853WTM362FWJVB41YREBFAS
-HTTP/1.1 200 OK
-Content-Length: 497
-Content-Type: application/json
-Date: Tue, 12 May 2020 18:57:58 GMT
-Grpc-Metadata-Content-Type: application/grpc
+curl -X GET http://localhost:8000/v1/deliveries/01E87PJQET446MJ8G5BPN5VGGX
+```
 
+```javascript
 {
-    "created_at": "2020-05-12T18:56:02.179577Z",
-    "data": "eyJuYW1lIjogIkFsbGlzc29uIn0=",
-    "delivery_attempt_delay": 60,
-    "delivery_attempt_timeout": 5,
-    "delivery_attempts": 1,
-    "id": "01E853WTM362FWJVB41YREBFAS",
-    "max_delivery_attempts": 5,
-    "message_id": "01E853WTKZVYWJFAQZ0EC4G125",
-    "scheduled_at": "2020-05-12T18:56:02.179577Z",
-    "secret_token": "my-super-secret-token",
-    "status": "completed",
-    "subscription_id": "httpbin-post",
-    "topic_id": "person",
-    "updated_at": "2020-05-12T18:56:46.854968Z",
-    "url": "https://httpbin.org/post"
+  "id": "01E87PJQET446MJ8G5BPN5VGGX",
+  "topic_id": "topic",
+  "subscription_id": "httpbin-post",
+  "message_id": "01E87PJQERSRN3SXQTEZB5X4FF",
+  "data": "eyJuYW1lIjogIkFsbGlzc29uIn0=",
+  "url": "https://httpbin.org/post",
+  "secret_token": "my-super-secret-token",
+  "max_delivery_attempts": 5,
+  "delivery_attempt_delay": 60,
+  "delivery_attempt_timeout": 5,
+  "scheduled_at": "2020-05-13T19:01:03.066423Z",
+  "delivery_attempts": 1,
+  "status": "completed",
+  "created_at": "2020-05-13T19:01:03.066423Z",
+  "updated_at": "2020-05-13T19:01:41.425554Z"
 }
 ```
 
@@ -138,28 +164,27 @@ Grpc-Metadata-Content-Type: application/grpc
 The execution_duration are in milliseconds.
 
 ```bash
-http http://localhost:8000/v1/delivery-attempts delivery_id==01E853WTM362FWJVB41YREBFAS
-HTTP/1.1 200 OK
-Content-Length: 1780
-Content-Type: application/json
-Date: Tue, 12 May 2020 19:00:22 GMT
-Grpc-Metadata-Content-Type: application/grpc
+curl -X GET 'http://localhost:8000/v1/delivery-attempts?delivery_id=01E87PJQET446MJ8G5BPN5VGGX'
+```
 
+```javascript
 {
-    "delivery_attempts": [
-        {
-            "created_at": "2020-05-12T18:56:46.839077Z",
-            "delivery_id": "01E853WTM362FWJVB41YREBFAS",
-            "execution_duration": 566,
-            "id": "01E853Y67Q70BTR4HGH1HSE4KV",
-            "request": "POST /post HTTP/1.1\r\nHost: httpbin.org\r\nContent-Type: application/json\r\n\r\n{\"topic_id\":\"person\",\"subscription_id\":\"httpbin-post\",\"message_id\":\"01E853WTKZVYWJFAQZ0EC4G125\",\"secret_token\":\"\",\"data\":\"eyJuYW1lIjogIkFsbGlzc29uIn0=\",\"created_at\":\"2020-05-12T15:56:02.179577-03:00\"}",
-            "response": "HTTP/2.0 200 OK\r\nContent-Length: 871\r\nAccess-Control-Allow-Credentials: true\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nDate: Tue, 12 May 2020 18:56:46 GMT\r\nServer: gunicorn/19.9.0\r\n\r\n{\n  \"args\": {}, \n  \"data\": \"{\\\"topic_id\\\":\\\"person\\\",\\\"subscription_id\\\":\\\"httpbin-post\\\",\\\"message_id\\\":\\\"01E853WTKZVYWJFAQZ0EC4G125\\\",\\\"secret_token\\\":\\\"\\\",\\\"data\\\":\\\"eyJuYW1lIjogIkFsbGlzc29uIn0=\\\",\\\"created_at\\\":\\\"2020-05-12T15:56:02.179577-03:00\\\"}\", \n  \"files\": {}, \n  \"form\": {}, \n  \"headers\": {\n    \"Accept-Encoding\": \"gzip\", \n    \"Content-Length\": \"200\", \n    \"Content-Type\": \"application/json\", \n    \"Host\": \"httpbin.org\", \n    \"User-Agent\": \"Go-http-client/2.0\", \n    \"X-Amzn-Trace-Id\": \"Root=1-5ebaf16e-ff0f55144a49777818244d5c\"\n  }, \n  \"json\": {\n    \"created_at\": \"2020-05-12T15:56:02.179577-03:00\", \n    \"data\": \"eyJuYW1lIjogIkFsbGlzc29uIn0=\", \n    \"message_id\": \"01E853WTKZVYWJFAQZ0EC4G125\", \n    \"secret_token\": \"\", \n    \"subscription_id\": \"httpbin-post\", \n    \"topic_id\": \"person\"\n  }, \n  \"origin\": \"177.37.153.46\", \n  \"url\": \"https://httpbin.org/post\"\n}\n",
-            "response_status_code": 200,
-            "success": true
-        }
-    ]
+  "delivery_attempts":[
+    {
+      "id":"01E87PKW55K0VX9F82NHE04VYR",
+      "delivery_id":"01E87PJQET446MJ8G5BPN5VGGX",
+      "request":"POST /post HTTP/1.1\r\nHost: httpbin.org\r\nContent-Type: application/json\r\n\r\n{\"id\":\"01E87PKW55K0VX9F82NHE04VYR\",\"topic_id\":\"topic\",\"subscription_id\":\"httpbin-post\",\"message_id\":\"01E87PJQERSRN3SXQTEZB5X4FF\",\"secret_token\":\"my-super-secret-token\",\"data\":\"eyJuYW1lIjogIkFsbGlzc29uIn0=\",\"created_at\":\"2020-05-13T16:01:03.066423-03:00\"}",
+      "response":"HTTP/2.0 200 OK\r\nContent-Length: 990\r\nAccess-Control-Allow-Credentials: true\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nDate: Wed, 13 May 2020 19:01:41 GMT\r\nServer: gunicorn/19.9.0\r\n\r\n{\n  \"args\": {}, \n  \"data\": \"{\\\"id\\\":\\\"01E87PKW55K0VX9F82NHE04VYR\\\",\\\"topic_id\\\":\\\"topic\\\",\\\"subscription_id\\\":\\\"httpbin-post\\\",\\\"message_id\\\":\\\"01E87PJQERSRN3SXQTEZB5X4FF\\\",\\\"secret_token\\\":\\\"my-super-secret-token\\\",\\\"data\\\":\\\"eyJuYW1lIjogIkFsbGlzc29uIn0=\\\",\\\"created_at\\\":\\\"2020-05-13T16:01:03.066423-03:00\\\"}\", \n  \"files\": {}, \n  \"form\": {}, \n  \"headers\": {\n    \"Accept-Encoding\": \"gzip\", \n    \"Content-Length\": \"254\", \n    \"Content-Type\": \"application/json\", \n    \"Host\": \"httpbin.org\", \n    \"User-Agent\": \"Go-http-client/2.0\", \n    \"X-Amzn-Trace-Id\": \"Root=1-5ebc4415-ae6e2582cb39e4843440b382\"\n  }, \n  \"json\": {\n    \"created_at\": \"2020-05-13T16:01:03.066423-03:00\", \n    \"data\": \"eyJuYW1lIjogIkFsbGlzc29uIn0=\", \n    \"id\": \"01E87PKW55K0VX9F82NHE04VYR\", \n    \"message_id\": \"01E87PJQERSRN3SXQTEZB5X4FF\", \n    \"secret_token\": \"my-super-secret-token\", \n    \"subscription_id\": \"httpbin-post\", \n    \"topic_id\": \"topic\"\n  }, \n  \"origin\": \"177.37.153.46\", \n  \"url\": \"https://httpbin.org/post\"\n}\n",
+      "response_status_code":200,
+      "execution_duration":768,
+      "success":true,
+      "created_at":"2020-05-13T19:01:41.414943Z"
+    }
+  ]
 }
 ```
+
+### 
 
 ## How to build docker images
 
