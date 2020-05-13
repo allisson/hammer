@@ -53,13 +53,6 @@ var (
 	WorkerDefaultFetchLimit = env.GetInt("HAMMER_WORKER_DEFAULT_FETCH_LIMIT", 100)
 )
 
-// Error data
-type Error struct {
-	Code    int    `json:"-"`
-	Message string `json:"message"`
-	Details string `json:"details"`
-}
-
 // Topic data
 type Topic struct {
 	ID        string    `json:"id" db:"id"`
