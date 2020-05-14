@@ -5,6 +5,15 @@
 
 Simple webhook system written in golang.
 
+## Features
+
+- GRPC + GPRC Gateway (http2 or http1, you choose your destination).
+- Topics and Subscriptions scheme similar to google pubsub, the message is published in a topic and this topic has several subscriptions sending the same notification to different systems.
+- Payload sent follows the JSON Event Format for CloudEvents - Version 1.0 standard.
+- Control the maximum amount of delivery attempts and delay between these attempts.
+- Locks control of worker deliveries using https://github.com/allisson/go-pglock.
+- Simplicity, it does the minimum necessary, it will not have authentication/permission scheme among other things, the idea is to use it internally in the cloud and not leave exposed.
+
 ## Quickstart
 
 Let's start with the basic concepts, we have three main entities that we must know to start:
