@@ -687,6 +687,9 @@
         "message_id": {
           "type": "string"
         },
+        "content_type": {
+          "type": "string"
+        },
         "data": {
           "type": "string"
         },
@@ -834,6 +837,9 @@
           "type": "string"
         },
         "topic_id": {
+          "type": "string"
+        },
+        "content_type": {
           "type": "string"
         },
         "data": {

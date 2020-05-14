@@ -19,9 +19,10 @@ func TestMessageHandler(t *testing.T) {
 		ctx := context.Background()
 		request := &pb.CreateMessageRequest{
 			Message: &pb.Message{
-				Id:      "id",
-				TopicId: "topic_id",
-				Data:    "{}",
+				Id:          "id",
+				TopicId:     "topic_id",
+				ContentType: "application/json",
+				Data:        "{}",
 			},
 		}
 		messageService.On("Create", mock.Anything).Return(nil)
@@ -37,10 +38,11 @@ func TestMessageHandler(t *testing.T) {
 		handler := NewMessageHandler(messageService)
 		ctx := context.Background()
 		message := hammer.Message{
-			ID:        "id",
-			TopicID:   "topic_id",
-			Data:      "{}",
-			CreatedAt: time.Now().UTC(),
+			ID:          "id",
+			TopicID:     "topic_id",
+			ContentType: "application/json",
+			Data:        "{}",
+			CreatedAt:   time.Now().UTC(),
 		}
 		request := &pb.GetMessageRequest{
 			Id: "id",
@@ -58,10 +60,11 @@ func TestMessageHandler(t *testing.T) {
 		handler := NewMessageHandler(messageService)
 		ctx := context.Background()
 		message := hammer.Message{
-			ID:        "id",
-			TopicID:   "topic_id",
-			Data:      "{}",
-			CreatedAt: time.Now().UTC(),
+			ID:          "id",
+			TopicID:     "topic_id",
+			ContentType: "application/json",
+			Data:        "{}",
+			CreatedAt:   time.Now().UTC(),
 		}
 		request := &pb.ListMessagesRequest{
 			Limit:  50,

@@ -87,6 +87,7 @@ func (m *Message) Create(message *hammer.Message) error {
 			TopicID:                message.TopicID,
 			SubscriptionID:         subscription.ID,
 			MessageID:              message.ID,
+			ContentType:            message.ContentType,
 			Data:                   message.Data,
 			URL:                    subscription.URL,
 			SecretToken:            subscription.SecretToken,

@@ -33,6 +33,7 @@ CREATE INDEX IF NOT EXISTS created_at_idx ON subscriptions USING BRIN (created_a
 CREATE TABLE IF NOT EXISTS messages(
     id VARCHAR PRIMARY KEY,
     topic_id VARCHAR NOT NULL,
+    content_type VARCHAR NOT NULL,
     data TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     FOREIGN KEY (topic_id) REFERENCES topics (id) ON DELETE CASCADE
@@ -48,6 +49,7 @@ CREATE TABLE IF NOT EXISTS deliveries(
     topic_id VARCHAR NOT NULL,
     subscription_id VARCHAR NOT NULL,
     message_id VARCHAR NOT NULL,
+    content_type VARCHAR NOT NULL,
     data TEXT NOT NULL,
     url VARCHAR NOT NULL,
     secret_token VARCHAR NOT NULL,
