@@ -26,8 +26,8 @@ func makeRequest(id string, delivery *hammer.Delivery, httpClient *http.Client) 
 	// Create payload
 	cloudEvent := hammer.CloudEventPayload{
 		SpecVersion:     "1.0",
-		Type:            "hammer.deliveryAttempt.create",
-		Source:          fmt.Sprintf("/v1/deliveries/%s", delivery.ID),
+		Type:            "hammer.message.create",
+		Source:          fmt.Sprintf("/v1/messages/%s", delivery.MessageID),
 		ID:              id,
 		Time:            delivery.CreatedAt,
 		SecretToken:     delivery.SecretToken,
