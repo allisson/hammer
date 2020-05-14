@@ -358,6 +358,35 @@
         "tags": [
           "Hammer"
         ]
+      },
+      "delete": {
+        "summary": "Delete message",
+        "operationId": "Hammer_DeleteMessage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Hammer"
+        ]
       }
     },
     "/v1/subscriptions": {
@@ -483,6 +512,35 @@
         "tags": [
           "Hammer"
         ]
+      },
+      "delete": {
+        "summary": "Delete subscription",
+        "operationId": "Hammer_DeleteSubscription",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Hammer"
+        ]
       }
     },
     "/v1/topics": {
@@ -588,6 +646,35 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/v1Topic"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Hammer"
+        ]
+      },
+      "delete": {
+        "summary": "Delete topic",
+        "operationId": "Hammer_DeleteTopic",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "properties": {}
             }
           },
           "default": {

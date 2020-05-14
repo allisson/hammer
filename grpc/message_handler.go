@@ -7,6 +7,7 @@ import (
 	"github.com/allisson/hammer"
 	pb "github.com/allisson/hammer/api/v1"
 	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -113,6 +114,19 @@ func (m *MessageHandler) ListMessages(ctx context.Context, request *pb.ListMessa
 			return response, status.Error(codes.Internal, err.Error())
 		}
 		response.Messages = append(response.Messages, messageResponse)
+	}
+
+	return response, nil
+}
+
+// DeleteMessage delete the message
+func (m *MessageHandler) DeleteMessage(ctx context.Context, request *pb.DeleteMessageRequest) (*empty.Empty, error) {
+	response := &empty.Empty{}
+
+	// Delete topic
+	err := m.messageService.Delete(request.Id)
+	if err != nil {
+		return response, status.Error(codes.Internal, err.Error())
 	}
 
 	return response, nil

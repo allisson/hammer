@@ -49,6 +49,15 @@ func (m *Message) Store(tx hammer.TxRepository, message *hammer.Message) error {
 	return tx.Exec(sqlMessageUpdate, message)
 }
 
+// Delete a hammer.Message on database
+func (m *Message) Delete(tx hammer.TxRepository, id string) error {
+	_, err := m.Find(id)
+	if err != nil {
+		return err
+	}
+	return tx.Exec(sqlMessageDelete, map[string]interface{}{"id": id})
+}
+
 // NewMessage returns a new Message with db connection
 func NewMessage(db *sqlx.DB) Message {
 	return Message{db: db}

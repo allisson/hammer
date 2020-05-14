@@ -6,6 +6,7 @@ import (
 	"github.com/allisson/hammer"
 	pb "github.com/allisson/hammer/api/v1"
 	"github.com/allisson/hammer/mocks"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/net/context"
@@ -70,5 +71,23 @@ func TestSubscriptionHandler(t *testing.T) {
 		assert.Equal(t, 1, len(response.Subscriptions))
 		assert.Equal(t, "subscription_id", response.Subscriptions[0].Id)
 		assert.Equal(t, "Subscription", response.Subscriptions[0].Name)
+	})
+
+	t.Run("Test Delete", func(t *testing.T) {
+		subscriptionService := &mocks.SubscriptionService{}
+		handler := NewSubscriptionHandler(subscriptionService)
+		ctx := context.Background()
+		subscription := hammer.Subscription{
+			ID:   "subscription_id",
+			Name: "Subscription",
+		}
+		request := &pb.DeleteSubscriptionRequest{
+			Id: subscription.ID,
+		}
+		subscriptionService.On("Delete", mock.Anything).Return(nil)
+
+		response, err := handler.DeleteSubscription(ctx, request)
+		assert.Nil(t, err)
+		assert.Equal(t, &empty.Empty{}, response)
 	})
 }

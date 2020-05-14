@@ -5,6 +5,7 @@ option go_package = ".;api";
 package hammer.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 service Hammer {
@@ -27,6 +28,12 @@ service Hammer {
       get: "/v1/topics"
     };
   }
+  // Delete topic
+  rpc DeleteTopic(DeleteTopicRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/topics/{id}"
+    };
+  }
   // Create a new subscription
   rpc CreateSubscription(CreateSubscriptionRequest) returns (Subscription) {
     option (google.api.http) = {
@@ -46,6 +53,12 @@ service Hammer {
       get: "/v1/subscriptions"
     };
   }
+  // Delete subscription
+  rpc DeleteSubscription(DeleteSubscriptionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/subscriptions/{id}"
+    };
+  }
   // Create a new message
   rpc CreateMessage(CreateMessageRequest) returns (Message) {
     option (google.api.http) = {
@@ -63,6 +76,12 @@ service Hammer {
   rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse) {
     option (google.api.http) = {
       get: "/v1/messages"
+    };
+  }
+  // Delete message
+  rpc DeleteMessage(DeleteMessageRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/messages/{id}"
     };
   }
   // Gets the delivery
@@ -124,6 +143,11 @@ message ListTopicsResponse {
   repeated Topic topics = 1;
 }
 
+// Request for the DeleteTopic method
+message DeleteTopicRequest {
+  string id = 1;
+}
+
 // A subscription resource
 message Subscription {
   string id = 1;
@@ -163,6 +187,11 @@ message ListSubscriptionsResponse {
   repeated Subscription subscriptions = 1;
 }
 
+// Request for the DeleteSubscription method
+message DeleteSubscriptionRequest {
+  string id = 1;
+}
+
 // A message resource
 message Message {
   string id = 1;
@@ -196,6 +225,11 @@ message ListMessagesRequest {
 // Response for the ListMessages method
 message ListMessagesResponse {
   repeated Message messages = 1;
+}
+
+// Request for the DeleteMessage method
+message DeleteMessageRequest {
+  string id = 1;
 }
 
 // A delivery resource

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	pb "github.com/allisson/hammer/api/v1"
+	"github.com/golang/protobuf/ptypes/empty"
 )
 
 // Server implements grpc server
@@ -30,6 +31,11 @@ func (s *Server) ListTopics(ctx context.Context, request *pb.ListTopicsRequest) 
 	return s.topicHandler.ListTopics(ctx, request)
 }
 
+// DeleteTopic delete the topic
+func (s *Server) DeleteTopic(ctx context.Context, request *pb.DeleteTopicRequest) (*empty.Empty, error) {
+	return s.topicHandler.DeleteTopic(ctx, request)
+}
+
 // CreateSubscription creates a new subscription
 func (s *Server) CreateSubscription(ctx context.Context, request *pb.CreateSubscriptionRequest) (*pb.Subscription, error) {
 	return s.subscriptionHandler.CreateSubscription(ctx, request)
@@ -45,6 +51,11 @@ func (s *Server) ListSubscriptions(ctx context.Context, request *pb.ListSubscrip
 	return s.subscriptionHandler.ListSubscriptions(ctx, request)
 }
 
+// DeleteSubscription delete the subscription
+func (s *Server) DeleteSubscription(ctx context.Context, request *pb.DeleteSubscriptionRequest) (*empty.Empty, error) {
+	return s.subscriptionHandler.DeleteSubscription(ctx, request)
+}
+
 // CreateMessage creates a new message
 func (s *Server) CreateMessage(ctx context.Context, request *pb.CreateMessageRequest) (*pb.Message, error) {
 	return s.messageHandler.CreateMessage(ctx, request)
@@ -58,6 +69,11 @@ func (s *Server) GetMessage(ctx context.Context, request *pb.GetMessageRequest) 
 // ListMessages get a list of messages
 func (s *Server) ListMessages(ctx context.Context, request *pb.ListMessagesRequest) (*pb.ListMessagesResponse, error) {
 	return s.messageHandler.ListMessages(ctx, request)
+}
+
+// DeleteMessage delete the message
+func (s *Server) DeleteMessage(ctx context.Context, request *pb.DeleteMessageRequest) (*empty.Empty, error) {
+	return s.messageHandler.DeleteMessage(ctx, request)
 }
 
 // GetDelivery gets the delivery

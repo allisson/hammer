@@ -26,6 +26,20 @@ func (_m *MessageService) Create(message *hammer.Message) error {
 	return r0
 }
 
+// Delete provides a mock function with given fields: id
+func (_m *MessageService) Delete(id string) error {
+	ret := _m.Called(id)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Find provides a mock function with given fields: id
 func (_m *MessageService) Find(id string) (hammer.Message, error) {
 	ret := _m.Called(id)

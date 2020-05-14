@@ -165,4 +165,22 @@ func TestSubscription(t *testing.T) {
 		err := subscriptionService.Update(&subscription)
 		assert.Equal(t, hammer.ErrSubscriptionDoesNotExists, err)
 	})
+
+	t.Run("Test Delete", func(t *testing.T) {
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
+		subscription.TopicID = topic.ID
+		topicRepo := &mocks.TopicRepository{}
+		subscriptionRepo := &mocks.SubscriptionRepository{}
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		txRepo := &mocks.TxRepository{}
+		subscriptionService := NewSubscription(topicRepo, subscriptionRepo, txFactoryRepo)
+		subscriptionRepo.On("Find", mock.Anything).Return(subscription, nil)
+		txFactoryRepo.On("New").Return(txRepo, nil)
+		subscriptionRepo.On("Delete", mock.Anything, mock.Anything).Return(nil)
+		txRepo.On("Commit").Return(nil)
+
+		err := subscriptionService.Delete(subscription.ID)
+		assert.Nil(t, err)
+	})
 }

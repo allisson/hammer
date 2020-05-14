@@ -120,6 +120,27 @@ func (s *Subscription) Update(subscription *hammer.Subscription) error {
 	return nil
 }
 
+// Delete a hammer.Subscription on repository
+func (s *Subscription) Delete(id string) error {
+	tx, err := s.txFactoryRepo.New()
+	if err != nil {
+		return err
+	}
+
+	err = s.subscriptionRepo.Delete(tx, id)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		rollback(tx, "subscription-delete-rollback")
+		return err
+	}
+
+	return nil
+}
+
 // NewSubscription returns a new Subscription with SubscriptionRepo
 func NewSubscription(topicRepo hammer.TopicRepository, subscriptionRepo hammer.SubscriptionRepository, txFactoryRepo hammer.TxFactoryRepository) Subscription {
 	return Subscription{
