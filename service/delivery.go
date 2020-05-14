@@ -20,15 +20,15 @@ type dispatchResponse struct {
 	Error              string
 }
 
-func makeRequest(id string, delivery *hammer.Delivery, httpClient *http.Client) dispatchResponse {
+func makeRequest(delivery *hammer.Delivery, httpClient *http.Client) dispatchResponse {
 	dr := dispatchResponse{}
 
 	// Create payload
 	cloudEvent := hammer.CloudEventPayload{
 		SpecVersion:     "1.0",
-		Type:            "hammer.deliveryAttempt.create",
-		Source:          fmt.Sprintf("/v1/deliveries/%s", delivery.ID),
-		ID:              id,
+		Type:            "hammer.message.create",
+		Source:          fmt.Sprintf("/v1/messages/%s", delivery.MessageID),
+		ID:              delivery.ID,
 		Time:            delivery.CreatedAt,
 		SecretToken:     delivery.SecretToken,
 		MessageID:       delivery.MessageID,
@@ -115,7 +115,7 @@ func (d *Delivery) Dispatch(delivery *hammer.Delivery, httpClient *http.Client) 
 		return err
 	}
 
-	dr := makeRequest(id, delivery, httpClient)
+	dr := makeRequest(delivery, httpClient)
 
 	// Start tx
 	tx, err := d.txFactoryRepo.New()
