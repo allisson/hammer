@@ -134,6 +134,10 @@ const (
 			created_at = :created_at
 		WHERE id = :id
 	`
+	sqlMessageDelete = `
+		DELETE FROM messages
+		WHERE id = :id
+	`
 	// Subscription Statements
 	sqlSubscriptionCreate = `
 		INSERT INTO subscriptions (
@@ -174,6 +178,10 @@ const (
 			updated_at = :updated_at
 		WHERE id = :id
 	`
+	sqlSubscriptionDelete = `
+		DELETE FROM subscriptions
+		WHERE id = :id
+	`
 	// Topic Statements
 	sqlTopicCreate = `
 		INSERT INTO topics (
@@ -194,6 +202,10 @@ const (
 		SET name = :name,
 			created_at = :created_at,
 			updated_at = :updated_at
+		WHERE id = :id
+	`
+	sqlTopicDelete = `
+		DELETE FROM topics
 		WHERE id = :id
 	`
 )

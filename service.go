@@ -8,6 +8,7 @@ type TopicService interface {
 	FindAll(findOptions FindOptions) ([]Topic, error)
 	Create(topic *Topic) error
 	Update(topic *Topic) error
+	Delete(id string) error
 }
 
 // SubscriptionService interface
@@ -16,6 +17,7 @@ type SubscriptionService interface {
 	FindAll(findOptions FindOptions) ([]Subscription, error)
 	Create(subscription *Subscription) error
 	Update(subscription *Subscription) error
+	Delete(id string) error
 }
 
 // MessageService interface
@@ -23,6 +25,7 @@ type MessageService interface {
 	Find(id string) (Message, error)
 	FindAll(findOptions FindOptions) ([]Message, error)
 	Create(message *Message) error
+	Delete(id string) error
 }
 
 // DeliveryService interface

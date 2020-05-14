@@ -94,4 +94,19 @@ func TestTopic(t *testing.T) {
 		err := topicService.Update(&topic)
 		assert.Equal(t, hammer.ErrTopicDoesNotExists, err)
 	})
+
+	t.Run("Test Delete", func(t *testing.T) {
+		topic := hammer.MakeTestTopic()
+		topicRepo := &mocks.TopicRepository{}
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		txRepo := &mocks.TxRepository{}
+		topicService := NewTopic(topicRepo, txFactoryRepo)
+		topicRepo.On("Find", mock.Anything).Return(topic, nil)
+		txFactoryRepo.On("New").Return(txRepo, nil)
+		topicRepo.On("Delete", mock.Anything, mock.Anything).Return(nil)
+		txRepo.On("Commit").Return(nil)
+
+		err := topicService.Delete(topic.ID)
+		assert.Nil(t, err)
+	})
 }

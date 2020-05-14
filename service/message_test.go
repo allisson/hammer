@@ -84,4 +84,22 @@ func TestMessage(t *testing.T) {
 		err := messageService.Create(&message)
 		assert.Equal(t, hammer.ErrTopicDoesNotExists, err)
 	})
+
+	t.Run("Test Delete", func(t *testing.T) {
+		message := hammer.MakeTestMessage()
+		topicRepo := &mocks.TopicRepository{}
+		messageRepo := &mocks.MessageRepository{}
+		subscriptionRepo := &mocks.SubscriptionRepository{}
+		deliveryRepo := &mocks.DeliveryRepository{}
+		txFactoryRepo := &mocks.TxFactoryRepository{}
+		txRepo := &mocks.TxRepository{}
+		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo, txFactoryRepo)
+		messageRepo.On("Find", mock.Anything).Return(message, nil)
+		txFactoryRepo.On("New").Return(txRepo, nil)
+		messageRepo.On("Delete", mock.Anything, mock.Anything).Return(nil)
+		txRepo.On("Commit").Return(nil)
+
+		err := messageService.Delete(message.ID)
+		assert.Nil(t, err)
+	})
 }

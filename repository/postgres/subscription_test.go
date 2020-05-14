@@ -105,4 +105,28 @@ func TestSubscription(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(subscriptions))
 	})
+
+	t.Run("Test Delete", func(t *testing.T) {
+		th := newTxnTestHelper()
+		defer th.db.Close()
+
+		tx, err := th.txFactory.New()
+		assert.Nil(t, err)
+		topic := hammer.MakeTestTopic()
+		subscription := hammer.MakeTestSubscription()
+		subscription.TopicID = topic.ID
+		err = th.topicRepo.Store(tx, &topic)
+		assert.Nil(t, err)
+		err = th.subscriptionRepo.Store(tx, &subscription)
+		assert.Nil(t, err)
+		err = tx.Commit()
+		assert.Nil(t, err)
+
+		tx, err = th.txFactory.New()
+		assert.Nil(t, err)
+		err = th.subscriptionRepo.Delete(tx, subscription.ID)
+		assert.Nil(t, err)
+		err = tx.Commit()
+		assert.Nil(t, err)
+	})
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/allisson/hammer"
 	pb "github.com/allisson/hammer/api/v1"
 	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -118,6 +119,19 @@ func (s *SubscriptionHandler) ListSubscriptions(ctx context.Context, request *pb
 			return response, status.Error(codes.Internal, err.Error())
 		}
 		response.Subscriptions = append(response.Subscriptions, subscriptionResponse)
+	}
+
+	return response, nil
+}
+
+// DeleteSubscription delete the subscription
+func (s *SubscriptionHandler) DeleteSubscription(ctx context.Context, request *pb.DeleteSubscriptionRequest) (*empty.Empty, error) {
+	response := &empty.Empty{}
+
+	// Delete topic
+	err := s.subscriptionService.Delete(request.Id)
+	if err != nil {
+		return response, status.Error(codes.Internal, err.Error())
 	}
 
 	return response, nil

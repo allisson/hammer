@@ -93,6 +93,27 @@ func (t *Topic) Update(topic *hammer.Topic) error {
 	return nil
 }
 
+// Delete a hammer.Topic on repository
+func (t *Topic) Delete(id string) error {
+	tx, err := t.txFactoryRepo.New()
+	if err != nil {
+		return err
+	}
+
+	err = t.topicRepo.Delete(tx, id)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		rollback(tx, "topic-delete-rollback")
+		return err
+	}
+
+	return nil
+}
+
 // NewTopic returns a new Topic with topicRepo
 func NewTopic(topicRepo hammer.TopicRepository, txFactoryRepo hammer.TxFactoryRepository) Topic {
 	return Topic{

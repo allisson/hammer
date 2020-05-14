@@ -116,6 +116,27 @@ func (m *Message) Create(message *hammer.Message) error {
 	return nil
 }
 
+// Delete a hammer.Message on repository
+func (m *Message) Delete(id string) error {
+	tx, err := m.txFactoryRepo.New()
+	if err != nil {
+		return err
+	}
+
+	err = m.messageRepo.Delete(tx, id)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		rollback(tx, "message-delete-rollback")
+		return err
+	}
+
+	return nil
+}
+
 // NewMessage returns a new Message with MessageRepo
 func NewMessage(topicRepo hammer.TopicRepository, messageRepo hammer.MessageRepository, subscriptionRepo hammer.SubscriptionRepository, deliveryRepo hammer.DeliveryRepository, txFactoryRepo hammer.TxFactoryRepository) Message {
 	return Message{

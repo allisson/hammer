@@ -49,6 +49,15 @@ func (t *Topic) Store(tx hammer.TxRepository, topic *hammer.Topic) error {
 	return tx.Exec(sqlTopicUpdate, topic)
 }
 
+// Delete a hammer.Topic on database
+func (t *Topic) Delete(tx hammer.TxRepository, id string) error {
+	_, err := t.Find(id)
+	if err != nil {
+		return err
+	}
+	return tx.Exec(sqlTopicDelete, map[string]interface{}{"id": id})
+}
+
 // NewTopic returns a new Topic with db connection
 func NewTopic(db *sqlx.DB) Topic {
 	return Topic{db: db}

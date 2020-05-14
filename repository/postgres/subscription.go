@@ -49,6 +49,15 @@ func (s *Subscription) Store(tx hammer.TxRepository, subscription *hammer.Subscr
 	return tx.Exec(sqlSubscriptionUpdate, subscription)
 }
 
+// Delete a hammer.Subscription on database
+func (s *Subscription) Delete(tx hammer.TxRepository, id string) error {
+	_, err := s.Find(id)
+	if err != nil {
+		return err
+	}
+	return tx.Exec(sqlSubscriptionDelete, map[string]interface{}{"id": id})
+}
+
 // NewSubscription returns a new Subscription with db connection
 func NewSubscription(db *sqlx.DB) Subscription {
 	return Subscription{db: db}

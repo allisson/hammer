@@ -26,6 +26,20 @@ func (_m *SubscriptionService) Create(subscription *hammer.Subscription) error {
 	return r0
 }
 
+// Delete provides a mock function with given fields: id
+func (_m *SubscriptionService) Delete(id string) error {
+	ret := _m.Called(id)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Find provides a mock function with given fields: id
 func (_m *SubscriptionService) Find(id string) (hammer.Subscription, error) {
 	ret := _m.Called(id)

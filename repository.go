@@ -5,6 +5,7 @@ type TopicRepository interface {
 	Find(id string) (Topic, error)
 	FindAll(findOptions FindOptions) ([]Topic, error)
 	Store(tx TxRepository, topic *Topic) error
+	Delete(tx TxRepository, id string) error
 }
 
 // SubscriptionRepository interface
@@ -12,6 +13,7 @@ type SubscriptionRepository interface {
 	Find(id string) (Subscription, error)
 	FindAll(findOptions FindOptions) ([]Subscription, error)
 	Store(tx TxRepository, subscription *Subscription) error
+	Delete(tx TxRepository, id string) error
 }
 
 // MessageRepository interface
@@ -19,6 +21,7 @@ type MessageRepository interface {
 	Find(id string) (Message, error)
 	FindAll(findOptions FindOptions) ([]Message, error)
 	Store(tx TxRepository, message *Message) error
+	Delete(tx TxRepository, id string) error
 }
 
 // DeliveryRepository interface

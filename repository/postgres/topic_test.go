@@ -120,4 +120,24 @@ func TestTopic(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(topics))
 	})
+
+	t.Run("Test Delete", func(t *testing.T) {
+		th := newTxnTestHelper()
+		defer th.db.Close()
+
+		tx, err := th.txFactory.New()
+		assert.Nil(t, err)
+		topic := hammer.MakeTestTopic()
+		err = th.topicRepo.Store(tx, &topic)
+		assert.Nil(t, err)
+		err = tx.Commit()
+		assert.Nil(t, err)
+
+		tx, err = th.txFactory.New()
+		assert.Nil(t, err)
+		err = th.topicRepo.Delete(tx, topic.ID)
+		assert.Nil(t, err)
+		err = tx.Commit()
+		assert.Nil(t, err)
+	})
 }

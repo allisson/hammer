@@ -12,6 +12,20 @@ type TopicRepository struct {
 	mock.Mock
 }
 
+// Delete provides a mock function with given fields: tx, id
+func (_m *TopicRepository) Delete(tx hammer.TxRepository, id string) error {
+	ret := _m.Called(tx, id)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(hammer.TxRepository, string) error); ok {
+		r0 = rf(tx, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Find provides a mock function with given fields: id
 func (_m *TopicRepository) Find(id string) (hammer.Topic, error) {
 	ret := _m.Called(id)
