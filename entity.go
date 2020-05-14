@@ -98,15 +98,18 @@ func (s Subscription) Validate() error {
 
 // Message data
 type Message struct {
-	ID        string    `json:"id" db:"id"`
-	TopicID   string    `json:"topic_id" db:"topic_id"`
-	Data      string    `json:"data" db:"data"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	ID          string    `json:"id" db:"id"`
+	TopicID     string    `json:"topic_id" db:"topic_id"`
+	ContentType string    `json:"content_type" db:"content_type"`
+	Data        string    `json:"data" db:"data"`
+	CreatedAt   time.Time `json:"created_at" db:"created_at"`
 }
 
 // Validate message
 func (m Message) Validate() error {
 	return validation.ValidateStruct(&m,
+		validation.Field(&m.TopicID, validation.Required),
+		validation.Field(&m.ContentType, validation.Required),
 		validation.Field(&m.Data, validation.Required),
 	)
 }
@@ -117,6 +120,7 @@ type Delivery struct {
 	TopicID                string    `json:"topic_id" db:"topic_id"`
 	SubscriptionID         string    `json:"subscription_id" db:"subscription_id"`
 	MessageID              string    `json:"message_id" db:"message_id"`
+	ContentType            string    `json:"content_type" db:"content_type"`
 	Data                   string    `json:"data" db:"data"`
 	URL                    string    `json:"url" db:"url"`
 	SecretToken            string    `json:"secret_token" db:"secret_token"`
@@ -143,15 +147,19 @@ type DeliveryAttempt struct {
 	CreatedAt          time.Time `json:"created_at" db:"created_at"`
 }
 
-// WebhookMessage data
-type WebhookMessage struct {
-	ID             string    `json:"id"`
-	TopicID        string    `json:"topic_id"`
-	SubscriptionID string    `json:"subscription_id"`
-	MessageID      string    `json:"message_id"`
-	SecretToken    string    `json:"secret_token"`
-	Data           string    `json:"data"`
-	CreatedAt      time.Time `json:"created_at"`
+// CloudEventPayload data
+type CloudEventPayload struct {
+	SpecVersion     string    `json:"specversion"`
+	Type            string    `json:"type"`
+	Source          string    `json:"source"`
+	ID              string    `json:"id"`
+	Time            time.Time `json:"time"`
+	SecretToken     string    `json:"secrettoken"`
+	MessageID       string    `json:"messageid"`
+	SubscriptionID  string    `json:"subscriptionid"`
+	TopicID         string    `json:"topicid"`
+	DataContentType string    `json:"datacontenttype"`
+	DataBase64      string    `json:"data_base64"`
 }
 
 // FindFilter data

@@ -34,6 +34,7 @@ func (d *DeliveryHandler) buildResponse(delivery *hammer.Delivery) (*pb.Delivery
 	response.TopicId = delivery.TopicID
 	response.SubscriptionId = delivery.SubscriptionID
 	response.MessageId = delivery.MessageID
+	response.ContentType = delivery.ContentType
 	response.Data = delivery.Data
 	response.Url = delivery.URL
 	response.SecretToken = delivery.SecretToken

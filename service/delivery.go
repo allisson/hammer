@@ -3,6 +3,7 @@ package service
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"time"
@@ -22,19 +23,23 @@ type dispatchResponse struct {
 func makeRequest(id string, delivery *hammer.Delivery, httpClient *http.Client) dispatchResponse {
 	dr := dispatchResponse{}
 
-	// Create WebhookMessage
-	webhookMessage := hammer.WebhookMessage{
-		ID:             id,
-		TopicID:        delivery.TopicID,
-		SubscriptionID: delivery.SubscriptionID,
-		MessageID:      delivery.MessageID,
-		SecretToken:    delivery.SecretToken,
-		Data:           delivery.Data,
-		CreatedAt:      delivery.CreatedAt,
+	// Create payload
+	cloudEvent := hammer.CloudEventPayload{
+		SpecVersion:     "1.0",
+		Type:            "hammer.deliveryAttempt.create",
+		Source:          fmt.Sprintf("/v1/deliveries/%s", delivery.ID),
+		ID:              id,
+		Time:            delivery.CreatedAt,
+		SecretToken:     delivery.SecretToken,
+		MessageID:       delivery.MessageID,
+		SubscriptionID:  delivery.SubscriptionID,
+		TopicID:         delivery.TopicID,
+		DataContentType: delivery.ContentType,
+		DataBase64:      delivery.Data,
 	}
 
 	// Convert to json
-	requestBody, err := json.Marshal(&webhookMessage)
+	requestBody, err := json.Marshal(&cloudEvent)
 	if err != nil {
 		dr.Error = err.Error()
 		return dr

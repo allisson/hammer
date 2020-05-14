@@ -45,9 +45,10 @@ func MakeTestSubscription() Subscription {
 func MakeTestMessage() Message {
 	id := fmt.Sprintf("%d", randonInt())
 	return Message{
-		ID:        fmt.Sprintf("Message_%s", id),
-		Data:      `{"id": "id", "name": "Allisson"}`,
-		CreatedAt: time.Now().UTC(),
+		ID:          fmt.Sprintf("Message_%s", id),
+		ContentType: "application/json",
+		Data:        `{"id": "id", "name": "Allisson"}`,
+		CreatedAt:   time.Now().UTC(),
 	}
 }
 
@@ -56,6 +57,7 @@ func MakeTestDelivery() Delivery {
 	id := fmt.Sprintf("%d", randonInt())
 	return Delivery{
 		ID:                     fmt.Sprintf("Delivery_%s", id),
+		ContentType:            "application/json",
 		Data:                   fmt.Sprintf("data_%s", id),
 		URL:                    fmt.Sprintf("https://example.com/%s/", id),
 		SecretToken:            fmt.Sprintf("token-%s", id),

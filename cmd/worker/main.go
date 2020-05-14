@@ -93,6 +93,9 @@ func (t *taskJob) Dispatch(deliveryID string, wg *sync.WaitGroup) {
 	logger.Info(
 		"delivery-attempt-made",
 		zap.String("id", delivery.ID),
+		zap.String("topic_id", delivery.TopicID),
+		zap.String("subscription_id", delivery.SubscriptionID),
+		zap.String("message_id", delivery.MessageID),
 		zap.String("status", delivery.Status),
 		zap.Int("attempts", delivery.DeliveryAttempts),
 		zap.Int("max_delivery_attempts", delivery.MaxDeliveryAttempts),

@@ -58,6 +58,7 @@ const (
 			"topic_id",
 			"subscription_id",
 			"message_id",
+			"content_type",
 			"data",
 			"url",
 			"secret_token",
@@ -75,6 +76,7 @@ const (
 			:topic_id,
 			:subscription_id,
 			:message_id,
+			:content_type,
 			:data,
 			:url,
 			:secret_token,
@@ -93,6 +95,7 @@ const (
 		SET topic_id = :topic_id,
 			subscription_id = :subscription_id,
 			message_id = :message_id,
+			content_type = :content_type,
 			data = :data,
 			url = :url,
 			secret_token = :secret_token,
@@ -111,12 +114,14 @@ const (
 		INSERT INTO messages (
 			"id",
 			"topic_id",
+			"content_type",
 			"data",
 			"created_at"
 		)
 		VALUES (
 			:id,
 			:topic_id,
+			:content_type,
 			:data,
 			:created_at
 		)
@@ -124,6 +129,7 @@ const (
 	sqlMessageUpdate = `
 		UPDATE messages
 		SET topic_id = :topic_id,
+			content_type = :content_type,
 			data = :data,
 			created_at = :created_at
 		WHERE id = :id

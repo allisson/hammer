@@ -24,6 +24,7 @@ func (m *MessageHandler) buildResponse(message *hammer.Message) (*pb.Message, er
 	}
 	response.Id = message.ID
 	response.TopicId = message.TopicID
+	response.ContentType = message.ContentType
 	response.Data = message.Data
 	response.CreatedAt = createdAt
 
@@ -38,9 +39,10 @@ func (m *MessageHandler) CreateMessage(ctx context.Context, request *pb.CreateMe
 
 	// Build a message
 	message := hammer.Message{
-		ID:      request.Message.Id,
-		TopicID: request.Message.TopicId,
-		Data:    string(request.Message.Data),
+		ID:          request.Message.Id,
+		TopicID:     request.Message.TopicId,
+		ContentType: request.Message.ContentType,
+		Data:        string(request.Message.Data),
 	}
 
 	// Validate message
