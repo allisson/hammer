@@ -91,7 +91,7 @@ func (t *taskJob) Dispatch(deliveryID string, wg *sync.WaitGroup) {
 		return
 	}
 	logger.Info(
-		"delivery-attempt-made",
+		"delivery-made",
 		zap.String("id", delivery.ID),
 		zap.String("topic_id", delivery.TopicID),
 		zap.String("subscription_id", delivery.SubscriptionID),
