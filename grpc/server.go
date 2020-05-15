@@ -21,6 +21,11 @@ func (s *Server) CreateTopic(ctx context.Context, request *pb.CreateTopicRequest
 	return s.topicHandler.CreateTopic(ctx, request)
 }
 
+// UpdateTopic update the topic
+func (s *Server) UpdateTopic(ctx context.Context, request *pb.UpdateTopicRequest) (*pb.Topic, error) {
+	return s.topicHandler.UpdateTopic(ctx, request)
+}
+
 // GetTopic gets the topic
 func (s *Server) GetTopic(ctx context.Context, request *pb.GetTopicRequest) (*pb.Topic, error) {
 	return s.topicHandler.GetTopic(ctx, request)
@@ -39,6 +44,11 @@ func (s *Server) DeleteTopic(ctx context.Context, request *pb.DeleteTopicRequest
 // CreateSubscription creates a new subscription
 func (s *Server) CreateSubscription(ctx context.Context, request *pb.CreateSubscriptionRequest) (*pb.Subscription, error) {
 	return s.subscriptionHandler.CreateSubscription(ctx, request)
+}
+
+// UpdateSubscription update the subscription
+func (s *Server) UpdateSubscription(ctx context.Context, request *pb.UpdateSubscriptionRequest) (*pb.Subscription, error) {
+	return s.subscriptionHandler.UpdateSubscription(ctx, request)
 }
 
 // GetSubscription gets the subscription

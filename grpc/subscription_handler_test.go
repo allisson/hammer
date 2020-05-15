@@ -19,15 +19,41 @@ func TestSubscriptionHandler(t *testing.T) {
 		ctx := context.Background()
 		request := &pb.CreateSubscriptionRequest{
 			Subscription: &pb.Subscription{
-				Id:      "subscription_id",
-				TopicId: "topic_id",
-				Name:    "Subscription",
-				Url:     "https://example.com/post",
+				Id:                     "subscription_id",
+				TopicId:                "topic_id",
+				Name:                   "Subscription",
+				Url:                    "https://example.com/post",
+				MaxDeliveryAttempts:    5,
+				DeliveryAttemptDelay:   60,
+				DeliveryAttemptTimeout: 5,
 			},
 		}
 		subscriptionService.On("Create", mock.Anything).Return(nil)
 
 		response, err := handler.CreateSubscription(ctx, request)
+		assert.Nil(t, err)
+		assert.Equal(t, "subscription_id", response.Id)
+		assert.Equal(t, "Subscription", response.Name)
+	})
+
+	t.Run("Test UpdateSubscription", func(t *testing.T) {
+		subscriptionService := &mocks.SubscriptionService{}
+		handler := NewSubscriptionHandler(subscriptionService)
+		ctx := context.Background()
+		request := &pb.UpdateSubscriptionRequest{
+			Subscription: &pb.Subscription{
+				Id:                     "subscription_id",
+				TopicId:                "topic_id",
+				Name:                   "Subscription",
+				Url:                    "https://example.com/post",
+				MaxDeliveryAttempts:    5,
+				DeliveryAttemptDelay:   60,
+				DeliveryAttemptTimeout: 5,
+			},
+		}
+		subscriptionService.On("Update", mock.Anything).Return(nil)
+
+		response, err := handler.UpdateSubscription(ctx, request)
 		assert.Nil(t, err)
 		assert.Equal(t, "subscription_id", response.Id)
 		assert.Equal(t, "Subscription", response.Name)

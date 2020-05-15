@@ -79,6 +79,7 @@ func (t *Topic) Update(topic *hammer.Topic) error {
 		return err
 	}
 	topic.ID = topicFromRepo.ID
+	topic.CreatedAt = topicFromRepo.CreatedAt
 	topic.UpdatedAt = time.Now().UTC()
 	err = t.topicRepo.Store(tx, topic)
 	if err != nil {

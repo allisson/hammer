@@ -74,6 +74,39 @@ func (s *SubscriptionHandler) CreateSubscription(ctx context.Context, request *p
 	return s.buildResponse(&subscription)
 }
 
+// UpdateSubscription update the subscription
+func (s *SubscriptionHandler) UpdateSubscription(ctx context.Context, request *pb.UpdateSubscriptionRequest) (*pb.Subscription, error) {
+	if request.Subscription == nil {
+		request.Subscription = &pb.Subscription{}
+	}
+
+	// Build a subscription
+	subscription := hammer.Subscription{
+		ID:                     request.Subscription.Id,
+		TopicID:                request.Subscription.TopicId,
+		Name:                   request.Subscription.Name,
+		URL:                    request.Subscription.Url,
+		SecretToken:            request.Subscription.SecretToken,
+		MaxDeliveryAttempts:    int(request.Subscription.MaxDeliveryAttempts),
+		DeliveryAttemptDelay:   int(request.Subscription.DeliveryAttemptDelay),
+		DeliveryAttemptTimeout: int(request.Subscription.DeliveryAttemptTimeout),
+	}
+
+	// Validate subscription
+	err := subscription.Validate()
+	if err != nil {
+		return &pb.Subscription{}, status.Error(codes.InvalidArgument, "invalid_subscription")
+	}
+
+	// Update subscription
+	err = s.subscriptionService.Update(&subscription)
+	if err != nil {
+		return &pb.Subscription{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return s.buildResponse(&subscription)
+}
+
 // GetSubscription gets the subscription
 func (s *SubscriptionHandler) GetSubscription(ctx context.Context, request *pb.GetSubscriptionRequest) (*pb.Subscription, error) {
 	// Get subscription from service
