@@ -1,5 +1,3 @@
-PLATFORM := $(shell uname | tr A-Z a-z)
-
 build-protobuf:
 	cd api/v1 && protoc -I/usr/local/include -I. -I$(GOPATH)/src -I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis --go_out=plugins=grpc:. hammer.proto
 	cd api/v1 && protoc -I/usr/local/include -I. -I$(GOPATH)/src -I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis --grpc-gateway_out=logtostderr=true:. hammer.proto
@@ -14,15 +12,6 @@ lint:
 
 test:
 	go test -covermode=count -coverprofile=count.out -v ./...
-
-download-golang-migrate-binary:
-	if [ ! -f ./migrate.$(PLATFORM)-amd64 ] ; \
-	then \
-		curl -sfL https://github.com/golang-migrate/migrate/releases/download/v4.11.0/migrate.$(PLATFORM)-amd64.tar.gz | tar -xvz; \
-	fi;
-
-db-migrate: download-golang-migrate-binary
-	./migrate.$(PLATFORM)-amd64 -source file://db/migrations -database ${HAMMER_DATABASE_URL} up
 
 mock:
 	@rm -rf mocks
@@ -45,4 +34,4 @@ run-worker:
 run-server:
 	go run cmd/server/main.go
 
-.PHONY: lint test download-golang-migrate-binary db-migrate mock run-worker run-server
+.PHONY: build-protobuf lint test mock run-worker run-server
