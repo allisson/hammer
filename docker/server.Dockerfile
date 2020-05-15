@@ -18,4 +18,5 @@ RUN go mod download && \
 # final stage
 FROM gcr.io/distroless/base:nonroot
 COPY --from=build-env /build/app /
+COPY --from=build-env /build/db/migrations /db/migrations
 CMD ["/app"]

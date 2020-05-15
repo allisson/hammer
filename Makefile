@@ -45,4 +45,4 @@ run-worker:
 run-server:
 	go run cmd/server/main.go
 
-.PHONY: lint test download-golang-migrate-binary db-migrate mock run-worker run-server
+.PHONY: build-protobuf lint test download-golang-migrate-binary db-migrate mock run-worker run-server
