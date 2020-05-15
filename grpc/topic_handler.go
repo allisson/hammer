@@ -62,6 +62,33 @@ func (t *TopicHandler) CreateTopic(ctx context.Context, request *pb.CreateTopicR
 	return t.buildResponse(&topic)
 }
 
+// UpdateTopic update the topic
+func (t *TopicHandler) UpdateTopic(ctx context.Context, request *pb.UpdateTopicRequest) (*pb.Topic, error) {
+	if request.Topic == nil {
+		request.Topic = &pb.Topic{}
+	}
+
+	// Build a topic
+	topic := hammer.Topic{
+		ID:   request.Topic.Id,
+		Name: request.Topic.Name,
+	}
+
+	// Validate topic
+	err := topic.Validate()
+	if err != nil {
+		return &pb.Topic{}, status.Error(codes.InvalidArgument, "invalid_topic")
+	}
+
+	// Update topic
+	err = t.topicService.Update(&topic)
+	if err != nil {
+		return &pb.Topic{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return t.buildResponse(&topic)
+}
+
 // GetTopic gets the topic
 func (t *TopicHandler) GetTopic(ctx context.Context, request *pb.GetTopicRequest) (*pb.Topic, error) {
 	// Get topic from service

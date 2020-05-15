@@ -39,12 +39,6 @@ var (
 	DefaultPaginationLimit = env.GetInt("HAMMER_DEFAULT_PAGINATION_LIMIT", 25)
 	// MaxPaginationLimit represents the max value for pagination limit on resource list
 	MaxPaginationLimit = env.GetInt("HAMMER_MAX_PAGINATION_LIMIT", 50)
-	// DefaultMaxDeliveryAttempts represents a default max delivery attempts for subscription
-	DefaultMaxDeliveryAttempts = env.GetInt("HAMMER_DEFAULT_MAX_DELIVERY_ATTEMPTS", 5)
-	// DefaultDeliveryAttemptDelay represents a default attempt delay for subscription
-	DefaultDeliveryAttemptDelay = env.GetInt("HAMMER_DEFAULT_DELIVERY_ATTEMPT_DELAY", 60)
-	// DefaultDeliveryAttemptTimeout represents a default attempt timeout for subscription
-	DefaultDeliveryAttemptTimeout = env.GetInt("HAMMER_DEFAULT_DELIVERY_ATTEMPT_TIMEOUT", 5)
 	// DefaultSecretTokenLength represents a default length for a random string to secret token if it is not informed
 	DefaultSecretTokenLength = env.GetInt("HAMMER_DEFAULT_SECRET_TOKEN_LENGTH", 40)
 	// WorkerDatabaseDelay represents a delay for database access by workers
@@ -90,9 +84,9 @@ func (s Subscription) Validate() error {
 		validation.Field(&s.TopicID, validation.Required, validation.Match(idRegex)),
 		validation.Field(&s.Name, validation.Required),
 		validation.Field(&s.URL, validation.Required, is.URL),
-		validation.Field(&s.MaxDeliveryAttempts, validation.Min(1)),
-		validation.Field(&s.DeliveryAttemptDelay, validation.Min(1)),
-		validation.Field(&s.DeliveryAttemptTimeout, validation.Min(1)),
+		validation.Field(&s.MaxDeliveryAttempts, validation.Required, validation.Min(1)),
+		validation.Field(&s.DeliveryAttemptDelay, validation.Required, validation.Min(1)),
+		validation.Field(&s.DeliveryAttemptTimeout, validation.Required, validation.Min(1)),
 	)
 }
 

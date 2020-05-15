@@ -54,8 +54,8 @@ curl -X POST 'http://localhost:8000/v1/topics' \
 {
   "id": "topic",
   "name": "Topic",
-  "created_at": "2020-05-14T11:42:49.929822Z",
-  "updated_at": "2020-05-14T11:42:49.929822Z"
+  "created_at": "2020-05-15T12:46:25.789143Z",
+  "updated_at": "2020-05-15T12:46:25.789143Z"
 }
 ```
 
@@ -90,8 +90,8 @@ curl -X POST 'http://localhost:8000/v1/subscriptions' \
   "max_delivery_attempts": 5,
   "delivery_attempt_delay": 60,
   "delivery_attempt_timeout": 5,
-  "created_at": "2020-05-14T11:43:27.574436Z",
-  "updated_at": "2020-05-14T11:43:27.574436Z"
+  "created_at": "2020-05-15T12:46:46.469638Z",
+  "updated_at": "2020-05-15T12:46:46.469638Z"
 }
 ```
 
@@ -111,11 +111,11 @@ curl -X POST 'http://localhost:8000/v1/messages' \
 
 ```javascript
 {
-  "id": "01E89G1PYMP3XNST3ARE86AAWF",
+  "id": "01E8C5ZKFFKHEAMSM0WRKCH7FQ",
   "topic_id": "topic",
   "content_type": "application/json",
   "data": "eyJuYW1lIjogIkFsbGlzc29uIn0=",
-  "created_at": "2020-05-14T11:45:22.900194Z"
+  "created_at": "2020-05-15T12:47:11.343464Z"
 }
 ```
 
@@ -126,8 +126,8 @@ The system will send a post request and the server must respond with the followi
 ```bash
 make run-worker
 go run cmd/worker/main.go
-{"level":"info","ts":1589456754.045473,"caller":"worker/main.go:182","msg":"worker-started"}
-{"level":"info","ts":1589456754.827661,"caller":"worker/main.go:93","msg":"delivery-made","id":"01E89G1PYP2SAKXFE82D2KC7GQ","topic_id":"topic","subscription_id":"httpbin-post","message_id":"01E89G1PYMP3XNST3ARE86AAWF","status":"completed","attempts":1,"max_delivery_attempts":5}
+{"level":"info","ts":1589546853.6263108,"caller":"worker/main.go:182","msg":"worker-started"}
+{"level":"info","ts":1589546854.666185,"caller":"worker/main.go:93","msg":"delivery-made","id":"01E8C5ZKFHGFR4ZBZ17SGN4FAX","topic_id":"topic","subscription_id":"httpbin-post","message_id":"01E8C5ZKFFKHEAMSM0WRKCH7FQ","status":"completed","attempts":1,"max_delivery_attempts":5}
 ```
 
 Submitted payload (Compatible with JSON Event Format for CloudEvents - Version 1.0):
@@ -136,13 +136,13 @@ Submitted payload (Compatible with JSON Event Format for CloudEvents - Version 1
 {
   "data_base64": "eyJuYW1lIjogIkFsbGlzc29uIn0=",
   "datacontenttype": "application/json",
-  "id": "01E89G1PYP2SAKXFE82D2KC7GQ",
-  "messageid": "01E89G1PYMP3XNST3ARE86AAWF",
+  "id": "01E8C5ZKFHGFR4ZBZ17SGN4FAX",
+  "messageid": "01E8C5ZKFFKHEAMSM0WRKCH7FQ",
   "secrettoken": "my-super-secret-token",
-  "source": "/v1/messages/01E89G1PYMP3XNST3ARE86AAWF",
+  "source": "/v1/messages/01E8C5ZKFFKHEAMSM0WRKCH7FQ",
   "specversion": "1.0",
   "subscriptionid": "httpbin-post",
-  "time": "2020-05-14T08:45:22.902722-03:00",
+  "time": "2020-05-15T09:47:11.345912-03:00",
   "topicid": "topic",
   "type": "hammer.message.created"
 }
@@ -151,15 +151,15 @@ Submitted payload (Compatible with JSON Event Format for CloudEvents - Version 1
 ### Get delivery data
 
 ```bash
-curl -X GET http://localhost:8000/v1/deliveries/01E89G1PYP2SAKXFE82D2KC7GQ
+curl -X GET http://localhost:8000/v1/deliveries/01E8C5ZKFHGFR4ZBZ17SGN4FAX
 ```
 
 ```javascript
 {
-  "id": "01E89G1PYP2SAKXFE82D2KC7GQ",
+  "id": "01E8C5ZKFHGFR4ZBZ17SGN4FAX",
   "topic_id": "topic",
   "subscription_id": "httpbin-post",
-  "message_id": "01E89G1PYMP3XNST3ARE86AAWF",
+  "message_id": "01E8C5ZKFFKHEAMSM0WRKCH7FQ",
   "content_type": "application/json",
   "data": "eyJuYW1lIjogIkFsbGlzc29uIn0=",
   "url": "https://httpbin.org/post",
@@ -167,11 +167,11 @@ curl -X GET http://localhost:8000/v1/deliveries/01E89G1PYP2SAKXFE82D2KC7GQ
   "max_delivery_attempts": 5,
   "delivery_attempt_delay": 60,
   "delivery_attempt_timeout": 5,
-  "scheduled_at": "2020-05-14T11:45:22.902722Z",
+  "scheduled_at": "2020-05-15T12:47:11.345912Z",
   "delivery_attempts": 1,
   "status": "completed",
-  "created_at": "2020-05-14T11:45:22.902722Z",
-  "updated_at": "2020-05-14T11:45:54.824677Z"
+  "created_at": "2020-05-15T12:47:11.345912Z",
+  "updated_at": "2020-05-15T12:47:34.662483Z"
 }
 ```
 
@@ -180,21 +180,21 @@ curl -X GET http://localhost:8000/v1/deliveries/01E89G1PYP2SAKXFE82D2KC7GQ
 The execution_duration are in milliseconds.
 
 ```bash
-curl -X GET 'http://localhost:8000/v1/delivery-attempts?delivery_id=01E89G1PYP2SAKXFE82D2KC7GQ'
+curl -X GET 'http://localhost:8000/v1/delivery-attempts?delivery_id=01E8C5ZKFHGFR4ZBZ17SGN4FAX'
 ```
 
 ```javascript
 {
-  "delivery_attempts": [
+  "delivery_attempts":[
     {
-      "id": "01E89G2NCC4E83KE1Z5P93D1AQ",
-      "delivery_id": "01E89G1PYP2SAKXFE82D2KC7GQ",
-      "request": "POST /post HTTP/1.1\r\nHost: httpbin.org\r\nContent-Type: application/json\r\n\r\n{\"specversion\":\"1.0\",\"type\":\"hammer.message.create\",\"source\":\"/v1/messages/01E89G1PYMP3XNST3ARE86AAWF\",\"id\":\"01E89G1PYP2SAKXFE82D2KC7GQ\",\"time\":\"2020-05-14T08:45:22.902722-03:00\",\"secrettoken\":\"my-super-secret-token\",\"messageid\":\"01E89G1PYMP3XNST3ARE86AAWF\",\"subscriptionid\":\"httpbin-post\",\"topicid\":\"topic\",\"datacontenttype\":\"application/json\",\"data_base64\":\"eyJuYW1lIjogIkFsbGlzc29uIn0=\"}",
-      "response": "HTTP/2.0 200 OK\r\nContent-Length: 1306\r\nAccess-Control-Allow-Credentials: true\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nDate: Thu, 14 May 2020 11:45:54 GMT\r\nServer: gunicorn/19.9.0\r\n\r\n{\n  \"args\": {}, \n  \"data\": \"{\\\"specversion\\\":\\\"1.0\\\",\\\"type\\\":\\\"hammer.message.created\\\",\\\"source\\\":\\\"/v1/messages/01E89G1PYMP3XNST3ARE86AAWF\\\",\\\"id\\\":\\\"01E89G1PYP2SAKXFE82D2KC7GQ\\\",\\\"time\\\":\\\"2020-05-14T08:45:22.902722-03:00\\\",\\\"secrettoken\\\":\\\"my-super-secret-token\\\",\\\"messageid\\\":\\\"01E89G1PYMP3XNST3ARE86AAWF\\\",\\\"subscriptionid\\\":\\\"httpbin-post\\\",\\\"topicid\\\":\\\"topic\\\",\\\"datacontenttype\\\":\\\"application/json\\\",\\\"data_base64\\\":\\\"eyJuYW1lIjogIkFsbGlzc29uIn0=\\\"}\", \n  \"files\": {}, \n  \"form\": {}, \n  \"headers\": {\n    \"Accept-Encoding\": \"gzip\", \n    \"Content-Length\": \"390\", \n    \"Content-Type\": \"application/json\", \n    \"Host\": \"httpbin.org\", \n    \"User-Agent\": \"Go-http-client/2.0\", \n    \"X-Amzn-Trace-Id\": \"Root=1-5ebd2f72-d3513e7a16137d8cb16a8f00\"\n  }, \n  \"json\": {\n    \"data_base64\": \"eyJuYW1lIjogIkFsbGlzc29uIn0=\", \n    \"datacontenttype\": \"application/json\", \n    \"id\": \"01E89G1PYP2SAKXFE82D2KC7GQ\", \n    \"messageid\": \"01E89G1PYMP3XNST3ARE86AAWF\", \n    \"secrettoken\": \"my-super-secret-token\", \n    \"source\": \"/v1/messages/01E89G1PYMP3XNST3ARE86AAWF\", \n    \"specversion\": \"1.0\", \n    \"subscriptionid\": \"httpbin-post\", \n    \"time\": \"2020-05-14T08:45:22.902722-03:00\", \n    \"topicid\": \"topic\", \n    \"type\": \"hammer.message.created\"\n  }, \n  \"origin\": \"177.37.153.46\", \n  \"url\": \"https://httpbin.org/post\"\n}\n",
+      "id": "01E8C60987C47VZ14RBA48M5EB",
+      "delivery_id": "01E8C5ZKFHGFR4ZBZ17SGN4FAX",
+      "request": "POST /post HTTP/1.1\r\nHost: httpbin.org\r\nContent-Type: application/json\r\n\r\n{\"specversion\":\"1.0\",\"type\":\"hammer.message.created\",\"source\":\"/v1/messages/01E8C5ZKFFKHEAMSM0WRKCH7FQ\",\"id\":\"01E8C5ZKFHGFR4ZBZ17SGN4FAX\",\"time\":\"2020-05-15T09:47:11.345912-03:00\",\"secrettoken\":\"my-super-secret-token\",\"messageid\":\"01E8C5ZKFFKHEAMSM0WRKCH7FQ\",\"subscriptionid\":\"httpbin-post\",\"topicid\":\"topic\",\"datacontenttype\":\"application/json\",\"data_base64\":\"eyJuYW1lIjogIkFsbGlzc29uIn0=\"}",
+      "response": "HTTP/2.0 200 OK\r\nContent-Length: 1308\r\nAccess-Control-Allow-Credentials: true\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nDate: Fri, 15 May 2020 12:47:34 GMT\r\nServer: gunicorn/19.9.0\r\n\r\n{\n  \"args\": {}, \n  \"data\": \"{\\\"specversion\\\":\\\"1.0\\\",\\\"type\\\":\\\"hammer.message.created\\\",\\\"source\\\":\\\"/v1/messages/01E8C5ZKFFKHEAMSM0WRKCH7FQ\\\",\\\"id\\\":\\\"01E8C5ZKFHGFR4ZBZ17SGN4FAX\\\",\\\"time\\\":\\\"2020-05-15T09:47:11.345912-03:00\\\",\\\"secrettoken\\\":\\\"my-super-secret-token\\\",\\\"messageid\\\":\\\"01E8C5ZKFFKHEAMSM0WRKCH7FQ\\\",\\\"subscriptionid\\\":\\\"httpbin-post\\\",\\\"topicid\\\":\\\"topic\\\",\\\"datacontenttype\\\":\\\"application/json\\\",\\\"data_base64\\\":\\\"eyJuYW1lIjogIkFsbGlzc29uIn0=\\\"}\", \n  \"files\": {}, \n  \"form\": {}, \n  \"headers\": {\n    \"Accept-Encoding\": \"gzip\", \n    \"Content-Length\": \"391\", \n    \"Content-Type\": \"application/json\", \n    \"Host\": \"httpbin.org\", \n    \"User-Agent\": \"Go-http-client/2.0\", \n    \"X-Amzn-Trace-Id\": \"Root=1-5ebe8f66-7cd7a3a08196283065db25d0\"\n  }, \n  \"json\": {\n    \"data_base64\": \"eyJuYW1lIjogIkFsbGlzc29uIn0=\", \n    \"datacontenttype\": \"application/json\", \n    \"id\": \"01E8C5ZKFHGFR4ZBZ17SGN4FAX\", \n    \"messageid\": \"01E8C5ZKFFKHEAMSM0WRKCH7FQ\", \n    \"secrettoken\": \"my-super-secret-token\", \n    \"source\": \"/v1/messages/01E8C5ZKFFKHEAMSM0WRKCH7FQ\", \n    \"specversion\": \"1.0\", \n    \"subscriptionid\": \"httpbin-post\", \n    \"time\": \"2020-05-15T09:47:11.345912-03:00\", \n    \"topicid\": \"topic\", \n    \"type\": \"hammer.message.created\"\n  }, \n  \"origin\": \"177.37.153.46\", \n  \"url\": \"https://httpbin.org/post\"\n}\n",
       "response_status_code": 200,
-      "execution_duration": 749,
+      "execution_duration": 1010,
       "success": true,
-      "created_at": "2020-05-14T11:45:54.810988Z"
+      "created_at": "2020-05-15T12:47:34.651052Z"
     }
   ]
 }

@@ -60,15 +60,6 @@ func (s *Subscription) Create(subscription *hammer.Subscription) error {
 	if subscription.SecretToken == "" {
 		subscription.SecretToken = generateRandomString(hammer.DefaultSecretTokenLength)
 	}
-	if subscription.MaxDeliveryAttempts <= 0 {
-		subscription.MaxDeliveryAttempts = hammer.DefaultMaxDeliveryAttempts
-	}
-	if subscription.DeliveryAttemptDelay <= 0 {
-		subscription.DeliveryAttemptDelay = hammer.DefaultDeliveryAttemptDelay
-	}
-	if subscription.DeliveryAttemptTimeout <= 0 {
-		subscription.DeliveryAttemptTimeout = hammer.DefaultDeliveryAttemptTimeout
-	}
 	err = s.subscriptionRepo.Store(tx, subscription)
 	if err != nil {
 		return err
@@ -106,6 +97,7 @@ func (s *Subscription) Update(subscription *hammer.Subscription) error {
 	}
 	subscription.ID = subscriptionFromRepo.ID
 	subscription.TopicID = subscriptionFromRepo.TopicID
+	subscription.CreatedAt = subscriptionFromRepo.CreatedAt
 	subscription.UpdatedAt = time.Now().UTC()
 	err = s.subscriptionRepo.Store(tx, subscription)
 	if err != nil {

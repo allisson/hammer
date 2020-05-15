@@ -31,6 +31,24 @@ func TestTopicHandler(t *testing.T) {
 		assert.Equal(t, "Topic", response.Name)
 	})
 
+	t.Run("Test UpdateTopic", func(t *testing.T) {
+		topicService := &mocks.TopicService{}
+		handler := NewTopicHandler(topicService)
+		ctx := context.Background()
+		request := &pb.UpdateTopicRequest{
+			Topic: &pb.Topic{
+				Id:   "topic_id",
+				Name: "Topic",
+			},
+		}
+		topicService.On("Update", mock.Anything).Return(nil)
+
+		response, err := handler.UpdateTopic(ctx, request)
+		assert.Nil(t, err)
+		assert.Equal(t, "topic_id", response.Id)
+		assert.Equal(t, "Topic", response.Name)
+	})
+
 	t.Run("Test GetTopic", func(t *testing.T) {
 		topicService := &mocks.TopicService{}
 		handler := NewTopicHandler(topicService)

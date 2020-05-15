@@ -16,6 +16,13 @@ service Hammer {
       body: "*"
     };
   }
+  // Update the topic
+  rpc UpdateTopic(UpdateTopicRequest) returns (Topic) {
+    option (google.api.http) = {
+      patch: "/v1/topics/{topic.id}"
+      body: "*"
+    };
+  }
   // Gets the topic
   rpc GetTopic(GetTopicRequest) returns (Topic) {
     option (google.api.http) = {
@@ -38,6 +45,13 @@ service Hammer {
   rpc CreateSubscription(CreateSubscriptionRequest) returns (Subscription) {
     option (google.api.http) = {
       post: "/v1/subscriptions",
+      body: "*"
+    };
+  }
+  // Update the subscription
+  rpc UpdateSubscription(UpdateSubscriptionRequest) returns (Subscription) {
+    option (google.api.http) = {
+      patch: "/v1/subscriptions/{subscription.id}"
       body: "*"
     };
   }
@@ -128,6 +142,11 @@ message CreateTopicRequest {
   Topic topic = 1;
 }
 
+// Request for the UpdateTopic method
+message UpdateTopicRequest {
+  Topic topic = 1;
+}
+
 // Request for the ListTopics method
 message ListTopicsRequest {
   uint32 limit = 1;
@@ -169,6 +188,11 @@ message GetSubscriptionRequest {
 
 // Request for the CreateSubscription method
 message CreateSubscriptionRequest {
+  Subscription subscription = 1;
+}
+
+// Request for the UpdateSubscription method
+message UpdateSubscriptionRequest {
   Subscription subscription = 1;
 }
 

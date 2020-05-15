@@ -543,6 +543,45 @@
         ]
       }
     },
+    "/v1/subscriptions/{subscription.id}": {
+      "patch": {
+        "summary": "Update the subscription",
+        "operationId": "Hammer_UpdateSubscription",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Subscription"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "subscription.id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1UpdateSubscriptionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Hammer"
+        ]
+      }
+    },
     "/v1/topics": {
       "get": {
         "summary": "List topics",
@@ -690,6 +729,45 @@
             "in": "path",
             "required": true,
             "type": "string"
+          }
+        ],
+        "tags": [
+          "Hammer"
+        ]
+      }
+    },
+    "/v1/topics/{topic.id}": {
+      "patch": {
+        "summary": "Update the topic",
+        "operationId": "Hammer_UpdateTopic",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1Topic"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response",
+            "schema": {
+              "$ref": "#/definitions/runtimeError"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "topic.id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1UpdateTopicRequest"
+            }
           }
         ],
         "tags": [
@@ -999,6 +1077,24 @@
         }
       },
       "title": "A topic resource"
+    },
+    "v1UpdateSubscriptionRequest": {
+      "type": "object",
+      "properties": {
+        "subscription": {
+          "$ref": "#/definitions/v1Subscription"
+        }
+      },
+      "title": "Request for the UpdateSubscription method"
+    },
+    "v1UpdateTopicRequest": {
+      "type": "object",
+      "properties": {
+        "topic": {
+          "$ref": "#/definitions/v1Topic"
+        }
+      },
+      "title": "Request for the UpdateTopic method"
     }
   }
 }
