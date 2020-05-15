@@ -205,5 +205,4 @@ curl -X GET 'http://localhost:8000/v1/delivery-attempts?delivery_id=01E8C5ZKFHGF
 ```
 docker build -f docker/server.Dockerfile -t hammer-server .
 docker build -f docker/worker.Dockerfile -t hammer-worker .
-docker build -f docker/migrate.Dockerfile -t hammer-migrate .
 ```

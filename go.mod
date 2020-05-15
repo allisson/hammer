@@ -7,7 +7,8 @@ require (
 	github.com/allisson/go-env v0.2.0
 	github.com/allisson/go-pglock v1.0.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.2.1
-	github.com/golang/protobuf v1.4.1
+	github.com/golang-migrate/migrate/v4 v4.11.0
+	github.com/golang/protobuf v1.4.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway v1.14.5
@@ -19,8 +20,8 @@ require (
 	github.com/prometheus/client_golang v1.6.0
 	github.com/stretchr/testify v1.5.1
 	go.uber.org/zap v1.15.0
-	golang.org/x/net v0.0.0-20200506145744-7e3656a0809f
-	google.golang.org/genproto v0.0.0-20200511104702-f5ebc3bea380
+	golang.org/x/net v0.0.0-20200513185701-a91f0712d120
+	google.golang.org/genproto v0.0.0-20200515170657-fc4c6c6a6587
 	google.golang.org/grpc v1.29.1
-	google.golang.org/protobuf v1.22.0
+	google.golang.org/protobuf v1.23.0
 )
