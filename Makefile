@@ -41,9 +41,12 @@ mock:
 	mockery -name DeliveryAttemptService
 
 run-worker:
-	go run cmd/worker/main.go
+	go run cmd/hammer/main.go worker
 
 run-server:
-	go run cmd/server/main.go
+	go run cmd/hammer/main.go server
 
-.PHONY: build-protobuf lint test download-golang-migrate-binary db-migrate mock run-worker run-server
+run-migrate:
+	go run cmd/hammer/main.go migrate
+
+.PHONY: build-protobuf lint test download-golang-migrate-binary db-migrate mock run-worker run-server run-migrate

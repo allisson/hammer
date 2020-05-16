@@ -13,10 +13,10 @@ COPY . .
 
 # build binary
 RUN go mod download && \
-    go build -ldflags="-s -w" -o ./app ./cmd/server
+    go build -ldflags="-s -w" -o ./app ./cmd/hammer
 
 # final stage
 FROM gcr.io/distroless/base:nonroot
 COPY --from=build-env /build/app /
 COPY --from=build-env /build/db/migrations /db/migrations
-CMD ["/app"]
+ENTRYPOINT ["/app"]

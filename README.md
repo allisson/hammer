@@ -30,8 +30,7 @@ To run the server it is necessary to have a database available from postgresql, 
 git clone https://github.com/allisson/hammer
 cd hammer
 cp local.env .env # and edit .env
-export HAMMER_DATABASE_URL='postgres://user:password@localhost:5432/hammer?sslmode=disable'
-make db-migrate # create database schema
+make run-migrate # create database schema
 make run-server # run the server (grpc + http)
 ```
 
@@ -200,9 +199,11 @@ curl -X GET 'http://localhost:8000/v1/delivery-attempts?delivery_id=01E8C5ZKFHGF
 }
 ```
 
-## How to build docker images
+## How to build and run docker images
 
 ```
-docker build -f docker/server.Dockerfile -t hammer-server .
-docker build -f docker/worker.Dockerfile -t hammer-worker .
+docker build -f Dockerfile -t hammer .
+docker run --env HAMMER_DATABASE_URL='postgres://user:pass@host.docker.internal:5432/hammer?sslmode=disable' hammer server
+docker run --env HAMMER_DATABASE_URL='postgres://user:pass@host.docker.internal:5432/hammer?sslmode=disable' hammer migrate
+docker run --env HAMMER_DATABASE_URL='postgres://user:pass@host.docker.internal:5432/hammer?sslmode=disable' hammer worker
 ```
