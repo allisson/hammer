@@ -50,3 +50,8 @@ type TxRepository interface {
 type TxFactoryRepository interface {
 	New() (TxRepository, error)
 }
+
+// MigrationRepository interface
+type MigrationRepository interface {
+	Run() error
+}

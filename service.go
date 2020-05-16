@@ -47,3 +47,8 @@ type WorkerService interface {
 	Run() error
 	Stop() error
 }
+
+// MigrationService interface
+type MigrationService interface {
+	Run() error
+}
