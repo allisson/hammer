@@ -33,6 +33,7 @@ mock:
 	mockery -name DeliveryAttemptRepository
 	mockery -name TxRepository
 	mockery -name TxFactoryRepository
+	mockery -name MigrationRepository
 	mockery -name TopicService
 	mockery -name SubscriptionService
 	mockery -name MessageService

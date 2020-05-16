@@ -10,13 +10,10 @@ import (
 	"syscall"
 
 	"github.com/allisson/go-env"
-	"github.com/allisson/go-pglock"
 	pb "github.com/allisson/hammer/api/v1"
 	hammerGrpc "github.com/allisson/hammer/grpc"
 	repository "github.com/allisson/hammer/repository/postgres"
 	"github.com/allisson/hammer/service"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
@@ -88,55 +85,6 @@ func metricsServer() {
 	}
 }
 
-func databaseMigrate() error {
-	// Get conn
-	conn, err := sqlDB.DB.Conn(context.Background())
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-
-	// Is the answer to everything
-	lockID := int64(42)
-
-	// Create a new lock
-	lock := pglock.NewLock(conn)
-
-	// Lock the resource
-	ok, err := lock.Lock(lockID)
-	if err != nil {
-		return err
-	}
-	if !ok {
-		return nil
-	}
-	// Unlock the resource
-	defer func() {
-		if err := lock.Unlock(lockID); err != nil {
-			logger.Error("database-migrations-unlock", zap.Error(err))
-		}
-	}()
-
-	// Execute migration
-	driver, err := postgres.WithInstance(sqlDB.DB, &postgres.Config{})
-	if err != nil {
-		return err
-	}
-	m, err := migrate.NewWithDatabaseInstance(env.GetString("HAMMER_DATABASE_MIGRATION_DIR", "file:///db/migrations"), "postgres", driver)
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-	err = m.Up()
-	if err != nil {
-		if err != migrate.ErrNoChange {
-			return err
-		}
-	}
-	logger.Info("database-migrations-completed")
-	return nil
-}
-
 func main() {
 	// Create repositories
 	topicRepo := repository.NewTopic(sqlDB)
@@ -145,6 +93,7 @@ func main() {
 	deliveryRepo := repository.NewDelivery(sqlDB)
 	deliveryAttemptRepo := repository.NewDeliveryAttempt(sqlDB)
 	txFactoryRepo := repository.NewTxFactory(sqlDB)
+	migrationRepo := repository.NewMigration(sqlDB, env.GetString("HAMMER_DATABASE_MIGRATION_DIR", "file:///db/migrations"))
 
 	// Create services
 	topicService := service.NewTopic(&topicRepo, &txFactoryRepo)
@@ -152,6 +101,7 @@ func main() {
 	messageService := service.NewMessage(&topicRepo, &messageRepo, &subscriptionRepo, &deliveryRepo, &txFactoryRepo)
 	deliveryService := service.NewDelivery(&deliveryRepo, &deliveryAttemptRepo, &txFactoryRepo)
 	deliveryAttemptService := service.NewDeliveryAttempt(&deliveryAttemptRepo)
+	migrationService := service.NewMigration(&migrationRepo)
 
 	// Create grpc handlers
 	topicHandler := hammerGrpc.NewTopicHandler(&topicService)
@@ -161,10 +111,11 @@ func main() {
 	deliveryAttemptHandler := hammerGrpc.NewDeliveryAttemptHandler(&deliveryAttemptService)
 
 	// Execute database migrations
-	err := databaseMigrate()
+	err := migrationService.Run()
 	if err != nil {
 		logger.Fatal("database-migrations-error", zap.Error(err))
 	}
+	logger.Info("database-migrations-completed")
 
 	// Start tcp server
 	listener, err := net.Listen("tcp", grpcEndpoint)
