@@ -19,6 +19,7 @@ require (
 	github.com/oklog/ulid/v2 v2.0.2
 	github.com/prometheus/client_golang v1.6.0
 	github.com/stretchr/testify v1.5.1
+	github.com/urfave/cli/v2 v2.2.0
 	go.uber.org/zap v1.15.0
 	golang.org/x/net v0.0.0-20200513185701-a91f0712d120
 	google.golang.org/genproto v0.0.0-20200515170657-fc4c6c6a6587
