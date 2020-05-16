@@ -41,3 +41,9 @@ type DeliveryAttemptService interface {
 	Find(id string) (DeliveryAttempt, error)
 	FindAll(findOptions FindOptions) ([]DeliveryAttempt, error)
 }
+
+// WorkerService interface
+type WorkerService interface {
+	Run() error
+	Stop() error
+}
