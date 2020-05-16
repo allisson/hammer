@@ -2,6 +2,7 @@
 [![Build Status](https://github.com/allisson/hammer/workflows/tests/badge.svg)](https://github.com/allisson/hammer/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/allisson/hammer)](https://goreportcard.com/report/github.com/allisson/hammer)
 [![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/allisson/hammer)
+[![Docker Image](https://img.shields.io/docker/cloud/build/allisson/hammer)](https://hub.docker.com/r/allisson/hammer)
 
 Simple webhook system written in golang.
 
@@ -25,6 +26,15 @@ Let's start with the basic concepts, we have three main entities that we must kn
 ### Run the server
 
 To run the server it is necessary to have a database available from postgresql, in this example we will consider that we have a database called hammer running in localhost with user and password equal to user.
+
+#### Docker
+
+```bash
+docker run --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' allisson/hammer migrate # run database migrations
+docker run --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' allisson/hammer server # run grpc server
+```
+
+#### Local
 
 ```bash
 git clone https://github.com/allisson/hammer
@@ -122,6 +132,14 @@ curl -X POST 'http://localhost:8000/v1/messages' \
 
 The system will send a post request and the server must respond with the following status codes for the delivery to be considered successful: 200, 201, 202 and 204.
 
+#### Docker
+
+```bash
+docker run --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' allisson/hammer worker
+```
+
+#### Local
+
 ```bash
 make run-worker
 go run cmd/worker/main.go
@@ -199,11 +217,8 @@ curl -X GET 'http://localhost:8000/v1/delivery-attempts?delivery_id=01E8C5ZKFHGF
 }
 ```
 
-## How to build and run docker images
+## How to build docker image
 
 ```
 docker build -f Dockerfile -t hammer .
-docker run --env HAMMER_DATABASE_URL='postgres://user:pass@host.docker.internal:5432/hammer?sslmode=disable' hammer server
-docker run --env HAMMER_DATABASE_URL='postgres://user:pass@host.docker.internal:5432/hammer?sslmode=disable' hammer migrate
-docker run --env HAMMER_DATABASE_URL='postgres://user:pass@host.docker.internal:5432/hammer?sslmode=disable' hammer worker
 ```
