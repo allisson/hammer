@@ -220,3 +220,19 @@ curl -X GET http://localhost:8000/v1/delivery-attempts/01E8HX1D6PYFB1HJFG0S7WEKB
 ```
 docker build -f Dockerfile -t hammer .
 ```
+
+## Disable REST API
+
+To disable the rest api, set the environment variable **HAMMER_REST_API_ENABLED** to false.
+
+```bash
+export HAMMER_REST_API_ENABLED='false'
+```
+
+## Disable Prometheus metrics
+
+To disable prometheus metrics, set the environment variable **HAMMER_METRICS_ENABLED** to false.
+
+```bash
+export HAMMER_METRICS_ENABLED='false'
+```
