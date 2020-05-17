@@ -16,17 +16,24 @@ type DeliveryService struct {
 }
 
 // Dispatch provides a mock function with given fields: delivery, httpClient
-func (_m *DeliveryService) Dispatch(delivery *hammer.Delivery, httpClient *http.Client) error {
+func (_m *DeliveryService) Dispatch(delivery *hammer.Delivery, httpClient *http.Client) (hammer.DeliveryAttempt, error) {
 	ret := _m.Called(delivery, httpClient)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*hammer.Delivery, *http.Client) error); ok {
+	var r0 hammer.DeliveryAttempt
+	if rf, ok := ret.Get(0).(func(*hammer.Delivery, *http.Client) hammer.DeliveryAttempt); ok {
 		r0 = rf(delivery, httpClient)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(hammer.DeliveryAttempt)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*hammer.Delivery, *http.Client) error); ok {
+		r1 = rf(delivery, httpClient)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // Find provides a mock function with given fields: id

@@ -108,11 +108,11 @@ func (d *Delivery) FindToDispatch(limit, offset int) ([]string, error) {
 }
 
 // Dispatch message to destination
-func (d *Delivery) Dispatch(delivery *hammer.Delivery, httpClient *http.Client) error {
+func (d *Delivery) Dispatch(delivery *hammer.Delivery, httpClient *http.Client) (hammer.DeliveryAttempt, error) {
 	// Generate delivery attempt id
 	id, err := generateULID()
 	if err != nil {
-		return err
+		return hammer.DeliveryAttempt{}, err
 	}
 
 	dr := makeRequest(delivery, httpClient)
@@ -120,7 +120,7 @@ func (d *Delivery) Dispatch(delivery *hammer.Delivery, httpClient *http.Client) 
 	// Start tx
 	tx, err := d.txFactoryRepo.New()
 	if err != nil {
-		return err
+		return hammer.DeliveryAttempt{}, err
 	}
 
 	// Create delivery attempt
@@ -138,7 +138,7 @@ func (d *Delivery) Dispatch(delivery *hammer.Delivery, httpClient *http.Client) 
 	err = d.deliveryAttemptRepo.Store(tx, &deliveryAttempt)
 	if err != nil {
 		rollback(tx, "delivery-dispatch-delivery-attempt-store")
-		return err
+		return hammer.DeliveryAttempt{}, err
 	}
 
 	// Update delivery
@@ -156,17 +156,17 @@ func (d *Delivery) Dispatch(delivery *hammer.Delivery, httpClient *http.Client) 
 	err = d.deliveryRepo.Store(tx, delivery)
 	if err != nil {
 		rollback(tx, "delivery-dispatch-delivery-store")
-		return err
+		return hammer.DeliveryAttempt{}, err
 	}
 
 	// Commit tx
 	err = tx.Commit()
 	if err != nil {
 		rollback(tx, "delivery-dispatch-commit")
-		return err
+		return hammer.DeliveryAttempt{}, err
 	}
 
-	return nil
+	return deliveryAttempt, nil
 }
 
 // NewDelivery returns a new Delivery with DeliveryRepo
