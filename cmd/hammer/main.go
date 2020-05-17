@@ -76,6 +76,10 @@ func newAppContext() appContext {
 }
 
 func gatewayServer() {
+	gatewayEnabled := env.GetBool("HAMMER_REST_API_ENABLED", true)
+	if !gatewayEnabled {
+		return
+	}
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -94,6 +98,10 @@ func gatewayServer() {
 }
 
 func metricsServer() {
+	metricsEnabled := env.GetBool("HAMMER_METRICS_ENABLED", true)
+	if !metricsEnabled {
+		return
+	}
 	port := env.GetInt("HAMMER_METRICS_PORT", 4001)
 	http.Handle("/metrics", promhttp.Handler())
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
