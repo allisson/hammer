@@ -33,7 +33,7 @@ type DeliveryService interface {
 	Find(id string) (Delivery, error)
 	FindAll(findOptions FindOptions) ([]Delivery, error)
 	FindToDispatch(limit, offset int) ([]string, error)
-	Dispatch(delivery *Delivery, httpClient *http.Client) error
+	Dispatch(delivery *Delivery, httpClient *http.Client) (DeliveryAttempt, error)
 }
 
 // DeliveryAttemptService interface

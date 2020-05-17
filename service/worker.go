@@ -67,21 +67,32 @@ func (w *Worker) dispatch(deliveryID string) {
 	httpClient := &http.Client{Timeout: time.Duration(delivery.DeliveryAttemptTimeout) * time.Second}
 
 	// Dispatch
-	err = w.deliveryService.Dispatch(&delivery, httpClient)
+	deliveryAttempt, err := w.deliveryService.Dispatch(&delivery, httpClient)
 	if err != nil {
 		logger.Error("delivery-service-dispatch", zap.Error(err))
 		return
 	}
-	logger.Info(
-		"delivery-made",
-		zap.String("id", delivery.ID),
-		zap.String("topic_id", delivery.TopicID),
-		zap.String("subscription_id", delivery.SubscriptionID),
-		zap.String("message_id", delivery.MessageID),
-		zap.String("status", delivery.Status),
-		zap.Int("attempts", delivery.DeliveryAttempts),
-		zap.Int("max_delivery_attempts", delivery.MaxDeliveryAttempts),
-	)
+
+	if delivery.Status == hammer.DeliveryStatusCompleted {
+		logger.Info(
+			"delivery-made",
+			zap.String("delivery_id", delivery.ID),
+			zap.String("delivery_attempt_id", deliveryAttempt.ID),
+			zap.Int("response_status_code", deliveryAttempt.ResponseStatusCode),
+			zap.Int("execution_duration", deliveryAttempt.ExecutionDuration),
+		)
+	} else {
+		logger.Info(
+			"delivery-fail",
+			zap.String("delivery_id", delivery.ID),
+			zap.String("delivery_attempt_id", deliveryAttempt.ID),
+			zap.Int("response_status_code", deliveryAttempt.ResponseStatusCode),
+			zap.Int("execution_duration", deliveryAttempt.ExecutionDuration),
+			zap.String("error", deliveryAttempt.Error),
+			zap.Int("attempts", delivery.DeliveryAttempts),
+			zap.Int("max_delivery_attempts", delivery.MaxDeliveryAttempts),
+		)
+	}
 }
 
 // Run worker flow

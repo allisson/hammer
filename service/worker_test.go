@@ -13,13 +13,19 @@ import (
 
 func TestWorker(t *testing.T) {
 	delivery := hammer.MakeTestDelivery()
+	delivery.TopicID = "topic"
+	delivery.SubscriptionID = "subscription"
+	delivery.MessageID = "message"
+	delivery.Status = hammer.DeliveryStatusCompleted
+	deliveryAttempt := hammer.MakeTestDeliveryAttempt()
+	deliveryAttempt.DeliveryID = delivery.ID
 	deliveryService := &mocks.DeliveryService{}
 	lock := &lockmock.Locker{}
 	workerService := NewWorker(lock, deliveryService)
 	deliveryService.On("FindToDispatch", hammer.WorkerDefaultFetchLimit, 0).Return([]string{delivery.ID}, nil)
 	lock.On("Lock", mock.Anything).Return(true, nil)
 	deliveryService.On("Find", delivery.ID).Return(delivery, nil)
-	deliveryService.On("Dispatch", &delivery, mock.Anything).Return(nil)
+	deliveryService.On("Dispatch", &delivery, mock.Anything).Return(deliveryAttempt, nil)
 	lock.On("Unlock", mock.Anything).Return(nil)
 
 	// Execute Run method in goroutine

@@ -75,8 +75,10 @@ func MakeTestDelivery() Delivery {
 func MakeTestDeliveryAttempt() DeliveryAttempt {
 	id := fmt.Sprintf("%d", randonInt())
 	return DeliveryAttempt{
-		ID:        fmt.Sprintf("DeliveryAttempt_%s", id),
-		Success:   false,
-		CreatedAt: time.Now().UTC(),
+		ID:                 fmt.Sprintf("DeliveryAttempt_%s", id),
+		Success:            true,
+		ResponseStatusCode: 201,
+		ExecutionDuration:  1000,
+		CreatedAt:          time.Now().UTC(),
 	}
 }

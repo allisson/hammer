@@ -76,10 +76,12 @@ func TestDelivery(t *testing.T) {
 		txRepo.On("Commit").Return(nil)
 
 		deliveryAttemps := delivery.DeliveryAttempts
-		err := deliveryService.Dispatch(&delivery, httpServer.Client())
+		deliveryAttempt, err := deliveryService.Dispatch(&delivery, httpServer.Client())
 		assert.Nil(t, err)
 		assert.Equal(t, delivery.DeliveryAttempts, deliveryAttemps+1)
 		assert.Equal(t, hammer.DeliveryStatusCompleted, delivery.Status)
+		assert.Equal(t, true, deliveryAttempt.Success)
+		assert.Equal(t, http.StatusOK, deliveryAttempt.ResponseStatusCode)
 	})
 
 	t.Run("Test Dispatch Error", func(t *testing.T) {
@@ -101,11 +103,13 @@ func TestDelivery(t *testing.T) {
 
 		deliveryScheduledAt := delivery.ScheduledAt
 		deliveryAttemps := delivery.DeliveryAttempts
-		err := deliveryService.Dispatch(&delivery, httpServer.Client())
+		deliveryAttempt, err := deliveryService.Dispatch(&delivery, httpServer.Client())
 		assert.Nil(t, err)
 		assert.Equal(t, delivery.DeliveryAttempts, deliveryAttemps+1)
 		assert.Equal(t, hammer.DeliveryStatusPending, delivery.Status)
 		assert.True(t, delivery.ScheduledAt.After(deliveryScheduledAt))
+		assert.Equal(t, false, deliveryAttempt.Success)
+		assert.Equal(t, http.StatusNotFound, deliveryAttempt.ResponseStatusCode)
 	})
 
 	t.Run("Test Dispatch MaxDeliveryAttempts Error", func(t *testing.T) {
@@ -128,10 +132,12 @@ func TestDelivery(t *testing.T) {
 
 		deliveryScheduledAt := delivery.ScheduledAt
 		deliveryAttemps := delivery.DeliveryAttempts
-		err := deliveryService.Dispatch(&delivery, httpServer.Client())
+		deliveryAttempt, err := deliveryService.Dispatch(&delivery, httpServer.Client())
 		assert.Nil(t, err)
 		assert.Equal(t, delivery.DeliveryAttempts, deliveryAttemps+1)
 		assert.Equal(t, hammer.DeliveryStatusFailed, delivery.Status)
 		assert.Equal(t, deliveryScheduledAt, delivery.ScheduledAt)
+		assert.Equal(t, false, deliveryAttempt.Success)
+		assert.Equal(t, http.StatusNotFound, deliveryAttempt.ResponseStatusCode)
 	})
 }
