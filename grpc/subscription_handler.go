@@ -62,7 +62,8 @@ func (s *SubscriptionHandler) CreateSubscription(ctx context.Context, request *p
 	// Validate subscription
 	err := subscription.Validate()
 	if err != nil {
-		return &pb.Subscription{}, status.Error(codes.InvalidArgument, "invalid_subscription")
+		st := validationStatusError(codes.InvalidArgument, "invalid_subscription", err)
+		return &pb.Subscription{}, st.Err()
 	}
 
 	// Create subscription
