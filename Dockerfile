@@ -20,5 +20,6 @@ FROM gcr.io/distroless/base:nonroot
 COPY --from=build-env /build/app /
 COPY --from=build-env /build/db/migrations /db/migrations
 EXPOSE 8000
+EXPOSE 4001
 EXPOSE 50051
 ENTRYPOINT ["/app"]
