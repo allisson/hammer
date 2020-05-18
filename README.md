@@ -31,7 +31,7 @@ To run the server it is necessary to have a database available from postgresql, 
 
 ```bash
 docker run --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' allisson/hammer migrate # run database migrations
-docker run -p 8000:8000 -p 50051:50051 --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' allisson/hammer server # run grpc server
+docker run -p 8000:8000 -p 4001:4001 -p 50051:50051 --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' allisson/hammer server # run grpc/http/metrics server
 ```
 
 #### Local
