@@ -50,7 +50,8 @@ func (t *TopicHandler) CreateTopic(ctx context.Context, request *pb.CreateTopicR
 	// Validate topic
 	err := topic.Validate()
 	if err != nil {
-		return &pb.Topic{}, status.Error(codes.InvalidArgument, "invalid_topic")
+		st := validationStatusError(codes.InvalidArgument, "invalid_topic", err)
+		return &pb.Topic{}, st.Err()
 	}
 
 	// Create topic

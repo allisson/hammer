@@ -49,7 +49,8 @@ func (m *MessageHandler) CreateMessage(ctx context.Context, request *pb.CreateMe
 	// Validate message
 	err := message.Validate()
 	if err != nil {
-		return &pb.Message{}, status.Error(codes.InvalidArgument, "invalid_message")
+		st := validationStatusError(codes.InvalidArgument, "invalid_message", err)
+		return &pb.Message{}, st.Err()
 	}
 
 	// Create Message
