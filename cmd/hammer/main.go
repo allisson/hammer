@@ -103,10 +103,34 @@ func metricsServer() {
 		return
 	}
 	port := env.GetInt("HAMMER_METRICS_PORT", 4001)
-	http.Handle("/metrics", promhttp.Handler())
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	mux := http.NewServeMux()
+	mux.Handle("/metrics", promhttp.Handler())
+	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 	if err != nil {
 		logger.Error("metrics-server-failed-to-start", zap.Error(err))
+	}
+}
+
+func healthCheckServer() {
+	healthCheckEnabled := env.GetBool("HAMMER_HEALTH_CHECK_ENABLED", true)
+	if !healthCheckEnabled {
+		return
+	}
+	port := env.GetInt("HAMMER_HEALTH_CHECK_PORT", 9000)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/liveness", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
+	mux.HandleFunc("/readiness", func(w http.ResponseWriter, r *http.Request) {
+		if err := sqlDB.Ping(); err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	})
+	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
+	if err != nil {
+		logger.Error("health-check-server-failed-to-start", zap.Error(err))
 	}
 }
 
@@ -161,6 +185,9 @@ func main() {
 				if err != nil {
 					logger.Fatal("failed-to-listen", zap.Error(err))
 				}
+
+				// Start health check
+				go healthCheckServer()
 
 				// Start http gateway
 				go gatewayServer()
@@ -250,6 +277,9 @@ func main() {
 
 				// Create worker service
 				workerService := service.NewWorker(&lock, ac.deliveryService)
+
+				// Start health check
+				go healthCheckServer()
 
 				idleConnsClosed := make(chan struct{})
 				go func() {

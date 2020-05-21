@@ -31,7 +31,7 @@ To run the server it is necessary to have a database available from postgresql, 
 
 ```bash
 docker run --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' allisson/hammer migrate # run database migrations
-docker run -p 8000:8000 -p 4001:4001 -p 50051:50051 --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' allisson/hammer server # run grpc/http/metrics server
+docker run -p 4001:4001 -p 8000:8000 -p 9000:9000 -p 50051:50051 --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' allisson/hammer server # run grpc/http/metrics server
 ```
 
 #### Local
@@ -235,4 +235,12 @@ To disable prometheus metrics, set the environment variable **HAMMER_METRICS_ENA
 
 ```bash
 export HAMMER_METRICS_ENABLED='false'
+```
+
+## Disable health check
+
+To disable health check, set the environment variable **HAMMER_HEALTH_CHECK_ENABLED** to false.
+
+```bash
+export HAMMER_HEALTH_CHECK_ENABLED='false'
 ```
