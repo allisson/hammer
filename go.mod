@@ -21,8 +21,8 @@ require (
 	github.com/stretchr/testify v1.5.1
 	github.com/urfave/cli/v2 v2.2.0
 	go.uber.org/zap v1.15.0
-	golang.org/x/net v0.0.0-20200513185701-a91f0712d120
-	google.golang.org/genproto v0.0.0-20200515170657-fc4c6c6a6587
+	golang.org/x/net v0.0.0-20200520182314-0ba52f642ac2
+	google.golang.org/genproto v0.0.0-20200521103424-e9a78aa275b7
 	google.golang.org/grpc v1.29.1
 	google.golang.org/protobuf v1.23.0
 )
