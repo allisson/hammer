@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"net"
 	"net/http"
@@ -34,6 +35,7 @@ import (
 var (
 	logger       *zap.Logger
 	sqlDB        *sqlx.DB
+	sqlConn      *sql.Conn
 	grpcEndpoint string
 	httpEndpoint string
 )
@@ -118,16 +120,21 @@ func healthCheckServer() {
 	}
 	port := env.GetInt("HAMMER_HEALTH_CHECK_PORT", 9000)
 	mux := http.NewServeMux()
-	mux.HandleFunc("/liveness", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNoContent)
-	})
-	mux.HandleFunc("/readiness", func(w http.ResponseWriter, r *http.Request) {
+	handler := func(w http.ResponseWriter, r *http.Request) {
 		if err := sqlDB.Ping(); err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
+		if sqlConn != nil {
+			if err := sqlConn.PingContext(context.Background()); err != nil {
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+		}
 		w.WriteHeader(http.StatusNoContent)
-	})
+	}
+	mux.HandleFunc("/liveness", handler)
+	mux.HandleFunc("/readiness", handler)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 	if err != nil {
 		logger.Error("health-check-server-failed-to-start", zap.Error(err))
@@ -147,6 +154,7 @@ func init() {
 	if err != nil {
 		logger.Fatal("failed-to-ping-database", zap.Error(err))
 	}
+	db.SetMaxOpenConns(env.GetInt("HAMMER_DATABASE_MAX_OPEN_CONNS", 3))
 	sqlDB = db
 
 	// Set grpc endpoint
@@ -269,10 +277,11 @@ func main() {
 			Usage:   "Starts the worker",
 			Action: func(c *cli.Context) error {
 				// Create lock
-				sqlConn, err := sqlDB.DB.Conn(context.Background())
+				conn, err := sqlDB.DB.Conn(context.Background())
 				if err != nil {
 					return err
 				}
+				sqlConn = conn
 				lock := pglock.NewLock(sqlConn)
 
 				// Create worker service
