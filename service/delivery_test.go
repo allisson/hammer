@@ -75,10 +75,10 @@ func TestDelivery(t *testing.T) {
 		deliveryRepo.On("Store", mock.Anything, mock.Anything).Return(nil)
 		txRepo.On("Commit").Return(nil)
 
-		deliveryAttemps := delivery.DeliveryAttempts
+		deliveryAttempts := delivery.DeliveryAttempts
 		deliveryAttempt, err := deliveryService.Dispatch(&delivery, httpServer.Client())
 		assert.Nil(t, err)
-		assert.Equal(t, delivery.DeliveryAttempts, deliveryAttemps+1)
+		assert.Equal(t, delivery.DeliveryAttempts, deliveryAttempts+1)
 		assert.Equal(t, hammer.DeliveryStatusCompleted, delivery.Status)
 		assert.Equal(t, true, deliveryAttempt.Success)
 		assert.Equal(t, http.StatusOK, deliveryAttempt.ResponseStatusCode)
@@ -102,10 +102,10 @@ func TestDelivery(t *testing.T) {
 		txRepo.On("Commit").Return(nil)
 
 		deliveryScheduledAt := delivery.ScheduledAt
-		deliveryAttemps := delivery.DeliveryAttempts
+		deliveryAttempts := delivery.DeliveryAttempts
 		deliveryAttempt, err := deliveryService.Dispatch(&delivery, httpServer.Client())
 		assert.Nil(t, err)
-		assert.Equal(t, delivery.DeliveryAttempts, deliveryAttemps+1)
+		assert.Equal(t, delivery.DeliveryAttempts, deliveryAttempts+1)
 		assert.Equal(t, hammer.DeliveryStatusPending, delivery.Status)
 		assert.True(t, delivery.ScheduledAt.After(deliveryScheduledAt))
 		assert.Equal(t, false, deliveryAttempt.Success)
@@ -131,10 +131,10 @@ func TestDelivery(t *testing.T) {
 		txRepo.On("Commit").Return(nil)
 
 		deliveryScheduledAt := delivery.ScheduledAt
-		deliveryAttemps := delivery.DeliveryAttempts
+		deliveryAttempts := delivery.DeliveryAttempts
 		deliveryAttempt, err := deliveryService.Dispatch(&delivery, httpServer.Client())
 		assert.Nil(t, err)
-		assert.Equal(t, delivery.DeliveryAttempts, deliveryAttemps+1)
+		assert.Equal(t, delivery.DeliveryAttempts, deliveryAttempts+1)
 		assert.Equal(t, hammer.DeliveryStatusFailed, delivery.Status)
 		assert.Equal(t, deliveryScheduledAt, delivery.ScheduledAt)
 		assert.Equal(t, false, deliveryAttempt.Success)

@@ -261,7 +261,7 @@ func main() {
 		{
 			Name:    "migrate",
 			Aliases: []string{"m"},
-			Usage:   "Run dabatase migrate",
+			Usage:   "Run database migrate",
 			Action: func(c *cli.Context) error {
 				err := ac.migrationService.Run()
 				if err != nil {
