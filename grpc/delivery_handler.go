@@ -66,7 +66,7 @@ func (d *DeliveryHandler) GetDelivery(ctx context.Context, request *pb.GetDelive
 	return d.buildResponse(&delivery)
 }
 
-// ListDeliveries get a list of deliveryies
+// ListDeliveries get a list of deliveries
 func (d *DeliveryHandler) ListDeliveries(ctx context.Context, request *pb.ListDeliveriesRequest) (*pb.ListDeliveriesResponse, error) {
 	// Get limit and offset
 	limit, offset := parsePagination(request.Limit, request.Offset)
@@ -74,7 +74,7 @@ func (d *DeliveryHandler) ListDeliveries(ctx context.Context, request *pb.ListDe
 	// Create response
 	response := &pb.ListDeliveriesResponse{}
 
-	// Get Deliverys
+	// Get Delivery
 	findOptions := hammer.FindOptions{
 		FindPagination: &hammer.FindPagination{
 			Limit:  limit,

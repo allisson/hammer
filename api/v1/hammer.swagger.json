@@ -13,7 +13,7 @@
   "paths": {
     "/v1/deliveries": {
       "get": {
-        "summary": "List deliveires",
+        "summary": "List deliveries",
         "operationId": "Hammer_ListDeliveries",
         "responses": {
           "200": {
