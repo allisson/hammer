@@ -1,21 +1,68 @@
 package repository
 
 import (
+	"context"
+	"net/http"
+	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/allisson/hammer"
-	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
+func TestDispatchToURL(t *testing.T) {
+	t.Run("Invalid delivery url", func(t *testing.T) {
+		delivery := hammer.MakeTestDelivery()
+		delivery.URL = "http://localhost:9999"
+
+		dr := dispatchToURL(delivery)
+		assert.False(t, dr.Success)
+		assert.Equal(t, `Post "http://localhost:9999": dial tcp [::1]:9999: connect: connection refused`, dr.Error)
+	})
+
+	t.Run("Invalid response status code", func(t *testing.T) {
+		httpServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+			// nolint:errcheck
+			w.Write([]byte("OK"))
+		}))
+		defer httpServer.Close()
+
+		delivery := hammer.MakeTestDelivery()
+		delivery.URL = httpServer.URL
+
+		dr := dispatchToURL(delivery)
+		assert.NotEqual(t, "", dr.Response)
+		assert.Equal(t, http.StatusInternalServerError, dr.ResponseStatusCode)
+		assert.False(t, dr.Success)
+		assert.Equal(t, "", dr.Error)
+	})
+
+	t.Run("Valid response status code", func(t *testing.T) {
+		httpServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// nolint:errcheck
+			w.Write([]byte("OK"))
+		}))
+		defer httpServer.Close()
+
+		delivery := hammer.MakeTestDelivery()
+		delivery.URL = httpServer.URL
+
+		dr := dispatchToURL(delivery)
+		assert.NotEqual(t, "", dr.Response)
+		assert.Equal(t, http.StatusOK, dr.ResponseStatusCode)
+		assert.True(t, dr.Success)
+		assert.Equal(t, "", dr.Error)
+	})
+}
+
 func TestDelivery(t *testing.T) {
+	ctx := context.Background()
+
 	t.Run("Test Store new Delivery", func(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
@@ -25,15 +72,13 @@ func TestDelivery(t *testing.T) {
 		delivery.TopicID = topic.ID
 		delivery.SubscriptionID = subscription.ID
 		delivery.MessageID = message.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription)
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message)
+		err = th.messageRepo.Store(ctx, message)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(tx, &delivery)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.deliveryRepo.Store(ctx, delivery)
 		assert.Nil(t, err)
 	})
 
@@ -41,8 +86,6 @@ func TestDelivery(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
@@ -52,25 +95,19 @@ func TestDelivery(t *testing.T) {
 		delivery.TopicID = topic.ID
 		delivery.SubscriptionID = subscription.ID
 		delivery.MessageID = message.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription)
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message)
+		err = th.messageRepo.Store(ctx, message)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(tx, &delivery)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.deliveryRepo.Store(ctx, delivery)
 		assert.Nil(t, err)
 
-		tx, err = th.txFactory.New()
-		assert.Nil(t, err)
 		delivery.Status = "completed"
-		err = th.deliveryRepo.Store(tx, &delivery)
+		err = th.deliveryRepo.Store(ctx, delivery)
 		assert.Nil(t, err)
-		err = tx.Commit()
-		assert.Nil(t, err)
-		deliveryFromRepo, err := th.deliveryRepo.Find(delivery.ID)
+		deliveryFromRepo, err := th.deliveryRepo.Find(ctx, delivery.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, delivery.Status, deliveryFromRepo.Status)
 	})
@@ -79,8 +116,6 @@ func TestDelivery(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
@@ -90,17 +125,15 @@ func TestDelivery(t *testing.T) {
 		delivery.TopicID = topic.ID
 		delivery.SubscriptionID = subscription.ID
 		delivery.MessageID = message.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription)
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message)
+		err = th.messageRepo.Store(ctx, message)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(tx, &delivery)
+		err = th.deliveryRepo.Store(ctx, delivery)
 		assert.Nil(t, err)
-		err = tx.Commit()
-		assert.Nil(t, err)
-		deliveryFromRepo, err := th.deliveryRepo.Find(delivery.ID)
+		deliveryFromRepo, err := th.deliveryRepo.Find(ctx, delivery.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, deliveryFromRepo.ID, delivery.ID)
 		assert.Equal(t, deliveryFromRepo.Status, delivery.Status)
@@ -110,32 +143,20 @@ func TestDelivery(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
-		message := hammer.MakeTestMessage()
-		message.TopicID = topic.ID
-		delivery1 := hammer.MakeTestDelivery()
-		delivery1.TopicID = topic.ID
-		delivery1.SubscriptionID = subscription.ID
-		delivery1.MessageID = message.ID
-		delivery2 := hammer.MakeTestDelivery()
-		delivery2.TopicID = topic.ID
-		delivery2.SubscriptionID = subscription.ID
-		delivery2.MessageID = message.ID
-		err = th.topicRepo.Store(tx, &topic)
+		message1 := hammer.MakeTestMessage()
+		message1.TopicID = topic.ID
+		message2 := hammer.MakeTestMessage()
+		message2.TopicID = topic.ID
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription)
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message)
+		err = th.messageRepo.Store(ctx, message1)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(tx, &delivery1)
-		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(tx, &delivery2)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.messageRepo.Store(ctx, message2)
 		assert.Nil(t, err)
 		findOptions := hammer.FindOptions{
 			FindPagination: &hammer.FindPagination{
@@ -143,53 +164,38 @@ func TestDelivery(t *testing.T) {
 				Offset: 0,
 			},
 		}
-		deliveries, err := th.deliveryRepo.FindAll(findOptions)
+		deliveries, err := th.deliveryRepo.FindAll(ctx, findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(deliveries))
 	})
 
-	t.Run("Test FindToDispatch", func(t *testing.T) {
+	t.Run("Test Dispatch", func(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
+		httpServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// nolint:errcheck
+			w.Write([]byte("OK"))
+		}))
+		defer httpServer.Close()
+
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
+		subscription.URL = httpServer.URL
 		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
-		delivery1 := hammer.MakeTestDelivery()
-		delivery1.TopicID = topic.ID
-		delivery1.SubscriptionID = subscription.ID
-		delivery1.MessageID = message.ID
-		delivery2 := hammer.MakeTestDelivery()
-		delivery2.TopicID = topic.ID
-		delivery2.SubscriptionID = subscription.ID
-		delivery2.MessageID = message.ID
-		delivery2.ScheduledAt = time.Now().Add(time.Duration(1) * time.Hour)
-		delivery3 := hammer.MakeTestDelivery()
-		delivery3.TopicID = topic.ID
-		delivery3.SubscriptionID = subscription.ID
-		delivery3.MessageID = message.ID
-		delivery3.Status = hammer.DeliveryStatusFailed
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription)
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message)
+		err = th.messageRepo.Store(ctx, message)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(tx, &delivery1)
+		deliveryAttempt, err := th.deliveryRepo.Dispatch(ctx)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(tx, &delivery2)
-		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(tx, &delivery3)
-		assert.Nil(t, err)
-		err = tx.Commit()
-		assert.Nil(t, err)
-		deliveries, err := th.deliveryRepo.FindToDispatch(50, 0)
-		assert.Nil(t, err)
-		assert.Equal(t, 1, len(deliveries))
-		assert.Equal(t, delivery1.ID, deliveries[0])
+		assert.Equal(t, http.StatusOK, deliveryAttempt.ResponseStatusCode)
+		assert.NotEqual(t, "", deliveryAttempt.Request)
+		assert.NotEqual(t, "", deliveryAttempt.Response)
+		assert.True(t, deliveryAttempt.Success)
 	})
 }

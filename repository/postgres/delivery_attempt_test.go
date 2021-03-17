@@ -1,20 +1,20 @@
 package repository
 
 import (
+	"context"
 	"testing"
 
 	"github.com/allisson/hammer"
-	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDeliveryAttempt(t *testing.T) {
+	ctx := context.Background()
+
 	t.Run("Test Store new DeliveryAttempt", func(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
@@ -26,17 +26,15 @@ func TestDeliveryAttempt(t *testing.T) {
 		delivery.MessageID = message.ID
 		deliveryAttempt := hammer.MakeTestDeliveryAttempt()
 		deliveryAttempt.DeliveryID = delivery.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription)
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message)
+		err = th.messageRepo.Store(ctx, message)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(tx, &delivery)
+		err = th.deliveryRepo.Store(ctx, delivery)
 		assert.Nil(t, err)
-		err = th.deliveryAttemptRepo.Store(tx, &deliveryAttempt)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.deliveryAttemptRepo.Store(ctx, deliveryAttempt)
 		assert.Nil(t, err)
 	})
 
@@ -44,8 +42,6 @@ func TestDeliveryAttempt(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
@@ -57,27 +53,21 @@ func TestDeliveryAttempt(t *testing.T) {
 		delivery.MessageID = message.ID
 		deliveryAttempt := hammer.MakeTestDeliveryAttempt()
 		deliveryAttempt.DeliveryID = delivery.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription)
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message)
+		err = th.messageRepo.Store(ctx, message)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(tx, &delivery)
+		err = th.deliveryRepo.Store(ctx, delivery)
 		assert.Nil(t, err)
-		err = th.deliveryAttemptRepo.Store(tx, &deliveryAttempt)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.deliveryAttemptRepo.Store(ctx, deliveryAttempt)
 		assert.Nil(t, err)
 
-		tx, err = th.txFactory.New()
-		assert.Nil(t, err)
 		deliveryAttempt.Success = true
-		err = th.deliveryAttemptRepo.Store(tx, &deliveryAttempt)
+		err = th.deliveryAttemptRepo.Store(ctx, deliveryAttempt)
 		assert.Nil(t, err)
-		err = tx.Commit()
-		assert.Nil(t, err)
-		deliveryAttemptFromRepo, err := th.deliveryAttemptRepo.Find(deliveryAttempt.ID)
+		deliveryAttemptFromRepo, err := th.deliveryAttemptRepo.Find(ctx, deliveryAttempt.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, deliveryAttempt.Success, deliveryAttemptFromRepo.Success)
 	})
@@ -86,8 +76,6 @@ func TestDeliveryAttempt(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
@@ -99,19 +87,17 @@ func TestDeliveryAttempt(t *testing.T) {
 		delivery.MessageID = message.ID
 		deliveryAttempt := hammer.MakeTestDeliveryAttempt()
 		deliveryAttempt.DeliveryID = delivery.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription)
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message)
+		err = th.messageRepo.Store(ctx, message)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(tx, &delivery)
+		err = th.deliveryRepo.Store(ctx, delivery)
 		assert.Nil(t, err)
-		err = th.deliveryAttemptRepo.Store(tx, &deliveryAttempt)
+		err = th.deliveryAttemptRepo.Store(ctx, deliveryAttempt)
 		assert.Nil(t, err)
-		err = tx.Commit()
-		assert.Nil(t, err)
-		deliveryAttemptFromRepo, err := th.deliveryAttemptRepo.Find(deliveryAttempt.ID)
+		deliveryAttemptFromRepo, err := th.deliveryAttemptRepo.Find(ctx, deliveryAttempt.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, deliveryAttemptFromRepo.ID, deliveryAttempt.ID)
 		assert.Equal(t, deliveryAttemptFromRepo.Success, deliveryAttempt.Success)
@@ -121,8 +107,6 @@ func TestDeliveryAttempt(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
@@ -136,19 +120,17 @@ func TestDeliveryAttempt(t *testing.T) {
 		deliveryAttempt1.DeliveryID = delivery.ID
 		deliveryAttempt2 := hammer.MakeTestDeliveryAttempt()
 		deliveryAttempt2.DeliveryID = delivery.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription)
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message)
+		err = th.messageRepo.Store(ctx, message)
 		assert.Nil(t, err)
-		err = th.deliveryRepo.Store(tx, &delivery)
+		err = th.deliveryRepo.Store(ctx, delivery)
 		assert.Nil(t, err)
-		err = th.deliveryAttemptRepo.Store(tx, &deliveryAttempt1)
+		err = th.deliveryAttemptRepo.Store(ctx, deliveryAttempt1)
 		assert.Nil(t, err)
-		err = th.deliveryAttemptRepo.Store(tx, &deliveryAttempt2)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.deliveryAttemptRepo.Store(ctx, deliveryAttempt2)
 		assert.Nil(t, err)
 		findOptions := hammer.FindOptions{
 			FindPagination: &hammer.FindPagination{
@@ -156,7 +138,7 @@ func TestDeliveryAttempt(t *testing.T) {
 				Offset: 0,
 			},
 		}
-		deliveryAttempts, err := th.deliveryAttemptRepo.FindAll(findOptions)
+		deliveryAttempts, err := th.deliveryAttemptRepo.FindAll(ctx, findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(deliveryAttempts))
 	})

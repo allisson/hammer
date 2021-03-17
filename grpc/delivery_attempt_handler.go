@@ -38,7 +38,7 @@ func (d *DeliveryAttemptHandler) buildResponse(deliveryAttempt *hammer.DeliveryA
 // GetDeliveryAttempt gets the DeliveryAttempt
 func (d *DeliveryAttemptHandler) GetDeliveryAttempt(ctx context.Context, request *pb.GetDeliveryAttemptRequest) (*pb.DeliveryAttempt, error) {
 	// Get DeliveryAttempt from service
-	deliveryAttempt, err := d.deliveryAttemptService.Find(request.Id)
+	deliveryAttempt, err := d.deliveryAttemptService.Find(ctx, request.Id)
 	if err != nil {
 		switch err {
 		case sql.ErrNoRows:
@@ -48,7 +48,7 @@ func (d *DeliveryAttemptHandler) GetDeliveryAttempt(ctx context.Context, request
 		}
 	}
 
-	return d.buildResponse(&deliveryAttempt)
+	return d.buildResponse(deliveryAttempt)
 }
 
 // ListDeliveryAttempts get a list of DeliveryAttempts
@@ -76,14 +76,15 @@ func (d *DeliveryAttemptHandler) ListDeliveryAttempts(ctx context.Context, reque
 	}
 	createdAtFilters := createdAtFilters(request.CreatedAtGt, request.CreatedAtGte, request.CreatedAtLt, request.CreatedAtLte)
 	findOptions.FindFilters = append(findOptions.FindFilters, createdAtFilters...)
-	deliveryAttempts, err := d.deliveryAttemptService.FindAll(findOptions)
+	deliveryAttempts, err := d.deliveryAttemptService.FindAll(ctx, findOptions)
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())
 	}
 
 	// Update response
-	for _, deliveryAttempt := range deliveryAttempts {
-		deliveryAttemptResponse, err := d.buildResponse(&deliveryAttempt)
+	for i := range deliveryAttempts {
+		deliveryAttempt := deliveryAttempts[i]
+		deliveryAttemptResponse, err := d.buildResponse(deliveryAttempt)
 		if err != nil {
 			return response, status.Error(codes.Internal, err.Error())
 		}

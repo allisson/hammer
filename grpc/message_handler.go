@@ -39,7 +39,7 @@ func (m *MessageHandler) CreateMessage(ctx context.Context, request *pb.CreateMe
 	}
 
 	// Build a message
-	message := hammer.Message{
+	message := &hammer.Message{
 		ID:          request.Message.Id,
 		TopicID:     request.Message.TopicId,
 		ContentType: request.Message.ContentType,
@@ -54,18 +54,18 @@ func (m *MessageHandler) CreateMessage(ctx context.Context, request *pb.CreateMe
 	}
 
 	// Create Message
-	err = m.messageService.Create(&message)
+	err = m.messageService.Create(ctx, message)
 	if err != nil {
 		return &pb.Message{}, status.Error(codes.Internal, err.Error())
 	}
 
-	return m.buildResponse(&message)
+	return m.buildResponse(message)
 }
 
 // GetMessage gets the message
 func (m *MessageHandler) GetMessage(ctx context.Context, request *pb.GetMessageRequest) (*pb.Message, error) {
 	// Get nessage from service
-	message, err := m.messageService.Find(request.Id)
+	message, err := m.messageService.Find(ctx, request.Id)
 	if err != nil {
 		switch err {
 		case sql.ErrNoRows:
@@ -75,7 +75,7 @@ func (m *MessageHandler) GetMessage(ctx context.Context, request *pb.GetMessageR
 		}
 	}
 
-	return m.buildResponse(&message)
+	return m.buildResponse(message)
 }
 
 // ListMessages get a list of messages
@@ -103,14 +103,15 @@ func (m *MessageHandler) ListMessages(ctx context.Context, request *pb.ListMessa
 	}
 	createdAtFilters := createdAtFilters(request.CreatedAtGt, request.CreatedAtGte, request.CreatedAtLt, request.CreatedAtLte)
 	findOptions.FindFilters = append(findOptions.FindFilters, createdAtFilters...)
-	messages, err := m.messageService.FindAll(findOptions)
+	messages, err := m.messageService.FindAll(ctx, findOptions)
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())
 	}
 
 	// Update response
-	for _, message := range messages {
-		messageResponse, err := m.buildResponse(&message)
+	for i := range messages {
+		message := messages[i]
+		messageResponse, err := m.buildResponse(message)
 		if err != nil {
 			return response, status.Error(codes.Internal, err.Error())
 		}
@@ -125,7 +126,7 @@ func (m *MessageHandler) DeleteMessage(ctx context.Context, request *pb.DeleteMe
 	response := &empty.Empty{}
 
 	// Delete topic
-	err := m.messageService.Delete(request.Id)
+	err := m.messageService.Delete(ctx, request.Id)
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())
 	}

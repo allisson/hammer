@@ -53,7 +53,7 @@ func (d *DeliveryHandler) buildResponse(delivery *hammer.Delivery) (*pb.Delivery
 // GetDelivery gets the Delivery
 func (d *DeliveryHandler) GetDelivery(ctx context.Context, request *pb.GetDeliveryRequest) (*pb.Delivery, error) {
 	// Get delivery from service
-	delivery, err := d.deliveryService.Find(request.Id)
+	delivery, err := d.deliveryService.Find(ctx, request.Id)
 	if err != nil {
 		switch err {
 		case sql.ErrNoRows:
@@ -63,7 +63,7 @@ func (d *DeliveryHandler) GetDelivery(ctx context.Context, request *pb.GetDelive
 		}
 	}
 
-	return d.buildResponse(&delivery)
+	return d.buildResponse(delivery)
 }
 
 // ListDeliveries get a list of deliveries
@@ -115,14 +115,15 @@ func (d *DeliveryHandler) ListDeliveries(ctx context.Context, request *pb.ListDe
 	}
 	createdAtFilters := createdAtFilters(request.CreatedAtGt, request.CreatedAtGte, request.CreatedAtLt, request.CreatedAtLte)
 	findOptions.FindFilters = append(findOptions.FindFilters, createdAtFilters...)
-	deliveries, err := d.deliveryService.FindAll(findOptions)
+	deliveries, err := d.deliveryService.FindAll(ctx, findOptions)
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())
 	}
 
 	// Update response
-	for _, delivery := range deliveries {
-		deliveryResponse, err := d.buildResponse(&delivery)
+	for i := range deliveries {
+		delivery := deliveries[i]
+		deliveryResponse, err := d.buildResponse(delivery)
 		if err != nil {
 			return response, status.Error(codes.Internal, err.Error())
 		}

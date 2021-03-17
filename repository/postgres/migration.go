@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -18,7 +19,7 @@ type Migration struct {
 }
 
 // Run migrations
-func (m *Migration) Run() error {
+func (m *Migration) Run(ctx context.Context) error {
 	driver, err := postgres.WithInstance(m.db.DB, &postgres.Config{})
 	if err != nil {
 		return err
@@ -41,8 +42,8 @@ func (m *Migration) Run() error {
 }
 
 // NewMigration will create a implementation of hammer.MigrationRepository
-func NewMigration(db *sqlx.DB, migrationDir string) Migration {
-	return Migration{
+func NewMigration(db *sqlx.DB, migrationDir string) *Migration {
+	return &Migration{
 		db:           db,
 		migrationDir: migrationDir,
 	}

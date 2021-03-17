@@ -1,28 +1,26 @@
 package repository
 
 import (
+	"context"
 	"testing"
 
 	"github.com/allisson/hammer"
-	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMessage(t *testing.T) {
+	ctx := context.Background()
+
 	t.Run("Test Store new Message", func(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.messageRepo.Store(ctx, message)
 		assert.Nil(t, err)
 	})
 
@@ -30,26 +28,18 @@ func TestMessage(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.messageRepo.Store(ctx, message)
 		assert.Nil(t, err)
 
-		tx, err = th.txFactory.New()
-		assert.Nil(t, err)
 		message.Data = "My Data III"
-		err = th.messageRepo.Store(tx, &message)
+		err = th.messageRepo.Store(ctx, message)
 		assert.Nil(t, err)
-		err = tx.Commit()
-		assert.Nil(t, err)
-		messageFromRepo, err := th.messageRepo.Find(message.ID)
+		messageFromRepo, err := th.messageRepo.Find(ctx, message.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, message.Data, messageFromRepo.Data)
 	})
@@ -58,18 +48,14 @@ func TestMessage(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message)
+		err = th.messageRepo.Store(ctx, message)
 		assert.Nil(t, err)
-		err = tx.Commit()
-		assert.Nil(t, err)
-		messageFromRepo, err := th.messageRepo.Find(message.ID)
+		messageFromRepo, err := th.messageRepo.Find(ctx, message.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, messageFromRepo.ID, message.ID)
 		assert.Equal(t, messageFromRepo.Data, message.Data)
@@ -79,20 +65,16 @@ func TestMessage(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		message1 := hammer.MakeTestMessage()
 		message1.TopicID = topic.ID
 		message2 := hammer.MakeTestMessage()
 		message2.TopicID = topic.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message1)
+		err = th.messageRepo.Store(ctx, message1)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message2)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.messageRepo.Store(ctx, message2)
 		assert.Nil(t, err)
 		findOptions := hammer.FindOptions{
 			FindPagination: &hammer.FindPagination{
@@ -100,7 +82,7 @@ func TestMessage(t *testing.T) {
 				Offset: 0,
 			},
 		}
-		messages, err := th.messageRepo.FindAll(findOptions)
+		messages, err := th.messageRepo.FindAll(ctx, findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(messages))
 	})
@@ -109,23 +91,15 @@ func TestMessage(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		message := hammer.MakeTestMessage()
 		message.TopicID = topic.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.messageRepo.Store(tx, &message)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.messageRepo.Store(ctx, message)
 		assert.Nil(t, err)
 
-		tx, err = th.txFactory.New()
-		assert.Nil(t, err)
-		err = th.messageRepo.Delete(tx, message.ID)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.messageRepo.Delete(ctx, message.ID)
 		assert.Nil(t, err)
 	})
 }

@@ -28,7 +28,7 @@ func TestSubscriptionHandler(t *testing.T) {
 				DeliveryAttemptTimeout: 5,
 			},
 		}
-		subscriptionService.On("Create", mock.Anything).Return(nil)
+		subscriptionService.On("Create", mock.Anything, mock.Anything).Return(nil)
 
 		response, err := handler.CreateSubscription(ctx, request)
 		assert.Nil(t, err)
@@ -51,7 +51,7 @@ func TestSubscriptionHandler(t *testing.T) {
 				DeliveryAttemptTimeout: 5,
 			},
 		}
-		subscriptionService.On("Update", mock.Anything).Return(nil)
+		subscriptionService.On("Update", mock.Anything, mock.Anything).Return(nil)
 
 		response, err := handler.UpdateSubscription(ctx, request)
 		assert.Nil(t, err)
@@ -63,14 +63,14 @@ func TestSubscriptionHandler(t *testing.T) {
 		subscriptionService := &mocks.SubscriptionService{}
 		handler := NewSubscriptionHandler(subscriptionService)
 		ctx := context.Background()
-		subscription := hammer.Subscription{
+		subscription := &hammer.Subscription{
 			ID:   "subscription_id",
 			Name: "Subscription",
 		}
 		request := &pb.GetSubscriptionRequest{
 			Id: "subscription_id",
 		}
-		subscriptionService.On("Find", mock.Anything).Return(subscription, nil)
+		subscriptionService.On("Find", mock.Anything, mock.Anything).Return(subscription, nil)
 
 		response, err := handler.GetSubscription(ctx, request)
 		assert.Nil(t, err)
@@ -82,7 +82,7 @@ func TestSubscriptionHandler(t *testing.T) {
 		subscriptionService := &mocks.SubscriptionService{}
 		handler := NewSubscriptionHandler(subscriptionService)
 		ctx := context.Background()
-		subscription := hammer.Subscription{
+		subscription := &hammer.Subscription{
 			ID:   "subscription_id",
 			Name: "Subscription",
 		}
@@ -90,7 +90,7 @@ func TestSubscriptionHandler(t *testing.T) {
 			Limit:  50,
 			Offset: 0,
 		}
-		subscriptionService.On("FindAll", mock.Anything).Return([]hammer.Subscription{subscription}, nil)
+		subscriptionService.On("FindAll", mock.Anything, mock.Anything).Return([]*hammer.Subscription{subscription}, nil)
 
 		response, err := handler.ListSubscriptions(ctx, request)
 		assert.Nil(t, err)
@@ -110,7 +110,7 @@ func TestSubscriptionHandler(t *testing.T) {
 		request := &pb.DeleteSubscriptionRequest{
 			Id: subscription.ID,
 		}
-		subscriptionService.On("Delete", mock.Anything).Return(nil)
+		subscriptionService.On("Delete", mock.Anything, mock.Anything).Return(nil)
 
 		response, err := handler.DeleteSubscription(ctx, request)
 		assert.Nil(t, err)

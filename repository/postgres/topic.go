@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/allisson/hammer"
@@ -13,8 +14,8 @@ type Topic struct {
 }
 
 // Find returns hammer.Topic by id
-func (t *Topic) Find(id string) (hammer.Topic, error) {
-	topic := hammer.Topic{}
+func (t *Topic) Find(ctx context.Context, id string) (*hammer.Topic, error) {
+	topic := &hammer.Topic{}
 	findOptions := hammer.FindOptions{
 		FindFilters: []hammer.FindFilter{
 			{
@@ -24,41 +25,47 @@ func (t *Topic) Find(id string) (hammer.Topic, error) {
 			},
 		},
 	}
-	sql, args := buildSQLQuery("topics", findOptions)
-	err := t.db.Get(&topic, sql, args...)
+	query, args := findQuery("topics", findOptions)
+	err := t.db.GetContext(ctx, topic, query, args...)
 	return topic, err
 }
 
 // FindAll returns []hammer.Topic by limit and offset
-func (t *Topic) FindAll(findOptions hammer.FindOptions) ([]hammer.Topic, error) {
-	topics := []hammer.Topic{}
-	sql, args := buildSQLQuery("topics", findOptions)
-	err := t.db.Select(&topics, sql, args...)
+func (t *Topic) FindAll(ctx context.Context, findOptions hammer.FindOptions) ([]*hammer.Topic, error) {
+	topics := []*hammer.Topic{}
+	query, args := findQuery("topics", findOptions)
+	err := t.db.SelectContext(ctx, &topics, query, args...)
 	return topics, err
 }
 
 // Store a hammer.Topic on database (create or update)
-func (t *Topic) Store(tx hammer.TxRepository, topic *hammer.Topic) error {
-	_, err := t.Find(topic.ID)
+func (t *Topic) Store(ctx context.Context, topic *hammer.Topic) error {
+	_, err := t.Find(ctx, topic.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return tx.Exec(sqlTopicCreate, topic)
+			query, args := insertQuery("topics", topic)
+			_, err := t.db.ExecContext(ctx, query, args...)
+			return err
 		}
 		return err
 	}
-	return tx.Exec(sqlTopicUpdate, topic)
+	query, args := updateQuery("topics", topic.ID, topic)
+	_, err = t.db.ExecContext(ctx, query, args...)
+	return err
 }
 
 // Delete a hammer.Topic on database
-func (t *Topic) Delete(tx hammer.TxRepository, id string) error {
-	_, err := t.Find(id)
+func (t *Topic) Delete(ctx context.Context, id string) error {
+	_, err := t.Find(ctx, id)
 	if err != nil {
 		return err
 	}
-	return tx.Exec(sqlTopicDelete, map[string]interface{}{"id": id})
+	query, args := deleteQuery("topics", id)
+	_, err = t.db.ExecContext(ctx, query, args...)
+	return err
 }
 
 // NewTopic returns a new Topic with db connection
-func NewTopic(db *sqlx.DB) Topic {
-	return Topic{db: db}
+func NewTopic(db *sqlx.DB) *Topic {
+	return &Topic{db: db}
 }
