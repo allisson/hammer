@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+
+	"github.com/oklog/ulid/v2"
 )
 
 func init() {
@@ -11,13 +13,14 @@ func init() {
 }
 
 func randonInt() int {
+	// nolint:gosec
 	return rand.Intn(9999)
 }
 
 // MakeTestTopic returns a new Topic
-func MakeTestTopic() Topic {
+func MakeTestTopic() *Topic {
 	id := fmt.Sprintf("%d", randonInt())
-	return Topic{
+	return &Topic{
 		ID:        fmt.Sprintf("topic_%s", id),
 		Name:      fmt.Sprintf("My Topic %s", id),
 		CreatedAt: time.Now().UTC(),
@@ -26,9 +29,9 @@ func MakeTestTopic() Topic {
 }
 
 // MakeTestSubscription returns a new Subscription
-func MakeTestSubscription() Subscription {
+func MakeTestSubscription() *Subscription {
 	id := fmt.Sprintf("%d", randonInt())
-	return Subscription{
+	return &Subscription{
 		ID:                     fmt.Sprintf("Subscription_%s", id),
 		Name:                   fmt.Sprintf("My Subscription %s", id),
 		URL:                    fmt.Sprintf("https://example.com/%s/", id),
@@ -42,9 +45,9 @@ func MakeTestSubscription() Subscription {
 }
 
 // MakeTestMessage returns a new Message
-func MakeTestMessage() Message {
+func MakeTestMessage() *Message {
 	id := fmt.Sprintf("%d", randonInt())
-	return Message{
+	return &Message{
 		ID:          fmt.Sprintf("Message_%s", id),
 		ContentType: "application/json",
 		Data:        `{"id": "id", "name": "Allisson"}`,
@@ -53,9 +56,9 @@ func MakeTestMessage() Message {
 }
 
 // MakeTestDelivery returns a new Delivery
-func MakeTestDelivery() Delivery {
+func MakeTestDelivery() *Delivery {
 	id := fmt.Sprintf("%d", randonInt())
-	return Delivery{
+	return &Delivery{
 		ID:                     fmt.Sprintf("Delivery_%s", id),
 		ContentType:            "application/json",
 		Data:                   fmt.Sprintf("data_%s", id),
@@ -72,13 +75,23 @@ func MakeTestDelivery() Delivery {
 }
 
 // MakeTestDeliveryAttempt returns a new DeliveryAttempt
-func MakeTestDeliveryAttempt() DeliveryAttempt {
+func MakeTestDeliveryAttempt() *DeliveryAttempt {
 	id := fmt.Sprintf("%d", randonInt())
-	return DeliveryAttempt{
+	return &DeliveryAttempt{
 		ID:                 fmt.Sprintf("DeliveryAttempt_%s", id),
 		Success:            true,
 		ResponseStatusCode: 201,
 		ExecutionDuration:  1000,
 		CreatedAt:          time.Now().UTC(),
 	}
+}
+
+// GenerateULID returns a new ulid id
+func GenerateULID() (string, error) {
+	seed := time.Now().UnixNano()
+	source := rand.NewSource(seed)
+	// nolint:gosec
+	entropy := rand.New(source)
+	id, err := ulid.New(ulid.Timestamp(time.Now()), entropy)
+	return id.String(), err
 }

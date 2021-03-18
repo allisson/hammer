@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/allisson/hammer"
@@ -13,8 +14,8 @@ type DeliveryAttempt struct {
 }
 
 // Find returns hammer.DeliveryAttempt by id
-func (d *DeliveryAttempt) Find(id string) (hammer.DeliveryAttempt, error) {
-	deliveryAttempt := hammer.DeliveryAttempt{}
+func (d DeliveryAttempt) Find(ctx context.Context, id string) (*hammer.DeliveryAttempt, error) {
+	deliveryAttempt := &hammer.DeliveryAttempt{}
 	findOptions := hammer.FindOptions{
 		FindFilters: []hammer.FindFilter{
 			{
@@ -24,32 +25,36 @@ func (d *DeliveryAttempt) Find(id string) (hammer.DeliveryAttempt, error) {
 			},
 		},
 	}
-	sql, args := buildSQLQuery("delivery_attempts", findOptions)
-	err := d.db.Get(&deliveryAttempt, sql, args...)
+	query, args := findQuery("delivery_attempts", findOptions)
+	err := d.db.GetContext(ctx, deliveryAttempt, query, args...)
 	return deliveryAttempt, err
 }
 
 // FindAll returns []hammer.DeliveryAttempt by limit and offset
-func (d *DeliveryAttempt) FindAll(findOptions hammer.FindOptions) ([]hammer.DeliveryAttempt, error) {
-	deliveryAttempts := []hammer.DeliveryAttempt{}
-	sql, args := buildSQLQuery("delivery_attempts", findOptions)
-	err := d.db.Select(&deliveryAttempts, sql, args...)
+func (d DeliveryAttempt) FindAll(ctx context.Context, findOptions hammer.FindOptions) ([]*hammer.DeliveryAttempt, error) {
+	deliveryAttempts := []*hammer.DeliveryAttempt{}
+	query, args := findQuery("delivery_attempts", findOptions)
+	err := d.db.SelectContext(ctx, &deliveryAttempts, query, args...)
 	return deliveryAttempts, err
 }
 
 // Store a hammer.DeliveryAttempt on database (create or update)
-func (d *DeliveryAttempt) Store(tx hammer.TxRepository, deliveryAttempt *hammer.DeliveryAttempt) error {
-	_, err := d.Find(deliveryAttempt.ID)
+func (d DeliveryAttempt) Store(ctx context.Context, deliveryAttempt *hammer.DeliveryAttempt) error {
+	_, err := d.Find(ctx, deliveryAttempt.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return tx.Exec(sqlDeliveryAttemptCreate, deliveryAttempt)
+			query, args := insertQuery("delivery_attempts", deliveryAttempt)
+			_, err := d.db.ExecContext(ctx, query, args...)
+			return err
 		}
 		return err
 	}
-	return tx.Exec(sqlDeliveryAttemptUpdate, deliveryAttempt)
+	query, args := updateQuery("delivery_attempts", deliveryAttempt.ID, deliveryAttempt)
+	_, err = d.db.ExecContext(ctx, query, args...)
+	return err
 }
 
 // NewDeliveryAttempt returns a new DeliveryAttempt with db connection
-func NewDeliveryAttempt(db *sqlx.DB) DeliveryAttempt {
-	return DeliveryAttempt{db: db}
+func NewDeliveryAttempt(db *sqlx.DB) *DeliveryAttempt {
+	return &DeliveryAttempt{db: db}
 }

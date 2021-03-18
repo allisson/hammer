@@ -9,9 +9,9 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/allisson/go-env"
-	"github.com/allisson/go-pglock"
 	"github.com/allisson/hammer"
 	pb "github.com/allisson/hammer/api/v1"
 	hammerGrpc "github.com/allisson/hammer/grpc"
@@ -33,7 +33,6 @@ import (
 )
 
 var (
-	logger       *zap.Logger
 	sqlDB        *sqlx.DB
 	sqlConn      *sql.Conn
 	grpcEndpoint string
@@ -56,24 +55,23 @@ func newAppContext() appContext {
 	messageRepo := repository.NewMessage(sqlDB)
 	deliveryRepo := repository.NewDelivery(sqlDB)
 	deliveryAttemptRepo := repository.NewDeliveryAttempt(sqlDB)
-	txFactoryRepo := repository.NewTxFactory(sqlDB)
 	migrationRepo := repository.NewMigration(sqlDB, env.GetString("HAMMER_DATABASE_MIGRATION_DIR", "file:///db/migrations"))
 
 	// Create services
-	topicService := service.NewTopic(&topicRepo, &txFactoryRepo)
-	subscriptionService := service.NewSubscription(&topicRepo, &subscriptionRepo, &txFactoryRepo)
-	messageService := service.NewMessage(&topicRepo, &messageRepo, &subscriptionRepo, &deliveryRepo, &txFactoryRepo)
-	deliveryService := service.NewDelivery(&deliveryRepo, &deliveryAttemptRepo, &txFactoryRepo)
-	deliveryAttemptService := service.NewDeliveryAttempt(&deliveryAttemptRepo)
-	migrationService := service.NewMigration(&migrationRepo)
+	topicService := service.NewTopic(topicRepo)
+	subscriptionService := service.NewSubscription(topicRepo, subscriptionRepo)
+	messageService := service.NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo)
+	deliveryService := service.NewDelivery(deliveryRepo, deliveryAttemptRepo)
+	deliveryAttemptService := service.NewDeliveryAttempt(deliveryAttemptRepo)
+	migrationService := service.NewMigration(migrationRepo)
 
 	return appContext{
-		topicService:           &topicService,
-		subscriptionService:    &subscriptionService,
-		messageService:         &messageService,
-		deliveryService:        &deliveryService,
-		deliveryAttemptService: &deliveryAttemptService,
-		migrationService:       &migrationService,
+		topicService:           topicService,
+		subscriptionService:    subscriptionService,
+		messageService:         messageService,
+		deliveryService:        deliveryService,
+		deliveryAttemptService: deliveryAttemptService,
+		migrationService:       migrationService,
 	}
 }
 
@@ -90,12 +88,12 @@ func gatewayServer() {
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	err := pb.RegisterHammerHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
 	if err != nil {
-		logger.Error("gateway-http-server", zap.Error(err))
+		zap.L().Error("gateway-http-server", zap.Error(err))
 		return
 	}
 
 	if err := http.ListenAndServe(httpEndpoint, mux); err != nil {
-		logger.Error("gateway-http-server", zap.Error(err))
+		zap.L().Error("gateway-http-server", zap.Error(err))
 	}
 }
 
@@ -109,7 +107,7 @@ func metricsServer() {
 	mux.Handle("/metrics", promhttp.Handler())
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 	if err != nil {
-		logger.Error("metrics-server-failed-to-start", zap.Error(err))
+		zap.L().Error("metrics-server-failed-to-start", zap.Error(err))
 	}
 }
 
@@ -137,22 +135,23 @@ func healthCheckServer() {
 	mux.HandleFunc("/readiness", handler)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
 	if err != nil {
-		logger.Error("health-check-server-failed-to-start", zap.Error(err))
+		zap.L().Error("health-check-server-failed-to-start", zap.Error(err))
 	}
 }
 
 func init() {
 	// Set logger
-	logger, _ = zap.NewProduction()
+	logger, _ := zap.NewProduction()
+	_ = zap.ReplaceGlobals(logger)
 
 	// Set database connection
 	db, err := sqlx.Open("postgres", env.GetString("HAMMER_DATABASE_URL", ""))
 	if err != nil {
-		logger.Fatal("failed-to-start-database-client", zap.Error(err))
+		zap.L().Fatal("failed-to-start-database-client", zap.Error(err))
 	}
 	err = db.Ping()
 	if err != nil {
-		logger.Fatal("failed-to-ping-database", zap.Error(err))
+		zap.L().Fatal("failed-to-ping-database", zap.Error(err))
 	}
 	db.SetMaxOpenConns(env.GetInt("HAMMER_DATABASE_MAX_OPEN_CONNS", 3))
 	sqlDB = db
@@ -191,7 +190,7 @@ func main() {
 				// Start tcp server
 				listener, err := net.Listen("tcp", grpcEndpoint)
 				if err != nil {
-					logger.Fatal("failed-to-listen", zap.Error(err))
+					zap.L().Fatal("failed-to-listen", zap.Error(err))
 				}
 
 				// Start health check
@@ -205,13 +204,13 @@ func main() {
 					grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
 						grpc_ctxtags.StreamServerInterceptor(),
 						grpc_prometheus.StreamServerInterceptor,
-						grpc_zap.StreamServerInterceptor(logger),
+						grpc_zap.StreamServerInterceptor(zap.L()),
 						grpc_recovery.StreamServerInterceptor(),
 					)),
 					grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 						grpc_ctxtags.UnaryServerInterceptor(),
 						grpc_prometheus.UnaryServerInterceptor,
-						grpc_zap.UnaryServerInterceptor(logger),
+						grpc_zap.UnaryServerInterceptor(zap.L()),
 						grpc_recovery.UnaryServerInterceptor(),
 					)),
 				)
@@ -219,9 +218,6 @@ func main() {
 
 				// Register grpc services
 				pb.RegisterHammerServer(grpcServer, &server)
-
-				// Enable grpc_prometheus histograms
-				grpc_prometheus.EnableHandlingTimeHistogram()
 
 				// Register grpc_prometheus default metrics
 				grpc_prometheus.Register(grpcServer)
@@ -242,15 +238,15 @@ func main() {
 					<-sigint
 
 					// We received an interrupt signal, shut down.
-					logger.Info("grpc-server-shutdown-started")
+					zap.L().Info("grpc-server-shutdown-started")
 					grpcServer.GracefulStop()
 					close(idleConnsClosed)
-					logger.Info("grpc-server-shutdown-finished")
+					zap.L().Info("grpc-server-shutdown-finished")
 				}()
 
-				logger.Info("grpc-server-started")
+				zap.L().Info("grpc-server-started")
 				if err := grpcServer.Serve(listener); err != nil {
-					logger.Error("grpc-server-serve", zap.Error(err))
+					zap.L().Error("grpc-server-serve", zap.Error(err))
 				}
 
 				<-idleConnsClosed
@@ -263,11 +259,11 @@ func main() {
 			Aliases: []string{"m"},
 			Usage:   "Run database migrate",
 			Action: func(c *cli.Context) error {
-				err := ac.migrationService.Run()
+				err := ac.migrationService.Run(c.Context)
 				if err != nil {
 					return err
 				}
-				logger.Info("database-migrations-completed")
+				zap.L().Info("database-migrations-completed")
 				return nil
 			},
 		},
@@ -276,46 +272,18 @@ func main() {
 			Aliases: []string{"w"},
 			Usage:   "Starts the worker",
 			Action: func(c *cli.Context) error {
-				// Create lock
-				conn, err := sqlDB.DB.Conn(context.Background())
-				if err != nil {
-					return err
-				}
-				sqlConn = conn
-				lock := pglock.NewLock(sqlConn)
+				// Create repositories
+				deliveryRepo := repository.NewDelivery(sqlDB)
 
 				// Create worker service
-				workerService := service.NewWorker(&lock, ac.deliveryService)
+				pollingInterval := time.Duration(env.GetInt("HAMMER_WORKER_DATABASE_DELAY", 1)) * time.Second
+				workerService := service.NewWorker(deliveryRepo, pollingInterval)
 
 				// Start health check
 				go healthCheckServer()
 
-				idleConnsClosed := make(chan struct{})
-				go func() {
-					sigint := make(chan os.Signal, 1)
-
-					// interrupt signal sent from terminal
-					signal.Notify(sigint, os.Interrupt)
-					// sigterm signal sent from kubernetes
-					signal.Notify(sigint, syscall.SIGTERM)
-
-					<-sigint
-
-					// We received an interrupt signal, shut down.
-					logger.Info("worker-shutdown-started")
-					if err := workerService.Stop(); err != nil {
-						logger.Error("worker-service-stop", zap.Error(err))
-					}
-					close(idleConnsClosed)
-					logger.Info("worker-shutdown-finished")
-				}()
-
-				logger.Info("worker-started")
-				if err := workerService.Run(); err != nil {
-					logger.Error("worker-service-run", zap.Error(err))
-				}
-
-				<-idleConnsClosed
+				// Start worker
+				workerService.Run(c.Context)
 
 				return nil
 			},
@@ -324,6 +292,6 @@ func main() {
 
 	err := app.Run(os.Args)
 	if err != nil {
-		logger.Fatal("app", zap.Error(err))
+		zap.L().Fatal("app", zap.Error(err))
 	}
 }

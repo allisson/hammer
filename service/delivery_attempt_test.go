@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"testing"
 
 	"github.com/allisson/hammer"
@@ -10,22 +11,24 @@ import (
 )
 
 func TestDeliveryAttempt(t *testing.T) {
+	ctx := context.Background()
+
 	t.Run("Test Find", func(t *testing.T) {
 		expectedDeliveryAttempt := hammer.MakeTestDeliveryAttempt()
 		deliveryAttemptRepo := &mocks.DeliveryAttemptRepository{}
 		deliveryAttemptService := NewDeliveryAttempt(deliveryAttemptRepo)
-		deliveryAttemptRepo.On("Find", mock.Anything).Return(expectedDeliveryAttempt, nil)
+		deliveryAttemptRepo.On("Find", mock.Anything, mock.Anything).Return(expectedDeliveryAttempt, nil)
 
-		deliveryAttempt, err := deliveryAttemptService.Find(expectedDeliveryAttempt.ID)
+		deliveryAttempt, err := deliveryAttemptService.Find(ctx, expectedDeliveryAttempt.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, expectedDeliveryAttempt, deliveryAttempt)
 	})
 
 	t.Run("Test FindAll", func(t *testing.T) {
-		expectedDeliveries := []hammer.DeliveryAttempt{hammer.MakeTestDeliveryAttempt()}
+		expectedDeliveries := []*hammer.DeliveryAttempt{hammer.MakeTestDeliveryAttempt()}
 		deliveryAttemptRepo := &mocks.DeliveryAttemptRepository{}
 		deliveryAttemptService := NewDeliveryAttempt(deliveryAttemptRepo)
-		deliveryAttemptRepo.On("FindAll", mock.Anything).Return(expectedDeliveries, nil)
+		deliveryAttemptRepo.On("FindAll", mock.Anything, mock.Anything).Return(expectedDeliveries, nil)
 
 		findOptions := hammer.FindOptions{
 			FindPagination: &hammer.FindPagination{
@@ -33,7 +36,7 @@ func TestDeliveryAttempt(t *testing.T) {
 				Offset: 0,
 			},
 		}
-		deliveries, err := deliveryAttemptService.FindAll(findOptions)
+		deliveries, err := deliveryAttemptService.FindAll(ctx, findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, expectedDeliveries, deliveries)
 	})

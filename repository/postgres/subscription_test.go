@@ -1,28 +1,26 @@
 package repository
 
 import (
+	"context"
 	"testing"
 
 	"github.com/allisson/hammer"
-	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSubscription(t *testing.T) {
+	ctx := context.Background()
+
 	t.Run("Test Store new Subscription", func(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
 	})
 
@@ -30,26 +28,18 @@ func TestSubscription(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
 
-		tx, err = th.txFactory.New()
-		assert.Nil(t, err)
 		subscription.Name = "My Subscription III"
-		err = th.subscriptionRepo.Store(tx, &subscription)
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
-		err = tx.Commit()
-		assert.Nil(t, err)
-		subscriptionFromRepo, err := th.subscriptionRepo.Find(subscription.ID)
+		subscriptionFromRepo, err := th.subscriptionRepo.Find(ctx, subscription.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, subscription.Name, subscriptionFromRepo.Name)
 	})
@@ -58,19 +48,15 @@ func TestSubscription(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
 
-		subscriptionFromRepo, err := th.subscriptionRepo.Find(subscription.ID)
+		subscriptionFromRepo, err := th.subscriptionRepo.Find(ctx, subscription.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, subscriptionFromRepo.ID, subscription.ID)
 		assert.Equal(t, subscriptionFromRepo.Name, subscription.Name)
@@ -80,20 +66,16 @@ func TestSubscription(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription1 := hammer.MakeTestSubscription()
 		subscription1.TopicID = topic.ID
 		subscription2 := hammer.MakeTestSubscription()
 		subscription2.TopicID = topic.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription1)
+		err = th.subscriptionRepo.Store(ctx, subscription1)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription2)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.subscriptionRepo.Store(ctx, subscription2)
 		assert.Nil(t, err)
 		findOptions := hammer.FindOptions{
 			FindPagination: &hammer.FindPagination{
@@ -101,7 +83,7 @@ func TestSubscription(t *testing.T) {
 				Offset: 0,
 			},
 		}
-		subscriptions, err := th.subscriptionRepo.FindAll(findOptions)
+		subscriptions, err := th.subscriptionRepo.FindAll(ctx, findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(subscriptions))
 	})
@@ -110,23 +92,15 @@ func TestSubscription(t *testing.T) {
 		th := newTxnTestHelper()
 		defer th.db.Close()
 
-		tx, err := th.txFactory.New()
-		assert.Nil(t, err)
 		topic := hammer.MakeTestTopic()
 		subscription := hammer.MakeTestSubscription()
 		subscription.TopicID = topic.ID
-		err = th.topicRepo.Store(tx, &topic)
+		err := th.topicRepo.Store(ctx, topic)
 		assert.Nil(t, err)
-		err = th.subscriptionRepo.Store(tx, &subscription)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.subscriptionRepo.Store(ctx, subscription)
 		assert.Nil(t, err)
 
-		tx, err = th.txFactory.New()
-		assert.Nil(t, err)
-		err = th.subscriptionRepo.Delete(tx, subscription.ID)
-		assert.Nil(t, err)
-		err = tx.Commit()
+		err = th.subscriptionRepo.Delete(ctx, subscription.ID)
 		assert.Nil(t, err)
 	})
 }

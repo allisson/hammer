@@ -17,7 +17,7 @@ func TestDeliveryHandler(t *testing.T) {
 		deliveryService := &mocks.DeliveryService{}
 		handler := NewDeliveryHandler(deliveryService)
 		ctx := context.Background()
-		delivery := hammer.Delivery{
+		delivery := &hammer.Delivery{
 			ID:        "id",
 			TopicID:   "topic_id",
 			Data:      "{}",
@@ -26,7 +26,7 @@ func TestDeliveryHandler(t *testing.T) {
 		request := &pb.GetDeliveryRequest{
 			Id: "id",
 		}
-		deliveryService.On("Find", mock.Anything).Return(delivery, nil)
+		deliveryService.On("Find", mock.Anything, mock.Anything).Return(delivery, nil)
 
 		response, err := handler.GetDelivery(ctx, request)
 		assert.Nil(t, err)
@@ -38,7 +38,7 @@ func TestDeliveryHandler(t *testing.T) {
 		deliveryService := &mocks.DeliveryService{}
 		handler := NewDeliveryHandler(deliveryService)
 		ctx := context.Background()
-		delivery := hammer.Delivery{
+		delivery := &hammer.Delivery{
 			ID:        "id",
 			TopicID:   "topic_id",
 			Data:      "{}",
@@ -48,7 +48,7 @@ func TestDeliveryHandler(t *testing.T) {
 			Limit:  50,
 			Offset: 0,
 		}
-		deliveryService.On("FindAll", mock.Anything).Return([]hammer.Delivery{delivery}, nil)
+		deliveryService.On("FindAll", mock.Anything, mock.Anything).Return([]*hammer.Delivery{delivery}, nil)
 
 		response, err := handler.ListDeliveries(ctx, request)
 		assert.Nil(t, err)

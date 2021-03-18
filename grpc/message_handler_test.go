@@ -26,7 +26,7 @@ func TestMessageHandler(t *testing.T) {
 				Data:        "{}",
 			},
 		}
-		messageService.On("Create", mock.Anything).Return(nil)
+		messageService.On("Create", mock.Anything, mock.Anything).Return(nil)
 
 		response, err := handler.CreateMessage(ctx, request)
 		assert.Nil(t, err)
@@ -38,7 +38,7 @@ func TestMessageHandler(t *testing.T) {
 		messageService := &mocks.MessageService{}
 		handler := NewMessageHandler(messageService)
 		ctx := context.Background()
-		message := hammer.Message{
+		message := &hammer.Message{
 			ID:          "id",
 			TopicID:     "topic_id",
 			ContentType: "application/json",
@@ -48,7 +48,7 @@ func TestMessageHandler(t *testing.T) {
 		request := &pb.GetMessageRequest{
 			Id: "id",
 		}
-		messageService.On("Find", mock.Anything).Return(message, nil)
+		messageService.On("Find", mock.Anything, mock.Anything).Return(message, nil)
 
 		response, err := handler.GetMessage(ctx, request)
 		assert.Nil(t, err)
@@ -60,7 +60,7 @@ func TestMessageHandler(t *testing.T) {
 		messageService := &mocks.MessageService{}
 		handler := NewMessageHandler(messageService)
 		ctx := context.Background()
-		message := hammer.Message{
+		message := &hammer.Message{
 			ID:          "id",
 			TopicID:     "topic_id",
 			ContentType: "application/json",
@@ -71,7 +71,7 @@ func TestMessageHandler(t *testing.T) {
 			Limit:  50,
 			Offset: 0,
 		}
-		messageService.On("FindAll", mock.Anything).Return([]hammer.Message{message}, nil)
+		messageService.On("FindAll", mock.Anything, mock.Anything).Return([]*hammer.Message{message}, nil)
 
 		response, err := handler.ListMessages(ctx, request)
 		assert.Nil(t, err)
@@ -94,7 +94,7 @@ func TestMessageHandler(t *testing.T) {
 		request := &pb.DeleteMessageRequest{
 			Id: message.ID,
 		}
-		messageService.On("Delete", mock.Anything).Return(nil)
+		messageService.On("Delete", mock.Anything, mock.Anything).Return(nil)
 
 		response, err := handler.DeleteMessage(ctx, request)
 		assert.Nil(t, err)

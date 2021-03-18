@@ -17,7 +17,7 @@ func TestDeliveryAttemptHandler(t *testing.T) {
 		deliveryAttemptService := &mocks.DeliveryAttemptService{}
 		handler := NewDeliveryAttemptHandler(deliveryAttemptService)
 		ctx := context.Background()
-		deliveryAttempt := hammer.DeliveryAttempt{
+		deliveryAttempt := &hammer.DeliveryAttempt{
 			ID:         "id",
 			DeliveryID: "delivery_id",
 			CreatedAt:  time.Now().UTC(),
@@ -25,7 +25,7 @@ func TestDeliveryAttemptHandler(t *testing.T) {
 		request := &pb.GetDeliveryAttemptRequest{
 			Id: "id",
 		}
-		deliveryAttemptService.On("Find", mock.Anything).Return(deliveryAttempt, nil)
+		deliveryAttemptService.On("Find", mock.Anything, mock.Anything).Return(deliveryAttempt, nil)
 
 		response, err := handler.GetDeliveryAttempt(ctx, request)
 		assert.Nil(t, err)
@@ -37,7 +37,7 @@ func TestDeliveryAttemptHandler(t *testing.T) {
 		deliveryAttemptService := &mocks.DeliveryAttemptService{}
 		handler := NewDeliveryAttemptHandler(deliveryAttemptService)
 		ctx := context.Background()
-		deliveryAttempt := hammer.DeliveryAttempt{
+		deliveryAttempt := &hammer.DeliveryAttempt{
 			ID:         "id",
 			DeliveryID: "delivery_id",
 			CreatedAt:  time.Now().UTC(),
@@ -46,7 +46,7 @@ func TestDeliveryAttemptHandler(t *testing.T) {
 			Limit:  50,
 			Offset: 0,
 		}
-		deliveryAttemptService.On("FindAll", mock.Anything).Return([]hammer.DeliveryAttempt{deliveryAttempt}, nil)
+		deliveryAttemptService.On("FindAll", mock.Anything, mock.Anything).Return([]*hammer.DeliveryAttempt{deliveryAttempt}, nil)
 
 		response, err := handler.ListDeliveryAttempts(ctx, request)
 		assert.Nil(t, err)

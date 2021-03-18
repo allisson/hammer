@@ -3,15 +3,14 @@ name: tests
 on: [push]
 
 jobs:
-
   build:
     name: Build
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:9.6-alpine
+        image: postgres:12-alpine
         env:
-          POSTGRES_DB: hammer
+          POSTGRES_DB: hammer_test
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
         ports:
@@ -22,18 +21,30 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-    - name: Set up Go 1.14
-      uses: actions/setup-go@v1
-      with:
-        go-version: 1.14
-      id: go
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
-    - name: Get dependencies
-      run: go mod download
-    - name: Lint
-      run: make lint
-    - name: Build
-      env:
-        HAMMER_DATABASE_URL: 'postgres://test:test@localhost:5432/hammer?sslmode=disable'
-      run: make db-migrate && make test
+      - name: Set up Go 1.16
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+
+      - name: Set cache
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Get dependencies
+        run: go mod download
+
+      - name: Lint
+        run: make lint
+
+      - name: Build
+        env:
+          HAMMER_TEST_DATABASE_URL: "postgres://test:test@localhost:5432/hammer_test?sslmode=disable"
+        run: make db-test-migrate && make test

@@ -1,6 +1,10 @@
 package service
 
-import "github.com/allisson/hammer"
+import (
+	"context"
+
+	"github.com/allisson/hammer"
+)
 
 // Migration is a implementation of hammer.MigrationService
 type Migration struct {
@@ -8,8 +12,8 @@ type Migration struct {
 }
 
 // Run migrations
-func (m *Migration) Run() error {
-	return m.migrationService.Run()
+func (m Migration) Run(ctx context.Context) error {
+	return m.migrationService.Run(ctx)
 }
 
 // NewMigration will create a implementation of hammer.MigrationService

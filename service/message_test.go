@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"database/sql"
 	"testing"
 
@@ -11,30 +12,31 @@ import (
 )
 
 func TestMessage(t *testing.T) {
+	ctx := context.Background()
+
 	t.Run("Test Find", func(t *testing.T) {
 		expectedMessage := hammer.MakeTestMessage()
 		topicRepo := &mocks.TopicRepository{}
 		messageRepo := &mocks.MessageRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
 		deliveryRepo := &mocks.DeliveryRepository{}
-		txFactoryRepo := &mocks.TxFactoryRepository{}
-		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo, txFactoryRepo)
-		messageRepo.On("Find", mock.Anything).Return(expectedMessage, nil)
+		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo)
+		messageRepo.On("Find", mock.Anything, expectedMessage.ID).Return(expectedMessage, nil)
 
-		message, err := messageService.Find(expectedMessage.ID)
+		message, err := messageService.Find(ctx, expectedMessage.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, expectedMessage, message)
 	})
 
 	t.Run("Test FindAll", func(t *testing.T) {
-		expectedMessages := []hammer.Message{hammer.MakeTestMessage()}
+		message := hammer.MakeTestMessage()
+		expectedMessages := []*hammer.Message{message}
 		topicRepo := &mocks.TopicRepository{}
 		messageRepo := &mocks.MessageRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
 		deliveryRepo := &mocks.DeliveryRepository{}
-		txFactoryRepo := &mocks.TxFactoryRepository{}
-		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo, txFactoryRepo)
-		messageRepo.On("FindAll", mock.Anything).Return(expectedMessages, nil)
+		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo)
+		messageRepo.On("FindAll", mock.Anything, mock.Anything).Return(expectedMessages, nil)
 
 		findOptions := hammer.FindOptions{
 			FindPagination: &hammer.FindPagination{
@@ -42,7 +44,7 @@ func TestMessage(t *testing.T) {
 				Offset: 0,
 			},
 		}
-		messages, err := messageService.FindAll(findOptions)
+		messages, err := messageService.FindAll(ctx, findOptions)
 		assert.Nil(t, err)
 		assert.Equal(t, expectedMessages, messages)
 	})
@@ -54,17 +56,13 @@ func TestMessage(t *testing.T) {
 		messageRepo := &mocks.MessageRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
 		deliveryRepo := &mocks.DeliveryRepository{}
-		txFactoryRepo := &mocks.TxFactoryRepository{}
-		txRepo := &mocks.TxRepository{}
-		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo, txFactoryRepo)
-		topicRepo.On("Find", mock.Anything).Return(hammer.Topic{}, nil)
-		subscriptionRepo.On("FindAll", mock.Anything).Return([]hammer.Subscription{hammer.MakeTestSubscription()}, nil)
-		txFactoryRepo.On("New").Return(txRepo, nil)
+		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo)
+		topicRepo.On("Find", mock.Anything, message.ID).Return(&hammer.Topic{}, nil)
+		subscriptionRepo.On("FindAll", mock.Anything, mock.Anything).Return([]*hammer.Subscription{hammer.MakeTestSubscription()}, nil)
 		messageRepo.On("Store", mock.Anything, mock.Anything).Return(nil)
 		deliveryRepo.On("Store", mock.Anything, mock.Anything).Return(nil)
-		txRepo.On("Commit").Return(nil)
 
-		err := messageService.Create(&message)
+		err := messageService.Create(ctx, message)
 		assert.Nil(t, err)
 		assert.NotEqual(t, "", message.ID)
 		assert.Equal(t, "eyJpZCI6ICJpZCIsICJuYW1lIjogIkFsbGlzc29uIn0=", message.Data)
@@ -77,11 +75,10 @@ func TestMessage(t *testing.T) {
 		messageRepo := &mocks.MessageRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
 		deliveryRepo := &mocks.DeliveryRepository{}
-		txFactoryRepo := &mocks.TxFactoryRepository{}
-		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo, txFactoryRepo)
-		topicRepo.On("Find", mock.Anything).Return(hammer.Topic{}, sql.ErrNoRows)
+		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo)
+		topicRepo.On("Find", mock.Anything, mock.Anything).Return(&hammer.Topic{}, sql.ErrNoRows)
 
-		err := messageService.Create(&message)
+		err := messageService.Create(ctx, message)
 		assert.Equal(t, hammer.ErrTopicDoesNotExists, err)
 	})
 
@@ -91,15 +88,11 @@ func TestMessage(t *testing.T) {
 		messageRepo := &mocks.MessageRepository{}
 		subscriptionRepo := &mocks.SubscriptionRepository{}
 		deliveryRepo := &mocks.DeliveryRepository{}
-		txFactoryRepo := &mocks.TxFactoryRepository{}
-		txRepo := &mocks.TxRepository{}
-		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo, txFactoryRepo)
+		messageService := NewMessage(topicRepo, messageRepo, subscriptionRepo, deliveryRepo)
 		messageRepo.On("Find", mock.Anything).Return(message, nil)
-		txFactoryRepo.On("New").Return(txRepo, nil)
 		messageRepo.On("Delete", mock.Anything, mock.Anything).Return(nil)
-		txRepo.On("Commit").Return(nil)
 
-		err := messageService.Delete(message.ID)
+		err := messageService.Delete(ctx, message.ID)
 		assert.Nil(t, err)
 	})
 }

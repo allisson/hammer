@@ -23,7 +23,7 @@ func TestTopicHandler(t *testing.T) {
 				Name: "Topic",
 			},
 		}
-		topicService.On("Create", mock.Anything).Return(nil)
+		topicService.On("Create", mock.Anything, mock.Anything).Return(nil)
 
 		response, err := handler.CreateTopic(ctx, request)
 		assert.Nil(t, err)
@@ -41,7 +41,7 @@ func TestTopicHandler(t *testing.T) {
 				Name: "Topic",
 			},
 		}
-		topicService.On("Update", mock.Anything).Return(nil)
+		topicService.On("Update", mock.Anything, mock.Anything).Return(nil)
 
 		response, err := handler.UpdateTopic(ctx, request)
 		assert.Nil(t, err)
@@ -53,14 +53,14 @@ func TestTopicHandler(t *testing.T) {
 		topicService := &mocks.TopicService{}
 		handler := NewTopicHandler(topicService)
 		ctx := context.Background()
-		topic := hammer.Topic{
+		topic := &hammer.Topic{
 			ID:   "topic_id",
 			Name: "Topic",
 		}
 		request := &pb.GetTopicRequest{
 			Id: "topic_id",
 		}
-		topicService.On("Find", mock.Anything).Return(topic, nil)
+		topicService.On("Find", mock.Anything, mock.Anything).Return(topic, nil)
 
 		response, err := handler.GetTopic(ctx, request)
 		assert.Nil(t, err)
@@ -72,7 +72,7 @@ func TestTopicHandler(t *testing.T) {
 		topicService := &mocks.TopicService{}
 		handler := NewTopicHandler(topicService)
 		ctx := context.Background()
-		topic := hammer.Topic{
+		topic := &hammer.Topic{
 			ID:   "topic_id",
 			Name: "Topic",
 		}
@@ -80,7 +80,7 @@ func TestTopicHandler(t *testing.T) {
 			Limit:  50,
 			Offset: 0,
 		}
-		topicService.On("FindAll", mock.Anything).Return([]hammer.Topic{topic}, nil)
+		topicService.On("FindAll", mock.Anything, mock.Anything).Return([]*hammer.Topic{topic}, nil)
 
 		response, err := handler.ListTopics(ctx, request)
 		assert.Nil(t, err)
@@ -100,7 +100,7 @@ func TestTopicHandler(t *testing.T) {
 		request := &pb.DeleteTopicRequest{
 			Id: topic.ID,
 		}
-		topicService.On("Delete", mock.Anything).Return(nil)
+		topicService.On("Delete", mock.Anything, mock.Anything).Return(nil)
 
 		response, err := handler.DeleteTopic(ctx, request)
 		assert.Nil(t, err)

@@ -16,7 +16,7 @@ type DeliveryAttemptHandler struct {
 	deliveryAttemptService hammer.DeliveryAttemptService
 }
 
-func (d *DeliveryAttemptHandler) buildResponse(deliveryAttempt *hammer.DeliveryAttempt) (*pb.DeliveryAttempt, error) {
+func (d DeliveryAttemptHandler) buildResponse(deliveryAttempt *hammer.DeliveryAttempt) (*pb.DeliveryAttempt, error) {
 	response := &pb.DeliveryAttempt{}
 	createdAt, err := ptypes.TimestampProto(deliveryAttempt.CreatedAt)
 	if err != nil {
@@ -36,9 +36,9 @@ func (d *DeliveryAttemptHandler) buildResponse(deliveryAttempt *hammer.DeliveryA
 }
 
 // GetDeliveryAttempt gets the DeliveryAttempt
-func (d *DeliveryAttemptHandler) GetDeliveryAttempt(ctx context.Context, request *pb.GetDeliveryAttemptRequest) (*pb.DeliveryAttempt, error) {
+func (d DeliveryAttemptHandler) GetDeliveryAttempt(ctx context.Context, request *pb.GetDeliveryAttemptRequest) (*pb.DeliveryAttempt, error) {
 	// Get DeliveryAttempt from service
-	deliveryAttempt, err := d.deliveryAttemptService.Find(request.Id)
+	deliveryAttempt, err := d.deliveryAttemptService.Find(ctx, request.Id)
 	if err != nil {
 		switch err {
 		case sql.ErrNoRows:
@@ -48,11 +48,11 @@ func (d *DeliveryAttemptHandler) GetDeliveryAttempt(ctx context.Context, request
 		}
 	}
 
-	return d.buildResponse(&deliveryAttempt)
+	return d.buildResponse(deliveryAttempt)
 }
 
 // ListDeliveryAttempts get a list of DeliveryAttempts
-func (d *DeliveryAttemptHandler) ListDeliveryAttempts(ctx context.Context, request *pb.ListDeliveryAttemptsRequest) (*pb.ListDeliveryAttemptsResponse, error) {
+func (d DeliveryAttemptHandler) ListDeliveryAttempts(ctx context.Context, request *pb.ListDeliveryAttemptsRequest) (*pb.ListDeliveryAttemptsResponse, error) {
 	// Get limit and offset
 	limit, offset := parsePagination(request.Limit, request.Offset)
 
@@ -76,14 +76,15 @@ func (d *DeliveryAttemptHandler) ListDeliveryAttempts(ctx context.Context, reque
 	}
 	createdAtFilters := createdAtFilters(request.CreatedAtGt, request.CreatedAtGte, request.CreatedAtLt, request.CreatedAtLte)
 	findOptions.FindFilters = append(findOptions.FindFilters, createdAtFilters...)
-	deliveryAttempts, err := d.deliveryAttemptService.FindAll(findOptions)
+	deliveryAttempts, err := d.deliveryAttemptService.FindAll(ctx, findOptions)
 	if err != nil {
 		return response, status.Error(codes.Internal, err.Error())
 	}
 
 	// Update response
-	for _, deliveryAttempt := range deliveryAttempts {
-		deliveryAttemptResponse, err := d.buildResponse(&deliveryAttempt)
+	for i := range deliveryAttempts {
+		deliveryAttempt := deliveryAttempts[i]
+		deliveryAttemptResponse, err := d.buildResponse(deliveryAttempt)
 		if err != nil {
 			return response, status.Error(codes.Internal, err.Error())
 		}

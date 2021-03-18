@@ -8,9 +8,9 @@ build-protobuf:
 lint:
 	if [ ! -f ./bin/golangci-lint ] ; \
 	then \
-		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.27.0; \
+		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.38.0; \
 	fi;
-	./bin/golangci-lint run
+	./bin/golangci-lint run -E gosec
 
 test:
 	go test -covermode=count -coverprofile=count.out -v ./...
@@ -18,27 +18,18 @@ test:
 download-golang-migrate-binary:
 	if [ ! -f ./migrate.$(PLATFORM)-amd64 ] ; \
 	then \
-		curl -sfL https://github.com/golang-migrate/migrate/releases/download/v4.11.0/migrate.$(PLATFORM)-amd64.tar.gz | tar -xvz; \
+		curl -sfL https://github.com/golang-migrate/migrate/releases/download/v4.14.1/migrate.$(PLATFORM)-amd64.tar.gz | tar -xvz; \
 	fi;
 
 db-migrate: download-golang-migrate-binary
 	./migrate.$(PLATFORM)-amd64 -source file://db/migrations -database ${HAMMER_DATABASE_URL} up
 
+db-test-migrate: download-golang-migrate-binary
+	./migrate.$(PLATFORM)-amd64 -source file://db/migrations -database ${HAMMER_TEST_DATABASE_URL} up
+
 mock:
 	@rm -rf mocks
-	mockery -name TopicRepository
-	mockery -name SubscriptionRepository
-	mockery -name MessageRepository
-	mockery -name DeliveryRepository
-	mockery -name DeliveryAttemptRepository
-	mockery -name TxRepository
-	mockery -name TxFactoryRepository
-	mockery -name MigrationRepository
-	mockery -name TopicService
-	mockery -name SubscriptionService
-	mockery -name MessageService
-	mockery -name DeliveryService
-	mockery -name DeliveryAttemptService
+	mockery --all
 
 run-worker:
 	go run cmd/hammer/main.go worker
@@ -49,4 +40,4 @@ run-server:
 run-migrate:
 	go run cmd/hammer/main.go migrate
 
-.PHONY: build-protobuf lint test download-golang-migrate-binary db-migrate mock run-worker run-server run-migrate
+.PHONY: build-protobuf lint test download-golang-migrate-binary db-migrate db-test-migrate mock run-worker run-server run-migrate

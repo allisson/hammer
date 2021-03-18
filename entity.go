@@ -43,8 +43,6 @@ var (
 	DefaultSecretTokenLength = env.GetInt("HAMMER_DEFAULT_SECRET_TOKEN_LENGTH", 40)
 	// WorkerDatabaseDelay represents a delay for database access by workers
 	WorkerDatabaseDelay = env.GetInt("HAMMER_WORKER_DATABASE_DELAY", 5)
-	// WorkerDefaultFetchLimit represents the default value for fetch limit
-	WorkerDefaultFetchLimit = env.GetInt("HAMMER_WORKER_DEFAULT_FETCH_LIMIT", 100)
 )
 
 // Topic data
@@ -172,6 +170,7 @@ type FindPagination struct {
 // FindOrderBy data
 type FindOrderBy struct {
 	FieldName string
+	Order     string
 }
 
 // FindOptions data
