@@ -16,7 +16,7 @@ type DeliveryAttemptHandler struct {
 	deliveryAttemptService hammer.DeliveryAttemptService
 }
 
-func (d *DeliveryAttemptHandler) buildResponse(deliveryAttempt *hammer.DeliveryAttempt) (*pb.DeliveryAttempt, error) {
+func (d DeliveryAttemptHandler) buildResponse(deliveryAttempt *hammer.DeliveryAttempt) (*pb.DeliveryAttempt, error) {
 	response := &pb.DeliveryAttempt{}
 	createdAt, err := ptypes.TimestampProto(deliveryAttempt.CreatedAt)
 	if err != nil {
@@ -36,7 +36,7 @@ func (d *DeliveryAttemptHandler) buildResponse(deliveryAttempt *hammer.DeliveryA
 }
 
 // GetDeliveryAttempt gets the DeliveryAttempt
-func (d *DeliveryAttemptHandler) GetDeliveryAttempt(ctx context.Context, request *pb.GetDeliveryAttemptRequest) (*pb.DeliveryAttempt, error) {
+func (d DeliveryAttemptHandler) GetDeliveryAttempt(ctx context.Context, request *pb.GetDeliveryAttemptRequest) (*pb.DeliveryAttempt, error) {
 	// Get DeliveryAttempt from service
 	deliveryAttempt, err := d.deliveryAttemptService.Find(ctx, request.Id)
 	if err != nil {
@@ -52,7 +52,7 @@ func (d *DeliveryAttemptHandler) GetDeliveryAttempt(ctx context.Context, request
 }
 
 // ListDeliveryAttempts get a list of DeliveryAttempts
-func (d *DeliveryAttemptHandler) ListDeliveryAttempts(ctx context.Context, request *pb.ListDeliveryAttemptsRequest) (*pb.ListDeliveryAttemptsResponse, error) {
+func (d DeliveryAttemptHandler) ListDeliveryAttempts(ctx context.Context, request *pb.ListDeliveryAttemptsRequest) (*pb.ListDeliveryAttemptsResponse, error) {
 	// Get limit and offset
 	limit, offset := parsePagination(request.Limit, request.Offset)
 

@@ -16,7 +16,7 @@ type DeliveryHandler struct {
 	deliveryService hammer.DeliveryService
 }
 
-func (d *DeliveryHandler) buildResponse(delivery *hammer.Delivery) (*pb.Delivery, error) {
+func (d DeliveryHandler) buildResponse(delivery *hammer.Delivery) (*pb.Delivery, error) {
 	response := &pb.Delivery{}
 	createdAt, err := ptypes.TimestampProto(delivery.CreatedAt)
 	if err != nil {
@@ -51,7 +51,7 @@ func (d *DeliveryHandler) buildResponse(delivery *hammer.Delivery) (*pb.Delivery
 }
 
 // GetDelivery gets the Delivery
-func (d *DeliveryHandler) GetDelivery(ctx context.Context, request *pb.GetDeliveryRequest) (*pb.Delivery, error) {
+func (d DeliveryHandler) GetDelivery(ctx context.Context, request *pb.GetDeliveryRequest) (*pb.Delivery, error) {
 	// Get delivery from service
 	delivery, err := d.deliveryService.Find(ctx, request.Id)
 	if err != nil {
@@ -67,7 +67,7 @@ func (d *DeliveryHandler) GetDelivery(ctx context.Context, request *pb.GetDelive
 }
 
 // ListDeliveries get a list of deliveries
-func (d *DeliveryHandler) ListDeliveries(ctx context.Context, request *pb.ListDeliveriesRequest) (*pb.ListDeliveriesResponse, error) {
+func (d DeliveryHandler) ListDeliveries(ctx context.Context, request *pb.ListDeliveriesRequest) (*pb.ListDeliveriesResponse, error) {
 	// Get limit and offset
 	limit, offset := parsePagination(request.Limit, request.Offset)
 

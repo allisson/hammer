@@ -219,9 +219,6 @@ func main() {
 				// Register grpc services
 				pb.RegisterHammerServer(grpcServer, &server)
 
-				// Enable grpc_prometheus histograms
-				grpc_prometheus.EnableHandlingTimeHistogram()
-
 				// Register grpc_prometheus default metrics
 				grpc_prometheus.Register(grpcServer)
 

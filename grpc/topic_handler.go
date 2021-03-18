@@ -17,7 +17,7 @@ type TopicHandler struct {
 	topicService hammer.TopicService
 }
 
-func (t *TopicHandler) buildResponse(topic *hammer.Topic) (*pb.Topic, error) {
+func (t TopicHandler) buildResponse(topic *hammer.Topic) (*pb.Topic, error) {
 	response := &pb.Topic{}
 	createdAt, err := ptypes.TimestampProto(topic.CreatedAt)
 	if err != nil {
@@ -36,7 +36,7 @@ func (t *TopicHandler) buildResponse(topic *hammer.Topic) (*pb.Topic, error) {
 }
 
 // CreateTopic creates a new topic
-func (t *TopicHandler) CreateTopic(ctx context.Context, request *pb.CreateTopicRequest) (*pb.Topic, error) {
+func (t TopicHandler) CreateTopic(ctx context.Context, request *pb.CreateTopicRequest) (*pb.Topic, error) {
 	if request.Topic == nil {
 		request.Topic = &pb.Topic{}
 	}
@@ -64,7 +64,7 @@ func (t *TopicHandler) CreateTopic(ctx context.Context, request *pb.CreateTopicR
 }
 
 // UpdateTopic update the topic
-func (t *TopicHandler) UpdateTopic(ctx context.Context, request *pb.UpdateTopicRequest) (*pb.Topic, error) {
+func (t TopicHandler) UpdateTopic(ctx context.Context, request *pb.UpdateTopicRequest) (*pb.Topic, error) {
 	if request.Topic == nil {
 		request.Topic = &pb.Topic{}
 	}
@@ -91,7 +91,7 @@ func (t *TopicHandler) UpdateTopic(ctx context.Context, request *pb.UpdateTopicR
 }
 
 // GetTopic gets the topic
-func (t *TopicHandler) GetTopic(ctx context.Context, request *pb.GetTopicRequest) (*pb.Topic, error) {
+func (t TopicHandler) GetTopic(ctx context.Context, request *pb.GetTopicRequest) (*pb.Topic, error) {
 	// Get topic from service
 	topic, err := t.topicService.Find(ctx, request.Id)
 	if err != nil {
@@ -107,7 +107,7 @@ func (t *TopicHandler) GetTopic(ctx context.Context, request *pb.GetTopicRequest
 }
 
 // ListTopics get a list of topics
-func (t *TopicHandler) ListTopics(ctx context.Context, request *pb.ListTopicsRequest) (*pb.ListTopicsResponse, error) {
+func (t TopicHandler) ListTopics(ctx context.Context, request *pb.ListTopicsRequest) (*pb.ListTopicsResponse, error) {
 	// Get limit and offset
 	limit, offset := parsePagination(request.Limit, request.Offset)
 
@@ -142,7 +142,7 @@ func (t *TopicHandler) ListTopics(ctx context.Context, request *pb.ListTopicsReq
 }
 
 // DeleteTopic delete the topic
-func (t *TopicHandler) DeleteTopic(ctx context.Context, request *pb.DeleteTopicRequest) (*empty.Empty, error) {
+func (t TopicHandler) DeleteTopic(ctx context.Context, request *pb.DeleteTopicRequest) (*empty.Empty, error) {
 	response := &empty.Empty{}
 
 	// Delete topic

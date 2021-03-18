@@ -17,7 +17,7 @@ type SubscriptionHandler struct {
 	subscriptionService hammer.SubscriptionService
 }
 
-func (s *SubscriptionHandler) buildResponse(subscription *hammer.Subscription) (*pb.Subscription, error) {
+func (s SubscriptionHandler) buildResponse(subscription *hammer.Subscription) (*pb.Subscription, error) {
 	response := &pb.Subscription{}
 	createdAt, err := ptypes.TimestampProto(subscription.CreatedAt)
 	if err != nil {
@@ -42,7 +42,7 @@ func (s *SubscriptionHandler) buildResponse(subscription *hammer.Subscription) (
 }
 
 // CreateSubscription creates a new subscription
-func (s *SubscriptionHandler) CreateSubscription(ctx context.Context, request *pb.CreateSubscriptionRequest) (*pb.Subscription, error) {
+func (s SubscriptionHandler) CreateSubscription(ctx context.Context, request *pb.CreateSubscriptionRequest) (*pb.Subscription, error) {
 	if request.Subscription == nil {
 		request.Subscription = &pb.Subscription{}
 	}
@@ -76,7 +76,7 @@ func (s *SubscriptionHandler) CreateSubscription(ctx context.Context, request *p
 }
 
 // UpdateSubscription update the subscription
-func (s *SubscriptionHandler) UpdateSubscription(ctx context.Context, request *pb.UpdateSubscriptionRequest) (*pb.Subscription, error) {
+func (s SubscriptionHandler) UpdateSubscription(ctx context.Context, request *pb.UpdateSubscriptionRequest) (*pb.Subscription, error) {
 	if request.Subscription == nil {
 		request.Subscription = &pb.Subscription{}
 	}
@@ -109,7 +109,7 @@ func (s *SubscriptionHandler) UpdateSubscription(ctx context.Context, request *p
 }
 
 // GetSubscription gets the subscription
-func (s *SubscriptionHandler) GetSubscription(ctx context.Context, request *pb.GetSubscriptionRequest) (*pb.Subscription, error) {
+func (s SubscriptionHandler) GetSubscription(ctx context.Context, request *pb.GetSubscriptionRequest) (*pb.Subscription, error) {
 	// Get subscription from service
 	subscription, err := s.subscriptionService.Find(ctx, request.Id)
 	if err != nil {
@@ -125,7 +125,7 @@ func (s *SubscriptionHandler) GetSubscription(ctx context.Context, request *pb.G
 }
 
 // ListSubscriptions get a list of topics
-func (s *SubscriptionHandler) ListSubscriptions(ctx context.Context, request *pb.ListSubscriptionsRequest) (*pb.ListSubscriptionsResponse, error) {
+func (s SubscriptionHandler) ListSubscriptions(ctx context.Context, request *pb.ListSubscriptionsRequest) (*pb.ListSubscriptionsResponse, error) {
 	// Get limit and offset
 	limit, offset := parsePagination(request.Limit, request.Offset)
 
@@ -160,7 +160,7 @@ func (s *SubscriptionHandler) ListSubscriptions(ctx context.Context, request *pb
 }
 
 // DeleteSubscription delete the subscription
-func (s *SubscriptionHandler) DeleteSubscription(ctx context.Context, request *pb.DeleteSubscriptionRequest) (*empty.Empty, error) {
+func (s SubscriptionHandler) DeleteSubscription(ctx context.Context, request *pb.DeleteSubscriptionRequest) (*empty.Empty, error) {
 	response := &empty.Empty{}
 
 	// Delete topic

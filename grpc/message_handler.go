@@ -17,7 +17,7 @@ type MessageHandler struct {
 	messageService hammer.MessageService
 }
 
-func (m *MessageHandler) buildResponse(message *hammer.Message) (*pb.Message, error) {
+func (m MessageHandler) buildResponse(message *hammer.Message) (*pb.Message, error) {
 	response := &pb.Message{}
 	createdAt, err := ptypes.TimestampProto(message.CreatedAt)
 	if err != nil {
@@ -33,7 +33,7 @@ func (m *MessageHandler) buildResponse(message *hammer.Message) (*pb.Message, er
 }
 
 // CreateMessage creates a new Message
-func (m *MessageHandler) CreateMessage(ctx context.Context, request *pb.CreateMessageRequest) (*pb.Message, error) {
+func (m MessageHandler) CreateMessage(ctx context.Context, request *pb.CreateMessageRequest) (*pb.Message, error) {
 	if request.Message == nil {
 		request.Message = &pb.Message{}
 	}
@@ -63,7 +63,7 @@ func (m *MessageHandler) CreateMessage(ctx context.Context, request *pb.CreateMe
 }
 
 // GetMessage gets the message
-func (m *MessageHandler) GetMessage(ctx context.Context, request *pb.GetMessageRequest) (*pb.Message, error) {
+func (m MessageHandler) GetMessage(ctx context.Context, request *pb.GetMessageRequest) (*pb.Message, error) {
 	// Get nessage from service
 	message, err := m.messageService.Find(ctx, request.Id)
 	if err != nil {
@@ -79,7 +79,7 @@ func (m *MessageHandler) GetMessage(ctx context.Context, request *pb.GetMessageR
 }
 
 // ListMessages get a list of messages
-func (m *MessageHandler) ListMessages(ctx context.Context, request *pb.ListMessagesRequest) (*pb.ListMessagesResponse, error) {
+func (m MessageHandler) ListMessages(ctx context.Context, request *pb.ListMessagesRequest) (*pb.ListMessagesResponse, error) {
 	// Get limit and offset
 	limit, offset := parsePagination(request.Limit, request.Offset)
 
@@ -122,7 +122,7 @@ func (m *MessageHandler) ListMessages(ctx context.Context, request *pb.ListMessa
 }
 
 // DeleteMessage delete the message
-func (m *MessageHandler) DeleteMessage(ctx context.Context, request *pb.DeleteMessageRequest) (*empty.Empty, error) {
+func (m MessageHandler) DeleteMessage(ctx context.Context, request *pb.DeleteMessageRequest) (*empty.Empty, error) {
 	response := &empty.Empty{}
 
 	// Delete topic
