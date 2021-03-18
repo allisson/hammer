@@ -6,10 +6,10 @@ import (
 
 	"github.com/allisson/hammer"
 	pb "github.com/allisson/hammer/api/v1"
-	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // MessageHandler implements methods for message create/update
@@ -17,19 +17,15 @@ type MessageHandler struct {
 	messageService hammer.MessageService
 }
 
-func (m MessageHandler) buildResponse(message *hammer.Message) (*pb.Message, error) {
+func (m MessageHandler) buildResponse(message *hammer.Message) *pb.Message {
 	response := &pb.Message{}
-	createdAt, err := ptypes.TimestampProto(message.CreatedAt)
-	if err != nil {
-		return response, status.Error(codes.Internal, err.Error())
-	}
 	response.Id = message.ID
 	response.TopicId = message.TopicID
 	response.ContentType = message.ContentType
 	response.Data = message.Data
-	response.CreatedAt = createdAt
+	response.CreatedAt = timestamppb.New(message.CreatedAt)
 
-	return response, nil
+	return response
 }
 
 // CreateMessage creates a new Message
@@ -58,8 +54,8 @@ func (m MessageHandler) CreateMessage(ctx context.Context, request *pb.CreateMes
 	if err != nil {
 		return &pb.Message{}, status.Error(codes.Internal, err.Error())
 	}
-
-	return m.buildResponse(message)
+	response := m.buildResponse(message)
+	return response, nil
 }
 
 // GetMessage gets the message
@@ -74,8 +70,8 @@ func (m MessageHandler) GetMessage(ctx context.Context, request *pb.GetMessageRe
 			return &pb.Message{}, status.Error(codes.Internal, err.Error())
 		}
 	}
-
-	return m.buildResponse(message)
+	response := m.buildResponse(message)
+	return response, nil
 }
 
 // ListMessages get a list of messages
@@ -111,10 +107,7 @@ func (m MessageHandler) ListMessages(ctx context.Context, request *pb.ListMessag
 	// Update response
 	for i := range messages {
 		message := messages[i]
-		messageResponse, err := m.buildResponse(message)
-		if err != nil {
-			return response, status.Error(codes.Internal, err.Error())
-		}
+		messageResponse := m.buildResponse(message)
 		response.Messages = append(response.Messages, messageResponse)
 	}
 
