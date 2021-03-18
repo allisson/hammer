@@ -225,7 +225,13 @@ All environment variables is defined on file local.env.
 docker build -f Dockerfile -t hammer .
 ```
 
-## Disable REST API
+## REST API
+
+Default port: 8000
+
+```bash
+curl --location --request GET 'http://localhost:8000/v1/topics'
+```
 
 To disable the rest api, set the environment variable **HAMMER_REST_API_ENABLED** to false.
 
@@ -233,7 +239,13 @@ To disable the rest api, set the environment variable **HAMMER_REST_API_ENABLED*
 export HAMMER_REST_API_ENABLED='false'
 ```
 
-## Disable Prometheus metrics
+## Prometheus metrics
+
+Default port: 4001
+
+```bash
+curl --location --request GET 'http://localhost:4001/metrics'
+```
 
 To disable prometheus metrics, set the environment variable **HAMMER_METRICS_ENABLED** to false.
 
@@ -241,7 +253,14 @@ To disable prometheus metrics, set the environment variable **HAMMER_METRICS_ENA
 export HAMMER_METRICS_ENABLED='false'
 ```
 
-## Disable health check
+## Health check
+
+Default port: 9000
+
+```bash
+curl --location --request GET 'http://localhost:9000/liveness'
+curl --location --request GET 'http://localhost:9000/readiness'
+```
 
 To disable health check, set the environment variable **HAMMER_HEALTH_CHECK_ENABLED** to false.
 
