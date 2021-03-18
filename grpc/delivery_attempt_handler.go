@@ -6,9 +6,9 @@ import (
 
 	"github.com/allisson/hammer"
 	pb "github.com/allisson/hammer/api/v1"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // DeliveryAttemptHandler implements methods for DeliveryAttempt get/list
@@ -16,12 +16,8 @@ type DeliveryAttemptHandler struct {
 	deliveryAttemptService hammer.DeliveryAttemptService
 }
 
-func (d DeliveryAttemptHandler) buildResponse(deliveryAttempt *hammer.DeliveryAttempt) (*pb.DeliveryAttempt, error) {
+func (d DeliveryAttemptHandler) buildResponse(deliveryAttempt *hammer.DeliveryAttempt) *pb.DeliveryAttempt {
 	response := &pb.DeliveryAttempt{}
-	createdAt, err := ptypes.TimestampProto(deliveryAttempt.CreatedAt)
-	if err != nil {
-		return response, status.Error(codes.Internal, err.Error())
-	}
 	response.Id = deliveryAttempt.ID
 	response.DeliveryId = deliveryAttempt.DeliveryID
 	response.Request = deliveryAttempt.Request
@@ -30,9 +26,9 @@ func (d DeliveryAttemptHandler) buildResponse(deliveryAttempt *hammer.DeliveryAt
 	response.ExecutionDuration = uint32(deliveryAttempt.ExecutionDuration)
 	response.Success = deliveryAttempt.Success
 	response.Error = deliveryAttempt.Error
-	response.CreatedAt = createdAt
+	response.CreatedAt = timestamppb.New(deliveryAttempt.CreatedAt)
 
-	return response, nil
+	return response
 }
 
 // GetDeliveryAttempt gets the DeliveryAttempt
@@ -48,7 +44,8 @@ func (d DeliveryAttemptHandler) GetDeliveryAttempt(ctx context.Context, request 
 		}
 	}
 
-	return d.buildResponse(deliveryAttempt)
+	response := d.buildResponse(deliveryAttempt)
+	return response, nil
 }
 
 // ListDeliveryAttempts get a list of DeliveryAttempts
@@ -84,10 +81,7 @@ func (d DeliveryAttemptHandler) ListDeliveryAttempts(ctx context.Context, reques
 	// Update response
 	for i := range deliveryAttempts {
 		deliveryAttempt := deliveryAttempts[i]
-		deliveryAttemptResponse, err := d.buildResponse(deliveryAttempt)
-		if err != nil {
-			return response, status.Error(codes.Internal, err.Error())
-		}
+		deliveryAttemptResponse := d.buildResponse(deliveryAttempt)
 		response.DeliveryAttempts = append(response.DeliveryAttempts, deliveryAttemptResponse)
 	}
 

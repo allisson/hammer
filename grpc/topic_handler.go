@@ -6,10 +6,10 @@ import (
 
 	"github.com/allisson/hammer"
 	pb "github.com/allisson/hammer/api/v1"
-	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // TopicHandler implements methods for topic create/update
@@ -17,22 +17,14 @@ type TopicHandler struct {
 	topicService hammer.TopicService
 }
 
-func (t TopicHandler) buildResponse(topic *hammer.Topic) (*pb.Topic, error) {
+func (t TopicHandler) buildResponse(topic *hammer.Topic) *pb.Topic {
 	response := &pb.Topic{}
-	createdAt, err := ptypes.TimestampProto(topic.CreatedAt)
-	if err != nil {
-		return response, status.Error(codes.Internal, err.Error())
-	}
-	updatedAt, err := ptypes.TimestampProto(topic.UpdatedAt)
-	if err != nil {
-		return response, status.Error(codes.Internal, err.Error())
-	}
 	response.Id = topic.ID
 	response.Name = topic.Name
-	response.CreatedAt = createdAt
-	response.UpdatedAt = updatedAt
+	response.CreatedAt = timestamppb.New(topic.CreatedAt)
+	response.UpdatedAt = timestamppb.New(topic.UpdatedAt)
 
-	return response, nil
+	return response
 }
 
 // CreateTopic creates a new topic
@@ -59,8 +51,8 @@ func (t TopicHandler) CreateTopic(ctx context.Context, request *pb.CreateTopicRe
 	if err != nil {
 		return &pb.Topic{}, status.Error(codes.Internal, err.Error())
 	}
-
-	return t.buildResponse(topic)
+	response := t.buildResponse(topic)
+	return response, nil
 }
 
 // UpdateTopic update the topic
@@ -86,8 +78,8 @@ func (t TopicHandler) UpdateTopic(ctx context.Context, request *pb.UpdateTopicRe
 	if err != nil {
 		return &pb.Topic{}, status.Error(codes.Internal, err.Error())
 	}
-
-	return t.buildResponse(topic)
+	response := t.buildResponse(topic)
+	return response, nil
 }
 
 // GetTopic gets the topic
@@ -102,8 +94,8 @@ func (t TopicHandler) GetTopic(ctx context.Context, request *pb.GetTopicRequest)
 			return &pb.Topic{}, status.Error(codes.Internal, err.Error())
 		}
 	}
-
-	return t.buildResponse(topic)
+	response := t.buildResponse(topic)
+	return response, nil
 }
 
 // ListTopics get a list of topics
@@ -131,10 +123,7 @@ func (t TopicHandler) ListTopics(ctx context.Context, request *pb.ListTopicsRequ
 	// Update response
 	for i := range topics {
 		topic := topics[i]
-		topicResponse, err := t.buildResponse(topic)
-		if err != nil {
-			return response, status.Error(codes.Internal, err.Error())
-		}
+		topicResponse := t.buildResponse(topic)
 		response.Topics = append(response.Topics, topicResponse)
 	}
 

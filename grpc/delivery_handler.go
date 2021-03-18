@@ -6,9 +6,9 @@ import (
 
 	"github.com/allisson/hammer"
 	pb "github.com/allisson/hammer/api/v1"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // DeliveryHandler implements methods for Delivery get/list
@@ -16,20 +16,8 @@ type DeliveryHandler struct {
 	deliveryService hammer.DeliveryService
 }
 
-func (d DeliveryHandler) buildResponse(delivery *hammer.Delivery) (*pb.Delivery, error) {
+func (d DeliveryHandler) buildResponse(delivery *hammer.Delivery) *pb.Delivery {
 	response := &pb.Delivery{}
-	createdAt, err := ptypes.TimestampProto(delivery.CreatedAt)
-	if err != nil {
-		return response, status.Error(codes.Internal, err.Error())
-	}
-	updatedAt, err := ptypes.TimestampProto(delivery.UpdatedAt)
-	if err != nil {
-		return response, status.Error(codes.Internal, err.Error())
-	}
-	scheduledAt, err := ptypes.TimestampProto(delivery.ScheduledAt)
-	if err != nil {
-		return response, status.Error(codes.Internal, err.Error())
-	}
 	response.Id = delivery.ID
 	response.TopicId = delivery.TopicID
 	response.SubscriptionId = delivery.SubscriptionID
@@ -41,13 +29,13 @@ func (d DeliveryHandler) buildResponse(delivery *hammer.Delivery) (*pb.Delivery,
 	response.MaxDeliveryAttempts = uint32(delivery.MaxDeliveryAttempts)
 	response.DeliveryAttemptDelay = uint32(delivery.DeliveryAttemptDelay)
 	response.DeliveryAttemptTimeout = uint32(delivery.DeliveryAttemptTimeout)
-	response.ScheduledAt = scheduledAt
+	response.ScheduledAt = timestamppb.New(delivery.ScheduledAt)
 	response.DeliveryAttempts = uint32(delivery.DeliveryAttempts)
 	response.Status = delivery.Status
-	response.CreatedAt = createdAt
-	response.UpdatedAt = updatedAt
+	response.CreatedAt = timestamppb.New(delivery.CreatedAt)
+	response.UpdatedAt = timestamppb.New(delivery.UpdatedAt)
 
-	return response, nil
+	return response
 }
 
 // GetDelivery gets the Delivery
@@ -62,8 +50,8 @@ func (d DeliveryHandler) GetDelivery(ctx context.Context, request *pb.GetDeliver
 			return &pb.Delivery{}, status.Error(codes.Internal, err.Error())
 		}
 	}
-
-	return d.buildResponse(delivery)
+	response := d.buildResponse(delivery)
+	return response, nil
 }
 
 // ListDeliveries get a list of deliveries
@@ -123,10 +111,7 @@ func (d DeliveryHandler) ListDeliveries(ctx context.Context, request *pb.ListDel
 	// Update response
 	for i := range deliveries {
 		delivery := deliveries[i]
-		deliveryResponse, err := d.buildResponse(delivery)
-		if err != nil {
-			return response, status.Error(codes.Internal, err.Error())
-		}
+		deliveryResponse := d.buildResponse(delivery)
 		response.Deliveries = append(response.Deliveries, deliveryResponse)
 	}
 

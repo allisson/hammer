@@ -6,10 +6,10 @@ import (
 
 	"github.com/allisson/hammer"
 	pb "github.com/allisson/hammer/api/v1"
-	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // SubscriptionHandler implements methods for topic create/update
@@ -17,16 +17,8 @@ type SubscriptionHandler struct {
 	subscriptionService hammer.SubscriptionService
 }
 
-func (s SubscriptionHandler) buildResponse(subscription *hammer.Subscription) (*pb.Subscription, error) {
+func (s SubscriptionHandler) buildResponse(subscription *hammer.Subscription) *pb.Subscription {
 	response := &pb.Subscription{}
-	createdAt, err := ptypes.TimestampProto(subscription.CreatedAt)
-	if err != nil {
-		return response, status.Error(codes.Internal, err.Error())
-	}
-	updatedAt, err := ptypes.TimestampProto(subscription.UpdatedAt)
-	if err != nil {
-		return response, status.Error(codes.Internal, err.Error())
-	}
 	response.Id = subscription.ID
 	response.TopicId = subscription.TopicID
 	response.Name = subscription.Name
@@ -35,10 +27,10 @@ func (s SubscriptionHandler) buildResponse(subscription *hammer.Subscription) (*
 	response.MaxDeliveryAttempts = uint32(subscription.MaxDeliveryAttempts)
 	response.DeliveryAttemptDelay = uint32(subscription.DeliveryAttemptDelay)
 	response.DeliveryAttemptTimeout = uint32(subscription.DeliveryAttemptTimeout)
-	response.CreatedAt = createdAt
-	response.UpdatedAt = updatedAt
+	response.CreatedAt = timestamppb.New(subscription.CreatedAt)
+	response.UpdatedAt = timestamppb.New(subscription.UpdatedAt)
 
-	return response, nil
+	return response
 }
 
 // CreateSubscription creates a new subscription
@@ -71,8 +63,8 @@ func (s SubscriptionHandler) CreateSubscription(ctx context.Context, request *pb
 	if err != nil {
 		return &pb.Subscription{}, status.Error(codes.Internal, err.Error())
 	}
-
-	return s.buildResponse(subscription)
+	response := s.buildResponse(subscription)
+	return response, nil
 }
 
 // UpdateSubscription update the subscription
@@ -104,8 +96,8 @@ func (s SubscriptionHandler) UpdateSubscription(ctx context.Context, request *pb
 	if err != nil {
 		return &pb.Subscription{}, status.Error(codes.Internal, err.Error())
 	}
-
-	return s.buildResponse(subscription)
+	response := s.buildResponse(subscription)
+	return response, nil
 }
 
 // GetSubscription gets the subscription
@@ -120,8 +112,8 @@ func (s SubscriptionHandler) GetSubscription(ctx context.Context, request *pb.Ge
 			return &pb.Subscription{}, status.Error(codes.Internal, err.Error())
 		}
 	}
-
-	return s.buildResponse(subscription)
+	response := s.buildResponse(subscription)
+	return response, nil
 }
 
 // ListSubscriptions get a list of topics
@@ -149,10 +141,7 @@ func (s SubscriptionHandler) ListSubscriptions(ctx context.Context, request *pb.
 	// Update response
 	for i := range subscriptions {
 		subscription := subscriptions[i]
-		subscriptionResponse, err := s.buildResponse(subscription)
-		if err != nil {
-			return response, status.Error(codes.Internal, err.Error())
-		}
+		subscriptionResponse := s.buildResponse(subscription)
 		response.Subscriptions = append(response.Subscriptions, subscriptionResponse)
 	}
 
