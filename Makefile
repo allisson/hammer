@@ -8,9 +8,9 @@ build-protobuf:
 lint:
 	if [ ! -f ./bin/golangci-lint ] ; \
 	then \
-		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.38.0; \
+		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.42.1; \
 	fi;
-	./bin/golangci-lint run -E gosec
+	./bin/golangci-lint run
 
 test:
 	go test -covermode=count -coverprofile=count.out -v ./...

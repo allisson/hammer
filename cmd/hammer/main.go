@@ -290,8 +290,7 @@ func main() {
 		},
 	}
 
-	err := app.Run(os.Args)
-	if err != nil {
-		zap.L().Fatal("app", zap.Error(err))
+	if err := app.Run(os.Args); err != nil {
+		zap.L().Error("app", zap.Error(err))
 	}
 }
