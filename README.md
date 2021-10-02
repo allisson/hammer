@@ -2,7 +2,6 @@
 [![Build Status](https://github.com/allisson/hammer/workflows/tests/badge.svg)](https://github.com/allisson/hammer/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/allisson/hammer)](https://goreportcard.com/report/github.com/allisson/hammer)
 [![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/github.com/allisson/hammer)
-[![Docker Image](https://img.shields.io/docker/cloud/build/allisson/hammer)](https://hub.docker.com/r/allisson/hammer)
 
 Simple webhook system written in golang.
 
