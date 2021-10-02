@@ -30,8 +30,8 @@ To run the server it is necessary to have a database available from postgresql, 
 #### Docker
 
 ```bash
-docker run --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' allisson/hammer migrate # run database migrations
-docker run -p 4001:4001 -p 8000:8000 -p 9000:9000 -p 50051:50051 --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' allisson/hammer server # run grpc/http/metrics servers
+docker run --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' quay.io/allisson/hammer migrate # run database migrations
+docker run -p 4001:4001 -p 8000:8000 -p 9000:9000 -p 50051:50051 --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' quay.io/allisson/hammer server # run grpc/http/metrics servers
 ```
 
 #### Local
@@ -135,7 +135,7 @@ The system will send a post request and the server must respond with the followi
 #### Docker
 
 ```bash
-docker run --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' allisson/hammer worker
+docker run --env HAMMER_DATABASE_URL='postgres://user:pass@localhost:5432/hammer?sslmode=disable' quay.io/allisson/hammer worker
 {"level":"info","ts":1616065862.332101,"caller":"service/worker.go:67","msg":"worker-started"}
 {"level":"info","ts":1616065863.104438,"caller":"service/worker.go:36","msg":"worker-delivery-attempt-created","id":"01F12GG6NWZR03MW1MFMQDWVVF","delivery_id":"01F12GF6VM4YSX5GW8TM4781EZ","response_status_code":200,"execution_duration":749,"success":true}
 ```
