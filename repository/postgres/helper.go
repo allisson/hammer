@@ -6,11 +6,12 @@ import (
 
 	"github.com/DATA-DOG/go-txdb"
 	"github.com/allisson/go-env"
-	"github.com/allisson/hammer"
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
+
+	"github.com/allisson/hammer"
 )
 
 func init() {

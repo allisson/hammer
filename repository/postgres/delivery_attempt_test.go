@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/allisson/hammer"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/allisson/hammer"
 )
 
 func TestDeliveryAttempt(t *testing.T) {

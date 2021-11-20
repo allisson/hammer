@@ -3,13 +3,14 @@ package grpc
 import (
 	"testing"
 
-	"github.com/allisson/hammer"
-	pb "github.com/allisson/hammer/api/v1"
-	"github.com/allisson/hammer/mocks"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/net/context"
+
+	"github.com/allisson/hammer"
+	pb "github.com/allisson/hammer/api/v1"
+	"github.com/allisson/hammer/mocks"
 )
 
 func TestTopicHandler(t *testing.T) {

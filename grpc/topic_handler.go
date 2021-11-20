@@ -4,12 +4,13 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/allisson/hammer"
-	pb "github.com/allisson/hammer/api/v1"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/allisson/hammer"
+	pb "github.com/allisson/hammer/api/v1"
 )
 
 // TopicHandler implements methods for topic create/update

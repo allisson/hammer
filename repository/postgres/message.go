@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/allisson/hammer"
 	"github.com/jmoiron/sqlx"
+
+	"github.com/allisson/hammer"
 )
 
 // Message is a implementation of hammer.MessageRepository

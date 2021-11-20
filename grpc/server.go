@@ -3,8 +3,9 @@ package grpc
 import (
 	"context"
 
-	pb "github.com/allisson/hammer/api/v1"
 	"github.com/golang/protobuf/ptypes/empty"
+
+	pb "github.com/allisson/hammer/api/v1"
 )
 
 // Server implements grpc server

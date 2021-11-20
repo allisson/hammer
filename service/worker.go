@@ -7,8 +7,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/allisson/hammer"
 	"go.uber.org/zap"
+
+	"github.com/allisson/hammer"
 )
 
 // Worker is a implementation of hammer.WorkerService

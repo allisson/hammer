@@ -5,10 +5,11 @@ import (
 	"database/sql"
 	"testing"
 
-	"github.com/allisson/hammer"
-	"github.com/allisson/hammer/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/allisson/hammer"
+	"github.com/allisson/hammer/mocks"
 )
 
 func TestMessage(t *testing.T) {
