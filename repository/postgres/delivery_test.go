@@ -6,8 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/allisson/hammer"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/allisson/hammer"
 )
 
 func TestDispatchToURL(t *testing.T) {

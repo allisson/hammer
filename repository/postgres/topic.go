@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/allisson/hammer"
 	"github.com/jmoiron/sqlx"
+
+	"github.com/allisson/hammer"
 )
 
 // Topic is a implementation of hammer.TopicRepository

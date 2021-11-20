@@ -10,8 +10,9 @@ import (
 	"net/http/httputil"
 	"time"
 
-	"github.com/allisson/hammer"
 	"github.com/jmoiron/sqlx"
+
+	"github.com/allisson/hammer"
 )
 
 type dispatchResponse struct {

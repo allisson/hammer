@@ -12,11 +12,6 @@ import (
 	"time"
 
 	"github.com/allisson/go-env"
-	"github.com/allisson/hammer"
-	pb "github.com/allisson/hammer/api/v1"
-	hammerGrpc "github.com/allisson/hammer/grpc"
-	repository "github.com/allisson/hammer/repository/postgres"
-	"github.com/allisson/hammer/service"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
@@ -30,6 +25,12 @@ import (
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+
+	"github.com/allisson/hammer"
+	pb "github.com/allisson/hammer/api/v1"
+	hammerGrpc "github.com/allisson/hammer/grpc"
+	repository "github.com/allisson/hammer/repository/postgres"
+	"github.com/allisson/hammer/service"
 )
 
 var (

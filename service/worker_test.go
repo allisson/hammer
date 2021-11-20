@@ -5,9 +5,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/mock"
+
 	"github.com/allisson/hammer"
 	"github.com/allisson/hammer/mocks"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestWorker(t *testing.T) {

@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/allisson/hammer/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/allisson/hammer/mocks"
 )
 
 func TestMigration(t *testing.T) {
