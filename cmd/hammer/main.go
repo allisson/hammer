@@ -25,6 +25,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/allisson/hammer"
 	pb "github.com/allisson/hammer/api/v1"
@@ -34,10 +35,11 @@ import (
 )
 
 var (
-	sqlDB        *sqlx.DB
-	sqlConn      *sql.Conn
-	grpcEndpoint string
-	httpEndpoint string
+	sqlDB             *sqlx.DB
+	sqlConn           *sql.Conn
+	grpcEndpoint      string
+	httpEndpoint      string
+	readHeaderTimeout time.Duration
 )
 
 type appContext struct {
@@ -86,14 +88,18 @@ func gatewayServer() {
 	defer cancel()
 
 	mux := runtime.NewServeMux()
-	opts := []grpc.DialOption{grpc.WithInsecure()}
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 	err := pb.RegisterHammerHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
 	if err != nil {
 		zap.L().Error("gateway-http-server", zap.Error(err))
 		return
 	}
-
-	if err := http.ListenAndServe(httpEndpoint, mux); err != nil {
+	server := &http.Server{
+		Addr:              httpEndpoint,
+		Handler:           mux,
+		ReadHeaderTimeout: readHeaderTimeout,
+	}
+	if err := server.ListenAndServe(); err != nil {
 		zap.L().Error("gateway-http-server", zap.Error(err))
 	}
 }
@@ -106,7 +112,12 @@ func metricsServer() {
 	port := env.GetInt("HAMMER_METRICS_PORT", 4001)
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
+	server := &http.Server{
+		Addr:              fmt.Sprintf(":%d", port),
+		Handler:           mux,
+		ReadHeaderTimeout: readHeaderTimeout,
+	}
+	err := server.ListenAndServe()
 	if err != nil {
 		zap.L().Error("metrics-server-failed-to-start", zap.Error(err))
 	}
@@ -134,7 +145,12 @@ func healthCheckServer() {
 	}
 	mux.HandleFunc("/liveness", handler)
 	mux.HandleFunc("/readiness", handler)
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), mux)
+	server := &http.Server{
+		Addr:              fmt.Sprintf(":%d", port),
+		Handler:           mux,
+		ReadHeaderTimeout: readHeaderTimeout,
+	}
+	err := server.ListenAndServe()
 	if err != nil {
 		zap.L().Error("health-check-server-failed-to-start", zap.Error(err))
 	}
@@ -162,6 +178,9 @@ func init() {
 
 	// Set http endpoint
 	httpEndpoint = fmt.Sprintf(":%d", env.GetInt("HAMMER_HTTP_PORT", 8000))
+
+	// Set ReadHeaderTimeout
+	readHeaderTimeout = 60 * time.Second
 }
 
 func main() {
