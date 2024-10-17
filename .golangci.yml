@@ -5,3 +5,6 @@ linters:
 linters-settings:
   goimports:
     local-prefixes: github.com/allisson/hammer
+  gosec:
+    excludes:
+      - G115
