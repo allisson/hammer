@@ -6,11 +6,7 @@ build-protobuf:
 	cd api/v1 && protoc -I/usr/local/include -I. -I$(GOPATH)/src -I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis --swagger_out=logtostderr=true:. hammer.proto
 
 lint:
-	if [ ! -f ./bin/golangci-lint ] ; \
-	then \
-		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.50.0; \
-	fi;
-	./bin/golangci-lint run --fix
+	golangci-lint run --fix
 
 test:
 	go test -covermode=count -coverprofile=count.out -v ./...
